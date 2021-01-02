@@ -1,0 +1,11 @@
+# Introduction {#intro}
+
+The structuring of these notes is a work-in-progress. The main criteria is to be able to locate anything quickly and to avoid similar notes in multiple places.
+
+Most of the notes are on R. Possible splits for sections:
+
+1. General. This is higher level material that doesn't get into specifics too much. Examples are data science process and workflow, good practice, and general resources. Not sure about computing best practice yet.
+2. Data Analysis. This is mostly the standard classification or regression modelling process, not necessarily because it deserves a separate section from other types of modelling or statistics but because it is a common application. I will include theory and implementation (including R packages specific to these tasks) here. I will include here all standard stages of the data analysis process, such as data exploration and model evaluation.
+3. Computing. General computing notes, but I will include some more general R material. Since notes on R will take be the main part of the full book it is useful to split it up. The R specific material that I'll put here are topics that are common across computing languages such as parallel processing, git, speed and memory profiling, testing, and efficient use of RStudio. These might be better in a separate section of their own though.
+4. R specific topics Notes here get into detail of specific packages, but will include base functions.
+5. Extras. For now, material that doesn't have a home e.g. maths & stats...?

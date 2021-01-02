@@ -1,0 +1,144 @@
+# Computing General
+
+These are miscellaneous topics in software development. For me, these will mainly relate to R packages, but for now I will keep a separate document for that.
+
+## General Resources
+
++ [The Software Sustainability Institute](https://www.software.ac.uk/)
++ [Software Carpentry](https://software-carpentry.org/)
++ Clean Code by Robert C. Martin - I found thsi a useful guide to good coding practices. It is quite general but uses Java for examples. Summaries of main points can be found [here](https://reflectoring.io/book-review-clean-code/) and [here](https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29) (there are plenty of others).
+
+## Software Licenses
+
+This is my basic understanding given a quick read. It will be more complicated than that.
+
+There is a basic introduction in Hadley's R packages book. This gives three links:
+
++	https://choosealicense.com/licenses/
++	https://tldrlegal.com/
++	https://cran.r-project.org/doc/manuals/R-exts.html#The-DESCRIPTION-file
+
+Look at the last of these if you choose a license other than the three Hadley suggests which are MIT, GPL and CC-0. Note that MIT requires a license file.
+
+This article compares MIT and GPL. MIT is `permissive` while GPL is `copyleft`. These are similar in terms of using the code as is but GPL gives more restrictions on how the code can be used if changed. MIT will allow someone to change to another license if they make changes and while GPL has a `share alike` principle which means they must use the same GPL licence with their work.
+
+Another article also compares these two but also the Apache license. 
+
+>Another way of looking at it is that you’re picking a license based on what you are afraid of. All of these licenses assume you’re afraid of being sued. The MIT license is if you’re afraid no one will use your code; you’re making the licensing as short and non-intimidating as possible. The Apache License you are somewhat afraid of no one using your code, but you are also afraid of legal ambiguity and patent trolls. With the GPL licenses, you are afraid of someone else profiting from your work (and ambiguity, and patent trolls).
+
+A good guide for researchers, particularly for R packages, is [Karl Broman's page on licenses](http://kbroman.org/pkg_primer/pages/licenses.html).
+
+### MIT License
+
+I went with a MIT license for my Gittins code.
+
+From Karl Broman:
+
+---
+
+If you’re not incorporating code that is licensed under the GPL, I recommend going with the MIT license.
+
+Unfortunately, and for reasons that I don’t understand, the R Core considers the MIT license to be not a proper license but rather a template for a license. And so if you want to use the MIT license, you must include a LICENSE file in your package that includes just two lines, like this (example here):
+
+```
+YEAR: 2014
+COPYRIGHT HOLDER: Karl W Broman
+```
+See the license template at http://www.r-project.org/Licenses/MIT.
+
+Then, in your DESCRIPTION file, include the following line.
+
+```
+License: MIT + file LICENSE
+```
+
+The all caps LICENSE in that line is the name of the file (within your package) with the text about year and copyright holder. You can also call the file LICENCE if you want. In this case, the relevant line in your DESCRIPTION file should be the following.
+
+```
+License: MIT + file LICENCE
+```
+
+(I’d thought that you could use a different name for the file, for example License.txt, but the Writing R Extensions manual seems pretty explicit that the file should be either LICENSE or LICENCE.)
+
+---
+
+## Changelogs 
+
+[Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+
+## Version Numbering
+
+[What to use as an initial version?](https://stackoverflow.com/questions/3728626/what-to-use-as-an-initial-version) gave the following answer which makes sense to me as I want to be able to increment minor versions even though I may be losing backwards compatibility.
+
+---
+
+The [Semantic Versioning](https://semver.org/) standard says:
+
+ >The simplest thing to do is start your initial development release at 0.1.0 and then increment the minor version for each subsequent release.
+
+It is fine to go from 0.3.0 straight to 1.0.0. It is also perfectly okay to be at 0.23.0. Starting at 0.4.0 is somewhat unadvisable as it suggests there have been previous published versions.
+
+Additionally, note that `0.y.z` is kept aside for quick iteration, so that initial development (and hence lots of breaking changes) does not leave you at something silly like 142.6.0. Instead of bumping the major version, bump the minor version on every breaking change until you release 1.0.0:
+
+>Major version zero (0.y.z) is for initial development. Anything may change at any time. The public API should not be considered stable.
+
+---
+
+## Installing R on New Computer
+
+I think these notes are out of date now as there are better ways of doing this but it might still be useful for getting info on installed packages.
+
+See http://stackoverflow.com/questions/1401904/painless-way-to-install-a-new-version-of-r-on-windows
+
+```
+library(utils)
+
+#saves info to a file called packageinfo
+rownames(installed.packages()) 
+packageinfo <- installed.packages()
+save(packageinfo, file="packageinfo.RDATA")
+
+#load saved info (set wd first)
+load("packageinfo.RDATA")
+pkgs <- packageinfo
+
+## Check necessary packages
+#need to change paths and create a vector with package names.
+load("G:\Setinfo\R\packagelist.RData" # includes a vector "pkgs"
+     installed <- pkgs %in% installed.packages()[, 'Package']
+     if (length(pkgs[!installed]) >=1){
+       install.packages(pkgs[!installed])
+     }     
+     
+load("packageinfo")
+pkgs <- packageinfo
+```
+
+Alternative from https://hlplab.wordpress.com/2012/06/01/transferring-installed-packages-between-different-installations-of-r/. This doesn't get them all (just the ones from the user library so use the above).
+
+```
+# store_packages.R
+# stores a list of your currently installed packages
+tmp = installed.packages()
+
+installedpackages = as.vector(tmp[is.na(tmp[,"Priority"]), 1])
+save(installedpackages, file="installed_packages.RDATA")
+
+# restore_packages.R
+# installs each package from the stored list of packages
+
+load("installed_packages.RDATA")
+
+for (count in 1:length(installedpackages)) install.packages(installedpackages[count])
+```
+
+
+
+## IT Issues
+
+###Blinking White Dot in RStudio
+
+On my 2019 laptop (Windows 7) I have a persistent blinking white dot in the script window. It follows the cursor but with a lag. It is described [here](https://github.com/rstudio/rstudio/issues/4390) and also occurs on windows 10. The problem is in something underlying RStudio (QT?) and will probably be fixed in RStudio 1.3.
+
+Meanwhile a fix is to switch to [software rendering](https://support.rstudio.com/hc/en-us/articles/360017886674-Troubleshooting-RStudio-Rendering-Errors). This may be slower so I might want to switch back if markdown lags.
+

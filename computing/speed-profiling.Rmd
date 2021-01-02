@@ -1,0 +1,25 @@
+---
+title: "Profiling and Speed Notes"
+output: html_document
+---
+
+http://tgmstat.wordpress.com/2013/09/25/profiling-r-code/
+This references: [Tidying and profiling R code Chapter](http://www.hep.by/gnu/r-patched/r-exts/R-exts_69.html#SEC69)
+or [full pdf](http://cran.r-project.org/doc/manuals/R-exts.pdf)
+
+HW advanced R book chapter:
+http://adv-r.had.co.nz/Profiling.html#performance-profiling
+
+Dirk Eddelbuttel: intro to high performance computing in R:
+http://dirk.eddelbuettel.com/papers/useR2010hpcTutorialHandout.pdf
+
+Detail on profiling
+http://stackoverflow.com/questions/3650862/how-to-efficiently-use-rprof-in-r
+
+General code optimisation
+http://www.azillionmonkeys.com/qed/optimize.html
+
+Speeding up R for busy people
+http://www.r-bloggers.com/faster-higher-stonger-a-guide-to-speeding-up-r-code-for-busy-people/
+
+

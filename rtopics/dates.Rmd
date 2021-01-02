@@ -1,0 +1,168 @@
+# Dates and Times
+
+```{r dates_setup, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE, warning=FALSE, message=FALSE, error=FALSE)
+library(lubridate)
+```
+
+Dates and times can be tricky to do properly. I will first outline how base R handles dates then describe the package lubridate. 
+
+There is a good overview https://www.r-bloggers.com/using-dates-and-times-in-r/ but it gets complicated.
+
+Three date/time classes are built-in in R: 
+
++	Date – no times, only dates.
++	POSIXct – store dates and times. Standard class (I think) used by lubridate.
++	POSIXlt – stores dates and times as a list. Makes extraction of components easier.
+
+## Base R
+
+If you subtract a date or date/time object from another a difftime object will be returned. Units are selected automatically but can be chosen using the `difftime()` function. You can also use `diff()` to find the differences between vectors of dates. 
+
+Difftime objects are specific to the unit used when they were created. Lubridate adds a lot more detail to this and improves display of differences.
+
+## Lubridate
+
++ [General article including lubridate](https://rpubs.com/jo_irisson/howto_date_time)
++ [Guide to lubridate](https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html)
++ [Manual](https://cran.r-project.org/web/packages/lubridate/lubridate.pdf)
+
+The manual has lots of functions but there is a broad guide at the start
+
+There are two broad kinds of time-based objects:
+
+1.	Moments in time (known as instants). Classes are Date, POSIXct, POSIXlt.
+2.	Spans of time (known as time spans). There is a Timespan class for these which is further divided into Duration-class, Period-class and Interval-class objects.
+
++	Intervals retain information about start and end points.
++	Durations measure exact amount of time. With leap years and daylight savings this might be confusing.
++	Periods measure change in clock time. 
+
+Use intervals to change between durations and periods. The different objects are stored quite differently:
+
+```{r dur, eval = TRUE}
+tm1 <- as.POSIXct("2013-07-24 23:55:26")
+tm1
+tm2 <- as.POSIXct("25072013 08:32:07", format = "%d%m%Y %H:%M:%S")
+tm2
+d <- tm2-tm1
+str(d)
+tint <- interval(tm2, tm1)
+tper <- as.period(tint)
+tdur <- as.duration(tint)
+str(tint)
+str(tper)
+str(tdur)
+tdur
+```
+
+Note the “num” part of period is seconds. I found periods add together fine using “+” but not using sum or rowSums.
+There are functions for testing which class an object belongs to (at each level): `is.instant()`, `is.Date()`, `is.POSXit()` etc.
+
+decimal_date converts instants to decimal time. Instants can be rounded to a convenient unit using the functions `ceiling_date()`, `floor_date()` and `round_date()`.
+
+Taking the difference of two instants returns a difftime object. These are numeric with a units attribute (seconds etc.). Using `as.numeric()` to convert to just a number drops the units which can be if converting times with different units. Instead use `as.numeric(x, units=”days”)`.
+
+### Lubridate Functions
+
++ The lubridate package has a family of simple parsing functions `ymd()` etc. for parsing dates from text. 
++ Elements can be extracted using `year()`, `month()`, `week`, `yday()`, `mday()`, `wday()`, `hour()`, `minute()`, `second()`, and `tz()`. 
++ `hours()` etc. (with an "s") creates period objects. These have a single numeric argument and are useful in date arithmetic e.g. `now() + years(1)`.
++ `dweeks()`, `ddays()` etc. similarly create durations. Intervals can be divided by durations.
++ `round_date()`, `floor_date()`, `ceiling_date()` are used to round dates to the unit specified in the 2nd argument e.g. `round_date(now(), "day")`.
+
+
+### Identfying Date Variables
+
+`read_csv` from readr does some automatic date conversion when reading so I feel it should be possible to do automatic conversion in lubridate. However, there doesn't seem to be these options and perhaps `read_csv` only checks for common formats. There is a `guess_formats()` function but this still requires guidance on general formats to try. In general, I think you just have to look at the format and the convert using `dmy()` etc. Note the `parse_date_time()` just performs a similar function to `dmy()` and similar functions but with more control (it underlies the `dmy()` functions). It does include some guessing of separators so does not need as much detail as base R functions but note that any guessing is based on a sample. I've found that `dmy_hms()` appears to drop the time part if it is zero but it is a datetime but the time is not displayed if it is zero. 
+
+## tsibble/slider Packages
+
+[tsibble](https://tsibble.tidyverts.org/) has tools for wrangling temporal data in a tidy framework. It succeeds the tibbletime package. [Slides from RStudio course](https://github.com/rstudio-conf-2020/time-series-forecasting?fbclid=IwAR2K82TIWjzyCimYrDeH19oHKiUowrRxbcpKjUz2ed2achIm2tUt779k05o)
+
+[slider](https://github.com/DavisVaughan/slider) gives sliding window functions.  From RStudio - builds on purrr. [tidyverse blog](https://www.tidyverse.org/blog/2020/02/slider-0-1-0/).
+
+The tsibble news says that the sliding window in their package can be replaced by `slider::slide()`. Both packages also have functions for summarising by fixed length tiles: `tsibble::tile_tibble()` and `slider::slider_period()`. The slider functions can be used outside of the tsibble framework.
+
+This code is an example of how to use slider to obtain fixed windows. This uses the `slide_period_dfr()` which outputs a data frame.
+
+```{r}
+# helper function to apply to tiles
+weekly_summary <- function(data) {
+  summarise(data, 
+            start = min(date_notified), 
+            week = isoweek(start),
+            year = year(start),
+            start_year = year(start),
+            n_days = n(), 
+            total = sum(total))
+}
+
+# `.period` handles grouping. Options: week, year, yweek etc.
+# `.origin` is important. Default is 1970-01-01 00:00:00
+ymd("2019-01-07") %>% wday(label = T) # a monday
+slide_period_dfr(dt, dt$date_notified, .period = "week", .f = weekly_summary, .origin = ymd("2019-01-07"))
+```
+
+Next is a similar example for a 7-day moving average using slider.
+
+```{r}
+dt <- tibble(date = seq.Date(ymd("2020-01-01"), ymd("2020-2-01"), by = "day"), 
+             total = rpois(length(date), 5))
+
+dt7d <- dt %>% 
+  select(date, total) %>% 
+  mutate(ndays = slide_dbl(total, length, .before = 6)) %>% 
+  mutate(total_7day = slide_dbl(total, mean, .before = 6, .complete = TRUE)) %>% 
+  filter(!is.na(total_7day)) #removes incomplete 7 day periods
+```
+
+The next block is not specifically about slider but is a plotting recipe to compare moving averages from two years (assuming same processing as above but a longer data date range). This uses 01 Jan as an origin.  
+
+```{r}
+dt7d %>% 
+  mutate(year = year(date),
+         yday = yday(date)) %>%
+  select(year, yday, total_7day) %>% 
+  pivot_wider(names_from = year, values_from = total_7day) %>% 
+  filter(!is.na(`2020`) & !is.na(`2019`)) %>% 
+  pivot_longer(-yday, names_to = "year", values_to = "total_7day") %>% 
+  ggplot(aes(x = yday, y = total_7day, group = year, colour = year)) +
+  geom_line(lwd = 1)
+```
+
+## Further notes
+
+There are a lot of functions which I haven’t explored but I used it a bit when processing the Activity Record data.
+One issue is the distinction between a date object and a date-time object. The functions as_date() and as_datetime() can be used to convert between them. The dates from the Excel sheet were automatically stored as date-time objects  even though there was no time attached. This could be seen by the “UTC” at the end of the string.  This stands for “Coordinated Universal Time” and is the time at the 0 meridian; somewhat similar to Greenwich Mean Time or “GMT” (but no daylight savings).  The today() function however created a date object and you can’t perform operations on different types so a changed the dates in the data to date objects.
+
+https://stackoverflow.com/questions/46199638/convert-decimal-number-double-to-hour-time-or-difftime-in-r gives a method to easily convert from a decimal to a time. Uses the chron package `times()` function.
+
+[SAS datetime types](https://v8doc.sas.com/sashtml/lrcon/zenid-63.htm)
+
+**Excel dates** - dates in excel are recorded as a number of days (can be fractional) starting from an origin of 2019-01-01. This origin can change for operating systems besides Windows. Also there is incorrectly a leap year in 1900. To convert in R use either `janitor::excel_numeric_to_date()` or, in base R, `as.date(x, origin = "1899-12-30")`. The origin is two days earlier than the excel one because (a) R treats 0 as being at the origin, while Excel uses 1, and (b) to correct for the leap year error. 
+
+**`hms` package** - part of the tidyverse. See (https://hms.tidyverse.org/) and (https://r4ds.had.co.nz/dates-and-times.html). Note that, like lunbridate, this also has an `hms()` function. It returns an hms object while the lubridate version returns a period.
+
+**`case_when()` and `if_else()` issues**. I had a data set taken from excel which had a date column which were in a mixture of formats. There were numeric entries (excel dates), some "dd.mm.yy" entries, some `NA`s, and a selection of various other character entries. I thought I could handle this with `case_when()` but this (and `ifelse()` too) evaluates the RHS for the full vector before extracting elements satisfying the RHS, so functions like `dmy()` and `as.Date()` might fail because they cannot handle all elements in teh vector. I don't know of a way around it other than to replace the problem elements using subsetting. Also `case_when()` requires consistent types for the RHS output even for `NA`s so you need to use specific NA-types such as `NA_real_`. A date `NA` is a double but the only way I could get it to work was to use `as.Date(NA)`.
+
+**Group data by month etc.**. Grouping by time units smaller than a year can be done more formally and with greater flaxibility in the tsibble package, but there is in dplyr is to use the `floor_date()` function e.g. `group_by(month = floor_date(date, "month"))`.
+
+**ISO week dates**. The standard numbering for weeks counts from 1st of January of each year. Therefore, the start day of each week will vary with the year, and there can be partial weeks at the end of the year. An alternative system is used by the *ISO 8601 date and time standard*. This starts each week on Monday and has either 52 or 53 complete weeks per year. The year of each week is the Gregorian year in which the week's Thursday falls. This means that an ISO year can disagree with the Gregorian year as dates near to January 1st might be assigned to the previous or next year. Lubridate has functions for both systems: `week()` and `year()` for standard, and `isoweek()` and `isoyear()` for ISO week/year. The tsibble package's `yearweek()`, `yearmonth()`, and `yearquarter()` functions use the ISO system. There is also `is_53weeks()` to say whether the year has 53 or 52 weeks.
+
+**`as_date()`, `as_datetime()`**. These are lubridate versions of base `as.Date()` and `as.POSIXct()`. 
+
++ `as_date()` ignores timezone (so it just drops the time component).
++ They have a default origin for numerics. This is `lubridate::origin` which is `"1970-01-01 UTC"`.
++ `as_datetime()` defaults to UTC.
++ Invalid date formats causes NAs, with a warning. I think base versions do this but without a warning.
+
+A date is stored as a double. `as.Date()` or `lubridate::as_date()` applied to a POSIXt will drop fractional part (i.e. time part). However, `as.Date()`  or `lubridate::as_date()` applied to a numeric will retain any fraction but the date correctly has 0 hours, mins, secs.
+
+```{r}
+x <- as_date(10000.38, origin = "1970-01-01")
+x
+second(x)
+as.numeric(x) # Not integer
+as_datetime(x) # non-integer part converted to time
+```

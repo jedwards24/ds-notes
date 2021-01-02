@@ -1,0 +1,131 @@
+# Notes on ggplot2
+
+## New additions
+
+**Ordering variables in a plot**. By default the plot will use natural ordering i.e. numeric, alphabetic or by factor. With factors the order of the factor levels will be used even if the factor is not ordered. The common way to force an ordering in a plot is to convert variables to a factor with the desired ordering. This is what happens using `reorder()` which converts to a factor (by default unorded) then applies ordering based on another vector or a function (a minus in front of the ordering variable will reverse the order). 
+
+**Text label positioning**. Use the [ggrepel package](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html) via the functions `geom_text_repel()` and `geom_label_repel()`. There are options but they work well just used as they are.
+
+### Colour Palettes
+
+[ggplot2 default color palette](https://stackoverflow.com/questions/8197559/emulate-ggplot2-default-color-palette)
+
+The colours used depend on the number of colours displayed. They are equally spaced uses around the colour wheel. The hex values can be obtained with `scales::hue_pal()(n)`, where `n` is the number of colours used.
+
+I had difficulty getting consistent colours across plots where colours depended on a factor that might sometimes have absent levels. This can be fixed using e.g. `scale_color_discrete(drop = F)`. It is not a problem if colours are set manually with named values corresponding to the factor labels: `scale_colour_manual(name = "sig", values = c("lo" = "#F8766D", "none" =  "#619CFF", "hi" = "#00BA38"))`. I found Some threads while looking for this solution,  which may be useful: [one](https://stackoverflow.com/questions/43440068/ggplot2-fix-colors-to-factor-levels), [two](https://stackoverflow.com/questions/6919025/how-to-assign-colors-to-categorical-variables-in-ggplot2-that-have-stable-mappin). I think they give slightly more general solutions, the first suggests defining your own custom scale, and the second uses named colour vectors rather than naming in `scale_colour_manual`.
+
+### Scales
+
+[The scales package](https://github.com/r-lib/scales) gives support for ggplot2 for axis scales (also some palette functions).
+
+[Setting axes to integer values](https://joshuacook.netlify.app/post/integer-values-ggplot-axis/). I wanted to force integer only values for scales. I couldn't find a built in solution but the link gives a modified `scales::pretty_breaks()` function. A manual solution is e.g. `scale_y_continuous(breaks=c(1,3,7,10))`.
+
+### Themes
+
+[Themes]((https://ggplot2.tidyverse.org/reference/theme.html)) change the appearance of non-data parts of a plot. There are a [number of options](https://ggplot2.tidyverse.org/reference/ggtheme.html) for complete themes built to ggplot2. Examples are `theme_classic()` which is based on the base R theme, and `theme_minmal()` which removes borders and background shading. These can added to plots using `+theme_minimal()` and have arguments to adjust, for example, the label font size. Alternatively, a theme can be set globally using e.g. `theme_set(theme_minimal())`. Use `theme_get()` to get the current default theme. There are other functions for [modifying themes](https://ggplot2.tidyverse.org/reference/theme_get.html) e.g. `theme_update()` and `theme_replace()`. 
+
+There are many packages giving themes or functions to work with themes. This [blog post](https://rfortherestofus.com/2019/08/themes-to-improve-your-ggplot-figures/) gives a number of links, most of which I will repeat here.
+
++ [hrbrthemes](https://github.com/hrbrmstr/hrbrthemes). Opininate and font-focused. Main theme uses Arial Narrow - “condensed, has solid default kerning pairs and geometric numbers”.
++  [firatheme](https://github.com/vankesteren/firatheme). Full theme. Uses Mozilla’s Fira Sans font. Maybe more dependencies.
++  [ggthemr](https://github.com/cttobin/ggthemr). Tools for building new themes from palettes, layouts, spacing, type, and other tweeks.Gives a number of custom palettes.
++ ["Publication ready theme"](https://rpubs.com/Koundy/71792). Strong axes with larger labels. Moves legend below x axis which I’m unsure about.
++ [cowplot](https://cran.r-project.org/web/packages/cowplot/). A practical collection of simple themes. He says, “I now believe that there isn’t one theme that works for all figures...”. A collection of themes with minimal changes from ggplot ones. I liked these. `theme_cowplot()` is similar to base R (no gridlines), but there is a function `background_grid()` to easily add gridlines. There are theme_minimal variations. Also gives function to arrange plots in a grid.
++ [BBC cookbook](https://bbc.github.io/rcookbook/).
++ [What is the default font for ggplot2](https://stackoverflow.com/questions/34610165/what-is-the-default-font-for-ggplot2)
+
+My thoughts: 
+
++ `theme_classic()` is half-open with no gridlines. Most ggplot themes have gridlines. theme_minimal() is open (no borders).
++ I like the half-open style of R classic but often miss gridlines. ggplot has a major and minor gridlines, and removing minor, as in cowplot, is simpler and a good compromise. cowplot has functions to customise (e.g. `background_grid()`) and can give me what I want.
+
+### Multiple Plots
+
+I previously used the patchwork package for creating layouts of multiple plots, but `cowplot::plot_grid()` also does this and I will usually already be using cowplot for its themes. It has functions for lining up plots correctly, including a method to line up a plot with a legend against one without. See [Retrieve the legend of a plot](https://wilkelab.org/cowplot/reference/get_legend.html). The method separates the legend from the plot then places this as a separate element in the grid.
+
+## Original notes
+
+These are old notes. My understanding has since moved on and this needs updating.
+
+I've had a lot of headaches getting into this. These notes aren't comprehensive but will cover issues I've had or things that weren't intuitive. It is loaded as part of the tidyverse package. 
+
+An excellent source for is the [graphs section of the Cookebook for R](http://www.cookbook-r.com/Graphs/) which just uses `ggplot`. Also see [this detailed tutorial](http://r-statistics.co/Complete-Ggplot2-Tutorial-Part1-With-R-Code.html) or the [main reference for ggplot2](http://ggplot2.tidyverse.org/reference/). (the first and third of these are the best place for reference).
+
+## Basics
+
+Base graphics in R works with vectors while `ggplot` works with dataframes. All the data needed to make the plot is typically be contained within the dataframe supplied to the ggplot() itself or can be supplied to respective geoms. More on that later. The `ggplot()` function creates a plot but more layers (and themes) can be added to it with other functions.
+
+`ggplot(data, aes(x=var1, y=var2))` will only create a blank plot because no assumption is made about the form of the plot. `data` says which df is used to supply the data, while `aes()` describes how variables in the data are mapped to visual properties (*aesthetics*) of the plot.
+
+*Layers* can be added to a ggplot using `geom_xxx()` functions e.g. `ggplot(data, aes(x=var1, y=var2)) + geom_point()`. The geom represents data points. Aesthetics can be added to a geom to map variables as in `ggplot()` but aesthetics supplied to ggplot() are used as defaults for every layer unless overriden.
+
+The `ggplot2` reference gives the following as being layers: geoms, stats,  position adjustments, annotations.
+
+The RStudio ggplot2 cheat sheet gives the following components of a plot:
+
++ a **data** set.
++ a set of **geoms** - visual marks that represent data points. Each function returns a layer. Aesthetic properties represent variables.
++ **Stats** - alternative to geoms as a way to build a layer by visualising a transformation of the data.
++ a **coordinate system** - default is cartesian.
++ **Scales** - control how a plot maps data values to the visual values of an aesthetic e.g. colour, fill, linetype, shape, size, or x/y axis location scales.
++ **Position adjustments** - how to arrange geoms that would otherwise occupy the same space.
++ **Labels** - title, axis, etc.
++ **Legends**
++ **Themes** - general appearance of the plot.
++ **Facets** - divides plot into subplots based on discrete variables.
++ **Zooming** - control x and y values displayed.
+
+## Multiple Plots
+
+`ggplot` doesn't directly plot multiple plots on one page. One solutions is the `multiplot()` function given [here in the R cookbook](http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/). This works easily but can't be saved with `ggsave()`. The [patchwork package](https://github.com/thomasp85/patchwork) allows this and is more flexible, allowing graphs within the multi-plot to be different sizes.
+
+`ggplot()` won't automatically show any plots if it is within a loop but plots can be saved to variables and `print`ed. 
+
+## Multiple lines on single plot
+
+The issue here is that I am used to thinking about lines as representing different vectors. In ggplot `geom_line()` needs to know which data points to connect in each line. This is done by stating a grouping variable in the aesthetics. To connect all points use `group=1`. To split into lines give a discrete variable `group=var` which splits the data. 
+
+I may need to think about data shapes for this (wide vs long). See [converting data between wide and long format](http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/)
+
+[thread](https://stackoverflow.com/questions/3777174/plotting-two-variables-as-lines-using-ggplot2-on-the-same-graph)
+
+## Misc
+
+[linetypes](http://www.sthda.com/english/wiki/ggplot2-line-types-how-to-change-line-types-of-a-graph-in-r-software), [linetypes2](http://ggplot2.tidyverse.org/reference/aes_linetype_size_shape.html)
+`facet_wrap()`
+
+[legend titles](https://stackoverflow.com/questions/14622421/how-to-change-legend-title-in-ggplot)
+
+[Different legend symbols for points and lines](https://stackoverflow.com/questions/26587940/ggplot2-different-legend-symbols-for-points-and-lines). This came up when I was overlaying a line onto a scatterplot. I could create a legend for the points and lines but the symbols for each in the legend had both points and lines in them. The solution is to use `override.aes()`, which will be helpful for ammending legends generally. [Another article](http://www.audhalbritter.com/complicated-figure/).
+
+[Adding an extra point](https://stackoverflow.com/questions/36541086/adding-a-extra-point-in-a-ggplot2-graph). Adding a point that isn't in the data is not as obvious as you'd think but there are several ways to do it. 
+
++ Add a layer directly `geom_point(aes(x=5.6, y=3.9), colour="blue")`.
++ Define a data frame with a single entry then use `geom_point(data = df, col = 'blue')`.
++ Use annotate:`annotate("point", x = 5.6, y = 3.9, colour = "blue")`
+
+[assigning plots in a loop](https://stackoverflow.com/questions/39799886/r-assigning-ggplot-objects-to-list-in-loop). The problem here is due to lazy evaluation - the plots aren't created when they are assigned. It can be solved by using `lapply()`. This example produces one plot for each `id`:
+
+```
+myplots <- lapply(exper_ids, function(i){
+  qplot(x = data$p_opt_ratio,
+        y = filter(prices_tbl, id == i)$p_greedy_ratio, 
+})
+```
+The list can be fed directly into patchwork using `wrap_plots(myplots)`.
+
+[Adding extra layer conditionally](https://stackoverflow.com/questions/22915337/if-else-condition-in-ggplot-to-add-an-extra-layer)
+Simplest solution that I was looking for was this. The trick is to enclose the whole if statement in {}. 
+```
+flag = T
+ggplot(df,aes(x,y)) +
+{if(flag)geom_hline(yintercept=15)} +
+  geom_point()
+```
+
+## Other Packages
+
+[ggfortify](https://github.com/sinhrks/ggfortify) gives simple functions to produce ggplots of output from common packages and functions such as `lm()`, `glmnet` and `kmeans()`.
+
+ggvis
+

@@ -37,3 +37,11 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Added by me
+ds-notes.Rproj
+todo.md
+/_book/
+/_bookdown_files/
+book.bib
+packages.bib

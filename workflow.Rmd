@@ -1,0 +1,87 @@
+# Workflow
+
+[ProjectTemplate](http://projecttemplate.net/getting_started.html). This was recommended by Hilary Parker on her podcast.
+
+[Jenny Bryan](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/). Recommending `here`. Separates out the "workflow" and "product" (raw data and R scripts). Workflow shouldn't be hardwired into product.
+
+[Prime Hints For Running A Data Project In R](https://kkulma.github.io/2018-03-18-Prime-Hints-for-Running-a-data-project-in-R/)
+
+[SO thread on statistical analysis workflow](https://stackoverflow.com/questions/1429907/workflow-for-statistical-analysis-and-report-writing/). Contains a basic workflow template on which I've based mine (load, clean, func, do) and links to examples from HW. From 2010.
+
+[R for DS workflow chapter](https://r4ds.had.co.nz/workflow-projects.html). Mostly basics. 
+
+[A workflow for data analysis](https://staffblogs.le.ac.uk/teachingr/2020/09/21/a-workflow-for-data-analysis/)
+
+[Divergent and Convergent Phases of Data Analysis](https://simplystatistics.org/2018/09/14/divergent-and-convergent-phases-of-data-analysis/). Roger Peng.  Roughly four phases with the odd number phases divergent and the even convergent:
+
+1. Exploration.
+2. Refining the problem.
+3. Model development. Build models and test performance. Prototyping. 
+4. Narration.
+
+The workflow in phase 1 can be quite loose, but phase 3 needs a more formal workflow and record of actions is needed because we are moving towards a final product. The convergent phases require decisions and choices (what work from previous stages to cut). 
+
+The model is based on a [double diamond framework](https://www.designcouncil.org.uk/news-opinion/what-framework-innovation-design-councils-evolved-double-diamond) from design where the stages are discover, define, develop, and deliver.
+
+The John Hopkins DS course gives 6 categories of data analyses:
+
+1.	Descriptive - quantitatively describing the main features of a collection of data.
+2.	Exploratory - finding previously unknown relationships.
+3.	Inferential - test theories about a population using a sample of “subjects” taken from the population.
+4.	Predictive - use data on some objects to predict values for another object.
+5.	Causal - find out what happens to one variable when you change another. Usually requires controlled experiments.
+6.	Mechanistic - understand the exact changes in variables that lead to changes in other variables for individual objects (usually difficult).
+
+## Misc
+
+[Jenny B slides on naming files](https://speakerdeck.com/jennybc/how-to-name-files)
+
+For notes on changelogs and version numbering see `software_development_notes.Rmd`.
+
+[Technical Debt](https://resources.sei.cmu.edu/asset_files/WhitePaper/2012_019_001_58818.pdf)
+
+[RAID log](https://www.projectmanager.com/blog/raid-log-use-one)
+
+[Worse is Better](https://en.m.wikipedia.org/wiki/Worse_is_better). This is the idea that adding functionality can make software worse due to increased complexity. In decreasing order of importance: simplicity, correctness, consistency, and completeness. The MIT approach also gives these principles but correctness and consistency are prioritised, with simplicity least important.
+
+**Task-lists**
+
++ [todo.txt](https://computers.tutsplus.com/tutorials/how-to-manage-your-tasks-with-todotxt--cms-20293). A framework to create task-lists using text files. 
++ [Github-flavoured markdown task-lists](https://pandao.github.io/editor.md/examples/task-lists.html). The `[ ]` and `[x]` syntax renders as tickboxes in markdown and R markdown if used at the start of a list entry, e.g.
+    + [ ] task 1
+    + [x] Another
+
+A template for how to structure these lists and what to put in them could be [Github issues](https://guides.github.com/features/issues/).
+
+## Best Practices
+
++ [Nice R Code](https://nicercode.github.io/). A collection of blog posts on writing nicer R code. From 2013.
++ [Data organisation in spreadsheets](https://kbroman.org/dataorg/)
++ [Good Enough Practices for Scientific Computing](https://swcarpentry.github.io/good-enough-practices-in-scientific-computing/)
++ [Guide to data sharing](https://github.com/jtleek/datasharing)
+
+Efficient R chapter 9 *Efficient Collaboration*:
+
++ General coding principles: Use modular code; comment your code; don't repeat yourself; be clear, concise, and consistent.
++ Reformat code with RStudio: Ctrl-I to fix indentation, Ctrl-Shift-A to reformat.
++ File names is lower case with *.R* extension. More at [http://bit.ly/Rpackstructure](http://bit.ly/Rpackstructure) section 1.1.
++ Loading packages. Use `library()` for essential packages. For non-essential use `require()` and capture warning.
++ Comments should provide context and explain the programmers intention.
++ Variable names in **underscore_separated** style. packages in Bioconductor use camel case.
++ Indentation: never mix tabs and spaces. Rstudio can automatically convert tabs (`Tools -> Global Options -> Code).
+
+### Naming and Style Guides
+
+[Tidyverse Style Guide](https://style.tidyverse.org). This was developed from the original Google style guide which has since been changed to a fork of the tidyverse guide. The [current Google style guide](https://google.github.io/styleguide/Rguide.html) just describes where it differs from the tidyverse guide. A quick summary: prefers big camel case for function names, don't use `attach()`, don't use right hand assignment in pipes, do use explicit returns, and do explicitly qualify namespaces for all external functions.
+
+Older naming/style guides:
+
++ https://docs.google.com/document/d/1esDVxyWvH8AsX-VJa-8oqWaHLs4stGlIbk8kLc5VlII/preview#
++ https://docs.microsoft.com/en-us/previous-versions/dotnet/netframework-1.1/xzf533w0(v=vs.71)?redirectedfrom=MSDN
++ http://stat405.had.co.nz/r-style.html
++ https://journal.r-project.org/archive/2012-2/RJournal_2012-2_Baaaath.pdf
++ https://stackoverflow.com/questions/1944910/what-is-your-preferred-style-for-naming-variables-in-r
++ [R Coding Conventions](https://docs.google.com/document/d/1esDVxyWvH8AsX-VJa-8oqWaHLs4stGlIbk8kLc5VlII/edit)
+
+I went with underscores because camel case is less easy to read and the main arguments against underscores are from ESS users. All lower case makes typing easier also. 
+

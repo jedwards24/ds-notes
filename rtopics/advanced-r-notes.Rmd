@@ -1,0 +1,175 @@
+# Advanced R Book Notes
+
+Some notes from Hadley's [Advanced R Book](http://adv-r.had.co.nz/). I've not covered all parts here and there are some bits (e.g. subsetting) in my main R notes file. A lot of text is copied directly.
+
+**UPDATE** (2018-02-17). There's a second edition of this book in development which can be found [here](https://adv-r.hadley.nz/). The structure is similar. The notes up to functional programming are from the first edition.
+
+## Functions
+
+Outline: 
+
+* **Function components** describes the three main components of a function: `body()`; `formals()` (arguments); `environment()`(the location of function’s variables).
+    * Primitive functions have `NULL` for all three components. Have no R code and call C directly. 
+* **Lexical scoping** teaches you how R finds values from names, the process of lexical scoping.
+* **Every operation is a function call** shows you that everything that happens in R is a result of a function call, even if it doesn’t look like it.
+* **Function arguments** discusses the three ways of supplying arguments to a function, how to call a function given a list of arguments, and the impact of lazy evaluation.
+* **Special calls** describes two special types of function: infix and replacement functions.
+* **Return values** discusses how and when functions return values, and how you can ensure that a function does something before it exits.
+
+### Lexical Scoping
+
+There are two types of scoping in R - lexical scoping and dynamic Scoping. Just Lexical scoping is described here. It is implemented automatically at the language level. Lexical scoping looks up symbol values based on how functions were nested when they were created, not how they are nested when they are called. There are four priciples:
+
+* name masking - look for variable at current level, if not found then look up a level until found.
+* functions vs. variables - R ignores non-functions with same name if it is obvious that a function is being called e.g. `f(3)`.
+* a fresh start - every time a function is called, a new environment is created to host execution. A function has no way to tell what happened the last time it was run; each invocation is completely independent. 
+* dynamic lookup - Lexical scoping determines where to look for values, not when to look for them. R looks for values when the function is run, not when it’s created. This means that the output of a function can be different depending on objects outside its environment.
+    * The findGlobals() function from codetools lists all the external dependencies of a function.
+ 
+### Everything that happens is a function call
+
+* Everything that exists is an object.
+* Everything that happens is a function call.
+
+All operators are functions even if they look like they have a different form. They can be implemented as function using backticks \` e.g. `` `[`(x, 3) `` or `` `for`(i, 1:2, print(i)) ``.
+
+Both ``sapply(1:5, `+`, 3)`` and `sapply(1:5, "+"", 3)` work the same. Note the difference between `` `+` `` and `"+"`. The first one is the value of the object called +, and the second is a string containing the character +. The second version works because sapply can be given the name of a function instead of the function itself: if you read the source of sapply(), you’ll see the first line uses match.fun() to find functions given their names.
+
+### Function Arguments
+
+When calling a function arguments are matched first by exact name (perfect matching), then by prefix matching, and finally by position.
+
+You can use `do.call()` to call a function with a list of arguments e.g. 
+```{r do.call, eval=F}
+args <- list(1:10, na.rm = TRUE)
+do.call(mean, args)
+# Equivalent to
+mean(1:10, na.rm = TRUE)
+```
+
+R are evaluated lazily so the default value can be defined in terms of other arguments and can even in terms of variables created within the function. "This is used frequently in base R functions, but I think it is bad practice, because you can’t understand what the default values will be without reading the complete source code."
+
+You can determine if an argument was supplied or not with the `missing()` function. You could use `missing()` to conditionally compute an argument if needed. "However, this makes it hard to know which arguments are required and which are optional without carefully reading the documentation. Instead, I usually set the default value to NULL and use `is.null()` to check if the argument was supplied."
+
+Lazy evaluation means arguments are only evaluated when they are used. If you want to ensure that an argument is evaluated you can use `force()`. So a function will still run if a specified argument is not supplied and will only throw an error when the argument is used. There will be an error even if the object exists globally but not if the object is created locally before it is used - it will no longer be `missing`. 
+
+`...` is a special argument which will match any arguments not otherwise matched, and can be easily passed on to other functions. To capture `...` in a form that is easier to work with, you can use `list(...)` (or see [See capturing unevaluated dots](http://adv-r.had.co.nz/Computing-on-the-language.html#capturing-dots)). "Using `...` comes at a price — any misspelled arguments will not raise an error, and any arguments after `...` must be fully named".
+
+### Special Calls
+
+R supports two additional syntaxes for calling special types of functions: infix and replacement functions.
+
+Most functions in R are “prefix” operators: the name of the function comes before the arguments. You can also create infix functions where the function name comes in between its arguments, like `+` or `-`. Can be user-created.
+
+Replacement functions act like they modify their arguments in place, and have the special name `xxx<-`. They typically have two arguments (`x` and `value`), although they can have more, and they must return the modified object.
+
+### Return Values
+
+Functions can return only a single object. But this is not a limitation because you can return a list containing any number of objects.
+
+Pure functions always map the same input to the same output and have no other impact on the workspace. Most base R functions are pure. Exceptions examples are `setwd()`, `plot()`, `saveRDS()`, and `par()`.
+
+Most R objects have copy-on-modify semantics. So modifying a function argument does not change the original value (there are two important exceptions to the copy-on-modify rule: environments and reference classes. These can be modified in place, so extra care is needed when working with them.)
+
+Functions can return invisible values, which are not printed out by default when you call the function.
+
+As well as returning a value, functions can set up other triggers to occur when the function is finished using `on.exit()`. This is often used as a way to guarantee that changes to the global state are restored when the function exits. The code in `on.exit()` is run regardless of how the function exits. **Caution**: If you’re using multiple `on.exit()` calls within a function, set `add = TRUE`. The default in `on.exit()` is `add = FALSE`, so that every time you run it, it overwrites existing exit expressions.
+
+## Environments
+
+I didn't take this section in very well so I'll just do brief notes on some bits that I understood.
+
+The job of an environment is to associate, or bind, a set of names to a set of values. You can think of an environment as a bag of names: Each name points to an object stored elsewhere in memory.
+
+* The objects don’t live in the environment so multiple names can point to the same object.
+* They can also point to different objects that have the same value.
+* If an object has no names pointing to it, it gets automatically deleted by the garbage collector.
+* Every environment has a parent, another environment. The parent is used to implement lexical scoping: if a name is not found in an environment, then R will look in its parent (and so on). 
+* Only one environment doesn’t have a parent: the empty environment.
+
+Most environments are created through function use. There are four types of environments associated with a function: enclosing, binding, execution, and calling.
+
+Regular assignment, `<-` always creates a variable in the current environment. The deep assignment arrow, `<<-`, never creates a variable in the current environment, but instead modifies an existing variable found by walking up the parent environments. If `<<-` doesn’t find an existing variable, it will create one in the global environment. 
+
+There are two other special types of binding, delayed and active.
+
+As well as powering scoping, environments are also useful data structures in their own right because they have reference semantics. Unlike most objects in R, when you modify an environment, it does not make a copy. Used this way they can solve three common problems:
+
+* Avoiding copies of large data.
+* Managing state within a package.
+* Efficiently looking up values from names - can be used to simulate a hashmap (see package `hash`).
+
+## Exceptions and Debugging [[chapter]](http://adv-r.had.co.nz/Exceptions-Debugging.html) 
+
+Gives some general debugging advice and links to more detailed material. 
+
+### Debugging Tools
+
+There are three key debugging tools:
+
+* RStudio’s error inspector and `traceback()` which list the sequence of calls that lead to the error.
+* RStudio’s “Rerun with Debug” tool and `options(error = browser)` which open an interactive session where the error occurred.
+* RStudio’s breakpoints and `browser()` which open an interactive session at an arbitrary location in the code.
+
+`browser()` is inserted into the code but I use `debug(fun)` and `debugonce(fun)`. The former would allow me to jump directly to the part of the code I want. `utils::setBreakpoint()` works like `debug()` but it takes a file name and line number and finds the appropriate function for you. These are special cases of `trace()`. RStudio has a "rerun with debug" option when an error occurs. Use options(error = browser) to turn it on, re-run the previous command, then use options(error = NULL) to return to the default error behaviour. A `browseOnce()` function is given which automates this. A breakpoint can be set in Rstudio by clicking to the left of the line number, or pressing `Shift + F9`. Special commands in debug mode are:
+
+* Next, n: executes the next step in the function.
+* Step into,  or s: works like next, but if the next step is a function, it will step into that function so you can work through each line.
+* Finish,  or f: finishes execution of the current loop or function.
+* Continue, c: leaves interactive debugging and continues regular execution of the function. This is useful if you’ve fixed the bad state and want to check that the function proceeds correctly.
+* Stop, Q: stops debugging, terminates the function, and returns to the global workspace. 
+
+There are two other slightly less useful commands that aren’t available in the toolbar:
+
+* Enter: repeats the previous command. I find this too easy to activate accidentally, so I turn it off using `options(browserNLdisabled = TRUE)`.
+* where: prints stack trace of active calls (the interactive equivalent of traceback).
+
+Gives two further `error=` options: `recover` and `dump.frames`. To reset error behaviour to the default, use `options(error = NULL)`. Convert warnings into errors with `options(warn = 2)` which enables the use of regular debugging tools.
+
+### Condition Handling
+
+In R, there are three tools for handling conditions (including errors) programmatically:
+
+* `try()` gives you the ability to continue execution even when an error occurs.
+    * Normally if you run a function that throws an error, it terminates immediately and doesn’t return a value. If you wrap the statement that creates the error in `try()`, the error message will be printed but execution will continue.
+    * You can suppress the message with `try(..., silent = TRUE)`.
+    * To pass larger blocks of code to `try()`, wrap them in {}: `try({...})`.
+    * `try()` is particularly useful when you’re applying a function to multiple elements in a list.
+* `tryCatch()` lets you specify handler functions that control what happens when a condition is signalled.
+    * `tryCatch()` is a general tool for handling conditions: in addition to errors, you can take different actions for warnings, messages, and interrupts. With `tryCatch()` you map conditions to handlers, named functions that are called with the condition as an input. If a condition is signalled, `tryCatch()` will call the first handler whose name matches one of the classes of the condition. The only useful built-in names are error, warning, message, interrupt, and the catch-all condition. 
+    * `tryCatch()` has one other argument: `finally`. It specifies a block of code (not a function) to run regardless of whether the initial expression succeeds or fails. This can be useful for clean up (e.g., deleting files, closing connections). This is functionally equivalent to using `on.exit()` but it can wrap smaller chunks of code than an entire function.
+* `withCallingHandlers()` is a variant of `tryCatch()` that establishes local handlers, whereas `tryCatch()` registers exiting handlers. Local handlers are called in the same context as where the condition is signalled, without interrupting the execution of the function. When a exiting handler from `tryCatch()` is called, the execution of the function is interrupted and the handler is called. `withCallingHandlers()` is rarely needed, but is useful to be aware of.
+
+There is a section on custom signal classes as a way of customising error messages. The `tryCatch` syntax isn't easy to understand from help files. See [this thread](https://stackoverflow.com/questions/12193779/how-to-write-trycatch-in-r/12195574#12195574) for a clearer explanation. Also, [careful with tryCatch](https://www.r-bloggers.com/careful-with-trycatch/) and [more detail](http://mazamascience.com/WorkingWithData/?p=912). There is a package tryCatchLog.  [vignette](https://cran.r-project.org/web/packages/tryCatchLog/vignettes/tryCatchLog-intro.html) gives drawbacks of `tryCatch`.
+
+I had problems using `tryCatch` top `stop` on an error. The following gives an unexpected error on first run then works as I'd expect on susequent runs. No idea why.
+```
+tryCatch(
+  expr = {log("dog")},
+  error = function(e){
+    stop("Can't take the log of a string")
+  }
+)
+
+```
+[This](https://stackoverflow.com/questions/8093914/use-trycatch-skip-to-next-value-of-loop-upon-error) gives an alternative method that works. It notes that `trycatch` returns an object and tests whether this object is an error using `inherits`
+
+```
+tc <- tryCatch(
+  expr = {log("dog")},
+  error = function(e) e
+)
+if (inherits(tc, "error)) stop("Can't take the log of a string")
+```
+
+### Defensive Programming
+
+Making code fail in a well-defined manner even when something unexpected occurs. Implement the “fail fast” principle:
+
+* Be strict about what you accept. For example, if your function is not vectorised in its inputs, but uses functions that are, make sure to check that the inputs are scalars. You can use `stopifnot()`, the `assertthat` package, or simple `if` statements and `stop()`.
+* Avoid functions that use non-standard evaluation, like `subset`, `transform`, and `with`. These functions save time when used interactively, but because they make assumptions to reduce typing, when they fail, they often fail with uninformative error messages.
+* Avoid functions that return different types of output depending on their input. The two biggest offenders are `[` and `sapply()`. Whenever subsetting a data frame in a function, you should always use `drop = FALSE`, otherwise you will accidentally convert 1-column data frames into vectors. Similarly, never use `sapply()` inside a function: always use the stricter vapply() which will throw an error if the inputs are incorrect types and return the correct type of output even for zero-length inputs.
+
+## Functional Programming
+
+[Common functions](https://www.rdocumentation.org/packages/base/versions/3.4.1/topics/funprog)

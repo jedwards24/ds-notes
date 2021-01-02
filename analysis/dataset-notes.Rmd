@@ -1,0 +1,121 @@
+# Dataset Notes
+
+```{r dataset_setup, include = F}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+library(tidyverse)
+library(kableExtra)
+library(edwards)
+```
+
+```{r dataset_func}
+dataset_info <- function(datasets) {
+  nn <- length(datasets)
+  classes <- character(nn)
+  len <- integer(nn)
+  cols <- integer(nn)
+  rows <- integer(nn)
+  miss <- logical(nn)
+  fct <- logical(nn)
+  
+  for(i in 1 : nn){
+    dt <- get(datasets[i])
+    classes[i] <- class(dt)[1]
+    len[i] <- length(dt)
+    #classes[i] %in% c("data.frame", "tbl_df", "spec_tbl_df")
+    if(is.data.frame(dt)){
+      cols[i] <- ncol(dt)
+      rows[i] <- nrow(dt)
+      if(sum(count_levels(dt, all = TRUE) > 0)) fct[i] <- TRUE
+    } 
+    if(any(is.na(unlist(dt)))) miss[i] <- TRUE
+  }
+  tibble(name = datasets, class = classes, length = len, cols, rows, missing = miss, contains_factor = fct)
+}
+```
+
+Also put example analyses here.
+
+## Inbuilt Datasets
+
+R comes with a number of inbuilt datasets. These can be viewed using `data()`, which will also list any datasets built into loaded packages. The base R packages come from the `datasets` package and there are help files for each set (or see the [documentation](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html)). 
+
+To see all datasets for all packages whether loaded or not use `data(package = .packages(all.available = TRUE))`. For just loaded packages use `data(package = .packages())$results`. Datasets for a particular package are listed with `data(package = "packagename")`. The `data()` function displays the sets in the viewer. To access as a data frame use `data()$results`, which gives a data frame with columns: `Package`, `LibPath`, `Item` (name of the data object), `Title` (longer title or short description).
+
+### Datasets Package
+
+The `datasets` package is included in base R and contains 104 datasets.
+
+```{r info}
+info <- dataset_info(ls("package:datasets"))
+```
+
+Most of the datasets are not data frames. The numbers of datasets of each class is:
+
+```{r explore2}
+count(info, class) %>% my_kable()
+```
+
+The next table gives more information on the data frame datasets (missing means the set contains missing values, contains_factors indicates whether any columns are factors):
+
+```{r explore3}
+info %>% filter(class == "data.frame") %>% select(-class, -length) %>% my_kable()
+```
+Only two of these datasets have missing values: `airquality` and `attenu`. The first seems more useful.  
+
+Datasets commonly used for demonstrations are `iris` and `mtcars`.
+
+### Other packages
+
+```{r tidy_depends}
+tidy_depends <- packageDescription("tidyverse")$Imports %>% 
+  str_split(",")  %>% 
+  unlist() %>%
+  str_remove_all("\n") %>% 
+  str_remove_all("\\(.+?\\)") %>% 
+  str_squish() %>% 
+  setdiff(c("lubridate", "broom", "modelr")) #exclude dependencies that are not loaded
+```
+
+Other packages often come with datasets included. Packages on my computer with the most datasets are:  
+
+```{r inbuilt}
+data(package = .packages(all.available = TRUE))$results %>%
+  as_tibble() %>% 
+  count(Package, sort = T, name = "n_datasets") %>% 
+  filter(n_datasets > 40) %>% 
+  my_kable()
+```
+
+The tidyverse packages contain a number of datasets. These are the packages loaded with the tidyverse (not including dependencies such as broom, lubridate, and modelr which are not loaded).
+
+```{r tidy}
+data(package = tidy_depends)$results %>%
+  as_tibble() %>% 
+  left_join(dataset_info(.$Item), by = c(Item = "name")) %>% 
+  select(-LibPath) %>% 
+  my_kable()
+```
+
+dplyr has `starwars` which has NAs and nested columns; `storms` with NAs and 10000 rows. forcats has `gss_cat` - most vars are factors (2 aren't), 21,483 rows and NAs in one column. 
+
+Another dataset package that is used in *R for Data Science* is the `nycflights13` package. This has the following datasets.
+
+```{r nycflights13}
+library(nycflights13)
+data(package = "nycflights13")$results %>%
+  as_tibble() %>% 
+  left_join(dataset_info(.$Item), by = c(Item = "name")) %>% 
+  select(-LibPath) %>% 
+  my_kable()
+```
+
+## Datasets outside R
+
+[UCI ML Reposistory](https://archive.ics.uci.edu/ml/index.php)
+
+https://towardsdatascience.com/classification-on-a-large-and-noisy-dataset-with-r-c10cf14cbae6 Example analysis on a messy dataset from the UCI repo.
+
+
+[Recommender datasets](https://gist.github.com/entaroadun/1653794)
+
+[Recommender - bit more detail](https://gab41.lab41.org/the-nine-must-have-datasets-for-investigating-recommender-systems-ce9421bf981c)

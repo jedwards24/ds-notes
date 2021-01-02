@@ -1,0 +1,99 @@
+# Random Forests
+
+```{r rf_setup, include = F}
+library(tidyverse)
+library(kableExtra)
+library(edwards)
+```
+
+[Original Breiman paper](https://link.springer.com/article/10.1023/A:1010933404324)
+
+[JSS Ranger paper](https://arxiv.org/abs/1508.04409) - gives good benchmarking and comparison with other packages. Explains how it is faster. The package will have developed further since this. 
+
+[Guide to the original random forest software by Leo Breiman and Adele Cutler](https://www.stat.berkeley.edu/~breiman/RandomForests)
+
+[Manual for Breiman fortran software](https://www.stat.berkeley.edu/~breiman/Using_random_forests_v4.0.pdf) - may be useful as guide to variable importance and imputation.
+
+[Datacamp article on the Boruta package](https://www.datacamp.com/community/tutorials/feature-selection-R-boruta)
+
+[Boruta for those in a hurry](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf)
+
+[Slides on RFs and GBMs in R](https://bgreenwell.github.io/MLDay18/MLDay18.html#1) - these are from the `pdp` package author Brandon Greenwell. Useful introduction. 
+
+## Basics
+
+In brief, random forest predictions are a combination of multiple trees. The observations used to fit each tree are sampled, with replacement, from the data. At each split only a subset (of size `mtry`) of variables are available. This makes makes the trees more dissimilar from each other.
+
+Predictions will tend to overfit to the data, but a better estimate of model fit can be found using *out-of-bag* (OOB) predictions. If an observation was used to grow a given tree then it is said to be *in-bag*. Observations not used are OOB. Just using predicitions from trees for which the observation was OOB gives an OOB predicition (using majority vote as normal). I think ties are split randomly but I'm not sure.
+
+In ranger, the in-bag status of each observation can be found by using the argument `keep.inbag = TRUE` when growing the forest. This adds an extra element `inbag.counts` to the forest object which is a list of counts of how often an observation was used for each tree (`num.trees` vectors each of length `n`). Predictions for each separate tree can be obtained using `predict(rf, data, predict.all = TRUE)`. The `.$predictions` of the output will then be a matrix rather than a vector with each column corresponding to individual trees.
+
+
+
+
+## Parallel
+
+`ranger` has built in parallel processing (implemented by default). For `randomForest` you need to use explicitly use foreach and doParallel or similar.
+
+## Interpretaion
+
+[Slides on RF variable importance issues](http://www.statistik.uni-dortmund.de/useR-2008/slides/Strobl+Zeileis.pdf) - has lots of references. 
+
+[Thread - Obtaining knowledge from a random forest](https://stats.stackexchange.com/questions/21152/obtaining-knowledge-from-a-random-forest)
+
+[randomForestExplainer package](https://cran.rstudio.com/web/packages/randomForestExplainer/vignettes/randomForestExplainer.html).
+
+### Tree Information
+
+Each package has functions to extract information about each tree such as which variable was split on, where the split was and the prediction for each terminal node.
+
+For `randomForest` there is the function `getTree(rfobj, k=1, labelVar=FALSE)` where `k` gives the tree number. If `labelVar=F` then a matrix is returned while `labelVar=T` a data frame is returned with a named column `split var` instead of a number.  
+
+`ranger` has `treeInfo(object, tree = 1)` which returns a data frame.
+
+## Categorical Variable Handling
+
+The best information on this is in this 2019 paper [Splitting on categorical predictors in random forests](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6368971/). One of the authors is the author of the `ranger` package. 
+
+For unordered categorical variables there are $2^{k-1}-1$ ways of splitting into two partitions. As well as taking a long time to find, there is also the problem of encoding the split. This can be done by recording a binary number with each digit a 0 or 1 depending on which branch the corresponding level is assigned to. `randomForest` and `ranger` stores this as a double which gives a maximum limit of 53 levels per variable. Options to work around this are to treat the variable as ordered ($k-1$ possible splits), bin levels in some way, or use dummy variables (also called one hot encoding). The last two methods generally give inferior fitting models, as does generic ordering such as alphabetic. 
+
+There are other ways of ordering the levels. For regression and binary classification, categorical factors can be arranged in order of mean response and treated as ordered while still choosing the optimal split (in gini/mse terms). These results don't hold for multivariate targets.
+
+I am unclear of the extent of this result though. The paper makes the distinction between ordering once before any splitting, and ordering before each split. The former is obviously easier and quicker while the second, although faster than full partition enumeration, still requires the same long number to record the split and hence the level limit. I think the paper says the results only hold with reordering with each split but it's not totally clear. Why would the orderings be different with each split? They would be different for each tree because of the different bootstrap samples but this wouldn't change with the splits. I suppose that each split is effectively a subset of the data so this would change the ordering.
+
+The `randomForest` package uses every split ordering for regression and binary classification and all partitions for multiclass classification. I am not certain if this ordering is by mean response or random.
+
+The `ranger` approach has three options for handling unordered factors, using the argument `respect.unordered.factors`. This can be set to one of 'ignore', 'order' and 'partition' (or use TRUE (='order') or FALSE (='ignore')). 
+
++ `ignore` or `FALSE` is the default and treats the factors as ordered (ordering by usual alphanumeric rules). 
++ `order` or `TRUE` uses the one time ordering by mean response.
++ `partition` uses the full combinatorial enumeration of possible splits.
+
+The paper finds, in simulations and real data, that the one time ordering method is at least as good as the other alternatives in terms of error as well as being simpler and faster but, oddly, the `ranger` default setting is `ignore`, which is usually gives the worst results.
+
+An earlier example (artificial) example of this is given in a [blog post](http://www.win-vector.com/blog/2016/05/on-ranger-respect-unordered-factors/). I ran the code given there with `respect.unordered.factors` set to TRUE, FALSE and 'partition', as well as `randomForest()` with standard settings (mtry=2 to match the ranger models). The mse prediction errors were:
+
+```{r wv_results}
+tibble(model = c("TRUE", "FALSE", 'partition', "randomForest"), 
+       mse_oob = c(4.16, 0.84, 1.92, 2.53),
+       mse_test = c(2.69, 1.15, 1.50, 3.20)) %>% 
+  my_kable()
+```
+
+Although this is only a 100 x 4 data set with 20 levels in each variable, the partition ranger model took 195 seconds to run even with parallelisation. The other options were near instantaneous. This indicates that partition is unlikely to be practical. 
+
+There are a few other discussions on the ranger github [here](https://github.com/imbs-hl/ranger/issues/36) and [here](https://github.com/mlr-org/mlr/pull/918), but these will have been superseded by the paper.
+
+I have given an example of the effect of ordering in my `pdp_notes.Rmd` file.
+
+## Missing Values
+
+`rfImpute()`
+
+## Speed
+
+There is a suggestion [here](https://stats.stackexchange.com/questions/37370/random-forest-computing-time-in-r) that not using the formula input to `randomForest` can speed it up but I found the opposite. The post is from 2013.
+
+## Misc
+
+There is a package [tuneRanger](https://rdrr.io/cran/tuneRanger/f/README.md) for tuning parameters in ranger. There is a paper also.

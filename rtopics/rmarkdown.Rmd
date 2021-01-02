@@ -1,0 +1,226 @@
+# R Markdown Notes
+
+```{r init, include = FALSE}
+library(tidyverse)
+library(sparkline)
+library(formattable)
+```
+Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using a plain text format, then convert it to structurally valid XHTML (or HTML). The design goal for Markdown’s formatting syntax is to make it as readable as possible. You can ply with basic markdown [here](https://daringfireball.net/projects/markdown/dingus).
+
+R Markdown builds on basic markdown and pandoc by adding executable R code.
+
++ [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/). By Yihui Xie
++ [A conpact guide to Rmd features](https://yongfu.name/Rmd_ref/)
++ [Yihui Xie's knitr website](https://yihui.name/knitr)
++ [Bookdown](https://bookdown.org/yihui/bookdown/). By Yihui Xie
++ [Rmd cheatsheet 1](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
++ [Rmd cheatsheet 2](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) - this one is
+newer but the other is less dense.
++ [Basic markdown syntax](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). May not be relevant to Rmd.
++ [Kable and KableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
++ [Using the cache for knitr](https://yihui.name/knitr/demo/cache/)
++ [Github version of markdown](https://help.github.com/categories/writing-on-github/)
+
+## Guides
+
++ [RMarkdown for writing reproducible scientific papers](https://libscie.github.io/rmarkdown-workshop/handout.html)
++ [https://rmarkdown.rstudio.com/](RStudio R markdown page) has an introductory guide, links to articles and examples.
++ [Karl Broman full tutorial with links](http://kbroman.org/knitr_knutshell/)
++ [Biographies and Citations](https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html). Uses a bibtex file which is imported in the YAML.
++ [R for Data Science chapter](https://r4ds.had.co.nz/r-markdown.html). Up to date with useful info on caching and parameter use. Other chapters have detail on R markdown formats and workflow: 
+  + [formats](https://r4ds.had.co.nz/r-markdown-formats.html) 
+  + [workflow](https://r4ds.had.co.nz/r-markdown-workflow.html)
++ [RMarkdown for Scientists](https://rmd4sci.njtierney.com/). WIP.
++ [RMarkdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/). Yihui Xie. WIP.
++ [rstudio4edu](https://rstudio4edu.github.io/rstudio4edu-book/). Guide to creating educational materials with R. Mostly cookbooks. Quite a bit on RMarkdown/Bookdown.
+
+## Slides
+
+[Creating slides](https://rmarkdown.rstudio.com/lesson-11.html). Gives options and links to guides. It wasn’t too difficult.
+
+## Adding images
+
+[SO thread](https://stackoverflow.com/questions/25166624/insert-picture-table-in-r-markdown) gives some solutions. I found the second answer to be best:
+
+
+    `r ''````{r pressure, echo=FALSE, fig.cap="A caption", out.width = '100%'}
+    knitr::include_graphics("temp.png")
+    ```
+
+The other main option didn’t work on all formats when I was doing presentations. There is more explanation in [bookdown](https://bookdown.org/yihui/bookdown/figures.html) and figure chunk options are detailed [here](https://yihui.name/knitr/options/#plots).
+
+## Tabs
+
+Add `{.tabset}` after a header to have subheadings as tabs. See [section 3.1.3 here](https://bookdown.org/yihui/rmarkdown/html-document.html).
+
+## Global Chunk Options
+
+Chunk options can be set globally. Here is an example of some common settings:
+```
+knitr::opts_chunk$set(fig.width=4, fig.height=4, fig.align = "center",
+                      fig.path='Figs/', dev = "png",
+                      echo=FALSE, warning=FALSE, message=FALSE, error=FALSE,
+                      cache = TRUE)
+```
+
+## Word Output
+
+Outputting to Word is fairly reliable but you can't use kableExtra which is html-based (`kable()` is ok). 
+
+Adding a page break isn't simple see [here](https://stackoverflow.com/questions/24672111/how-to-add-a-page-break-in-word-document-generated-by-rstudio-markdown) and links within.
+
+## Verbatim Code
+
+How to generate a code chunk that is not parsed by R so that the whole chunk (including the header) is shown in the output document. I found this quite frustrating to solve.
+
+A summary of several options are given [here](https://rmarkdown.rstudio.com/articles_verbatim.html). There are various solutions given by the knitr author:  [knitr FAQ](https://yihui.name/knitr/faq/), [blog post](https://yihui.name/en/2017/11/knitr-verbatim-code-chunk/). Also see links in the Jenny Bryan article. Those didn't all work as given for me but seem ok if enclosed in four back ticks or indented. The zero width space worked when indented. Most options seem to mess up the code highlighting in RStudio (not the method given in the FAQ with tabs). The easiest to read is probably to enclose in `<pre><code>` and `</pre></code>` (this doesn't need the four backticks or indenting).
+
+[Another article](https://rmarkdown.rstudio.com/articles_verbatim2.html) gives a function (I think). Need to look in detail.
+
+## Tables
+
+There is some information on how to create tables directly from text in pandoc in [this chapter](https://dereksonderegger.github.io/570L/15-rmarkdown-tricks.html). 
+
+You can set global options for tables using `df_print` which includes "paged" tables for html ([see here](https://bookdown.org/yihui/rmarkdown/html-document.html#data-frame-printing))
+
+[Article comparing methods for enhancing tables](https://rfortherestofus.com/2019/11/how-to-make-beautiful-tables-in-r/):
+
++ DT - adds filtering, pagination and sorting to HTML tables.
++ gt - new RStudio package. In development.
++ formattable - conditional formatting for tables. Can include sparklines.
++ kable & kableExtra - imports some options from formattable.
++ reactable - similar to DT but with more formatting.
++ flextable - best option if knitting to Word.
++ rhandsontable - another similar to DT, which gets closer to Excel-type interactivity.
+
+### Kable Column Headers Formatting
+
+Table column names can be changed using the `kable()` argument `col.names`. To wrap long names to new lines insert a `<br/>` into the string and use `escape = FALSE` ([thread](https://stackoverflow.com/questions/44816307/getting-column-names-to-wrap-in-r-kable-html-table)). 
+
+Split headers can be added with kableExtra by using `add_header_above()` ([details](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#grouped_columns__rows)). I find `bordered=TRUE` is needed.
+
+Here is example of how to use this with `my_kable()`:
+
+```
+my_kable(mytbl, escape = FALSE,
+         col.names = c("Year", "Claimants", "Claims", 
+                       "Claimants<br/>per Claim", "Number", "Proportion", "Type A", "Type B")) %>% 
+  kable_styling(c("striped", "bordered")) %>% 
+  add_header_above(c(rep(" ", 4), "Late Claims" = 2, "Investigations" = 2))
+```
+
+### Adding Sparklines to Tables
+
+Sparklines can be created easily using the sparklines package, but I found it hard to find good general information adding them to tables. [This guide to the formattable package](https://www.displayr.com/formattable/) has a section on adding sparklines, but the code is very unclear, there is little explanation  about how it works, and it isn't clear how to apply it to general data.
+
+Here is some adapted code to add a sparkline column. Here I use data added a simple intger vector. The sparkline is created by `sparkline()` then converted to text for `formattable()`. The two lines after the `df` creation tell the `formattable` HTML widget that it contains sparklines.
+
+```{r spark1}
+data_vec <- c(1,2,7,6,5)
+df = data.frame("Type" = c("bar", "line"),
+               Sparkline = c(as.character(htmltools::as.tags(sparkline(data_vec, type = "bar"))), 
+                             as.character(htmltools::as.tags(sparkline(data_vec, type = "line")))))
+out = as.htmlwidget(formattable(df))
+out$dependencies = c(out$dependencies, htmlwidgets:::widget_dependencies("sparkline", "sparkline"))
+out
+```
+
+What I wanted to know was how to this more naturally in a data frame using grouped or nested data. The best example code I could find was in a [github issue for formattable](https://github.com/renkun-ken/formattable/issues/83). One example used `group_by()` and `summarise()` (note that the `c()` inside `sparkline()` isn't needed).
+
+```{r spark2}
+res <- iris %>% 
+  group_by(Species) %>% 
+  summarise(
+    N=n(),
+    SL_Mean=round(mean(Sepal.Length),3),
+    SW_Mean=round(mean(Sepal.Width),3),
+    Petal.Length=as.character(
+      htmltools::as.tags(
+        sparkline(c(Petal.Length))
+      )
+    ),
+    Sepal.Length=as.character(
+      htmltools::as.tags(
+        sparkline(c(Sepal.Length))
+      )
+    )
+  ) %>%
+  formattable() %>%
+  formattable::as.htmlwidget()
+
+res$dependencies <- c(
+  res$dependencies,
+  htmlwidgets:::widget_dependencies("sparkline", "sparkline")
+)
+res
+```
+
+I adpated this to work with nested data using `map()` inside `mutate()` e.g. `map(data, ~as.character(htmltools::as.tags(sparkline(.$Sepal.Length, type = "bar")`.
+
+## Contingency Tables
+
+I wanted to apply kable-type formatting easily to the output from `table()`. I didn't look deeply into getting the formatting exactly right but the [gt package](https://github.com/rstudio/gt) may be one way (github only as of now, 2020-01). 
+
+For quicker, rougher solutions the issue my first problem with `edwards::my_kable()` was that I had constrained input to be data frames. I can get around this by using `as.data.frame.matrix()`. This strips the variable names and the row lables (`kable()` seems to coerce the table with the same result). [This thread](https://stackoverflow.com/questions/45308404/two-way-frequency-table-in-rmarkdown) suggests fixing this with the xtable package but the [printr package](https://yihui.org/printr/) should work directly. 
+
+As a quick fix alternative using `my_kable()` I did the following (replacing row_names etc. with appropriate values):
+```
+dfmat <- as.data.frame.matrix(table(dt)) 
+bind_cols(tibble(`row_title / col_title` = row_names), dfmat) %>% 
+my_kable()
+```
+
+I have put a function into edwards to do this.
+
+## Misc
+
+There is a `read_chunk()` function which reads R code chunks from an external script.
+
+Options for text boxes are given in [this thread](https://stackoverflow.com/questions/25654845/how-can-i-create-a-text-box-for-a-note-in-markdown). A standard quote box can be made for a paragraph with a `>` at the start. Other options are a horizontal line before and after with `---` (leave blank line around) or double tab indent starting the paragraph which adds a box.
+
+Formatting output from inline R code to match the code chunk formatting. I wanted to write variable names stored in an object in the same format as if I had enclosed it backticks. Formatting of R code output can be done using `kableExtra::text_spec()`. The standard formatting for a code chunk is `textspec(sometext, background = "#F7F7F7", monospace = TRUE)`. I got the background colour from [https://yihui.name/knitr/options/](https://yihui.name/knitr/options/).
+
+Caching [twitter thread on naming chunks](https://twitter.com/drob/status/738786604731490304). Also of interest for method of handling file changes.
+
+Different HTML themes can be built using a css file, but there are [built-in themes available](https://www.datadreaming.org/post/r-markdown-theme-gallery/). The theme can be changed in the YAML as given [in this bookdown chapter](https://bookdown.org/yihui/rmarkdown/html-document.html#appearance_and_style) (must be exactly right). The chapter also describes other style settings and adding a TOC. The YAML for this that I have been using is:
+
+```
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    number_sections: true
+    theme: cerulean
+```
+
+[Double spacing in an html document](https://tex.stackexchange.com/questions/266160/knitr-double-spacing-in-an-html-document). Can be done internally to the document by adding html tags: enclose the text you want double spaced between`<div style="line-height: 2em;">` and `</div>`. 
+
+To add internal hyperlinks in html (via pandoc) either, use the exact section name in square brackets (e.g. `[Conclusion]`), or give custom name to the section in curly braces (e.g. `Conclusion {#conc}`) then use that in the standard link syntax (e.g. `[See conclusion](#conc)`). 
+
+I have found that `"-"` displays as a large dot in html tables. This happens because it is read as a bullet by pandoc. One fix is to replace with `"--"` to get an endash, but this doesn't always work (`"---"` is used in markdown for an emdash). Another suggestion is `"\\-"`. [kableExtra issue thread](https://github.com/haozhu233/kableExtra/issues/223). 
+
+# Bookdown
+
++ [bookdown book](https://bookdown.org/yihui/bookdown/)
++ [Getting started](https://bookdown.org/home/about/)
+
+The bookdown project can be created in RStudio when creating a new project (like a package). It can then be linked to github. An alternative is to create a new repo on github then clone locally using *File >> New project* in RStudio. The project created won't be a bookdown project so create a bookdown project with a different name then copy the files from this new project to the folder of the one linked to github. Change the name of the R Project file to the match its new folder and delete the folder with the incorrect name (after closing the project).
+
+# Website
+
+Rhian set up a personal academic website for me on github. It is hosted at https://james-edwards.netlify.com/. It was created using blogdown, which is a package, based on R markdown, used to create websites. There is an [online book](https://bookdown.org/yihui/blogdown/) about its use. There is a [guide](http://www.mit.edu/~k2smith/post/getting-started/) to the Hugo academic website theme. Also see [Nemeth’s github](https://github.com/chris-nemeth/academic-kickstart) for his website.
+
+## Structure in R
+
+There are four top level folders:  public, content, static, themes.
+
++	`Themes` – this contains themes for the website. The website uses Hugo-academic theme. I won’t be altering this.
++	I put slides, PDFs, or other files in the `static` folder inside appropriate subfolders (which I can create). They are copied to the public folder when the website is rendered. The .bib files for citations are in `files`, PDFs in `pdf`, talk slides in `slides`. There is an example of how to do this [here](https://github.com/yihui/blogdown-static)
++	I haven’t altered anything in `public` directly yet. Not sure if I ever should. 
++	`Content` – this is the content of the website i.e. the text, objects etc.
+
+You are supposed to be able to preview the website in R but it requires Hugo to be installed and RStudio always crashes when I use `blogdown::install_hugo()`
+
+If unsure how I did something in the past then the best place to look is my commits.

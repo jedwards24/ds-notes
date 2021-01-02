@@ -1,0 +1,17 @@
+--- 
+title: "Data Science Notes"
+author: "James Edwards"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "This is a loose and informal collection of my notes on data science and related topics"
+---
+
+# About {-}
+
+These are my personal notes on data science and related topics. It is largely a lot of links to resources, sometimes with more detailed notes. Some of the notes will have large chunks of copied text and I may not always have made it clear that it is copied verbatim.
+
+

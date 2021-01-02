@@ -1,0 +1,156 @@
+# Logistic Regresssion and glmnet"
+
+A collection of notes on logistic regression in general and the `glmnet` package from my last postdoc. 
+
+## Logistic Regression Options in R
+
+I didn't try many options: `glm()` in base, `glmnet` and `speedglm`. Due to separability (see below) issues I found I needed some regularisation which only `glmnet` provided. The base `glm()` gave output with a warning where the data was separable but `speedglm` gave no output. I've not looked into Bayesian versions but they do exist. 
+
+There is an ordinal logistic regression in the `MASS` package.
+
+### Computation and Speed
+
+Once I'd tidied my dataset I didn't have problems with speed or memory but here are a few links I collected when looking into this. See `glmnet` section for using parallelisation.
+
++ Some [advice](https://stackoverflow.com/questions/16284766/how-to-speed-up-glm-estimation-in-r) on speeding up glm fitting in R.
++ [Article on reducing the size of models when using `glm()`](http://www.win-vector.com/blog/2014/05/trimming-the-fat-from-glm-models-in-r/). 
+
+### Separation
+
+There is an issue that can occur in logistic regression when the data is perfectly separable i.e. there are parts of the data that can explained perfectly. This causes infinite likelihood for multiple models which can cause coefficients to be unstable and very large. It can solved by some form of regularisation (e.g. ridge, lasso, Bayes). There is a discussion [here](https://stats.stackexchange.com/questions/11109/how-to-deal-with-perfect-separation-in-logistic-regression).
+
+More detail on the subject is given in a [thesis by Konis (2007)](https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a). This is accompanied by an R package `safeBinaryRegression` which checks for separation before fitting. The function `detect_separation` from `brglm2` does similar.
+
+The standard categorisation of separation seems to come from Albert & Anderson (1984) who give three classes of datasets: completely separated (CS), quasi-completely separated (QCS), and overlapped. The data is CS if there is hyperplane such that all the 1s are on one side and all the 0s on the other. QCS is similar but some 0s and 1s lie on the separating hyperplane. For both CS and QCS the maximum likelihood for the regression coefficients is infinite. In CS these solutions are non-unique, in CQS it may be unique.
+
+### Misc Notes
+
+Agresti (section 5.1.4) discusses the situation where X rather than Y is random, such as in retrospective studies. Odds ratios and hence LR can be used in these and it gives a Bayesian justification. It notes that a LR always holds in the situation $Y=i$ and $X\sim N(\mu_i, \sigma^2)$. If the variances differ then the model has a quadratic term and a nonmonotone relationship.  
+
+Agresti (section 6.5.3) has a short bit on sample size determination in LR. It gives two refs: Hsieh et al. (1998) and Whittemore (1981). I found a later 1998 by Hsieh which references the others. Its in the Papers >> GLMs folder.
+
+The base r `glm()` has a `predict.glm()` (can just use `predict()`) that can be used to get responses and se for new data for a fitted model. Example code use is `predict(fit, newdata = data.frame(x = p_range), type = "link", se.fit = T)`. The `type = "link"` is the default and output on the logit scale, `type = "response"` is on the response scale (i.e. in [0,1]), and `type ="terms"` is on the logit scale but centred (I'm not clear on this one).
+
+**Prediction uncertainty**. The following is for linear regression so will need to be transformed) The covariance matrix of parameters is $\Sigma = \sigma^2(\mathbf{X}^\intercal\mathbf{X})^{-1}$. The mean response $\hat y_i=\mathbf{x}_i\mathbf{\hat b}$ which has variance $\mathbf{x}_i\Sigma\mathbf{x}_i^\intercal$.
+
+[http://www.win-vector.com/blog/2011/09/the-simpler-derivation-of-logistic-regression/](A simpler derivation of logistic regression)
+
+## Books and Resources
+
+I've tried:
+
++ Agresti's Categorical Data Analysis
++ Extending the Linear Model with R by Julian J. Faraway
+
+## glmnet
+
+This package performs elasticnet regularisation. There is a [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_beta.html) (2016).
+
+There are two main functions for fitting models `glmnet()` and `cv.glmnet()`. The former does a single fit while the second uses cross validation. They produce different objects for the purposes of plotting - coefficient values and loss respectively . Each function fits models over a sequence of `lambda` values which adjust the regularisation strength (larger `lambda` includes fewer variables). 
+
+I'll concentrate on  `cv.glmnet()`. The argument `type.measure` states the loss measure for cross-validation. Default is `deviance` but alternatives for two-class binomial models are `class` (misclassification error), `auc` (area under ROC curve), and  `mae`. The returned object is an S4 list of length 10. There is a vector of `lambda` values and corresponding mean, sd, number of non-zero cofficients, and upper and lower intervals for the cv loss measures. The scalars `lambda.min` and `lambda.1se` give the `lambda` values that, respectively, minimise the cv loss and give the simplest model with 1 se of the minimum loss. Detailed information on the fitted models is in a sublist `glmnet.fit`.
+
+The coefficients can be retrieved using `coef(fit, s="lambda.1se")` where `s` is a value of `lambda`. Note that `plot(fit)` gives `log(s)` and corresponding number of non-zero coefs. 
+
+For predictions use `predict(fit, newx, type, s)` where `newx` gives new inputs as a model matrix in the same form as used to fit the regression, `type` gives the type of output, and `s` is the value of `lambda` of the model used. Note `s` can be given as a vector. Options for `type` are:
+
+- "response" gives the fitted probabilities
+- "class"" produces the class label corresponding to the maximum probability.
+- "coefficients" computes the coefficients at values of s
+- "nonzero" retuns a list of the indices of the nonzero coefficients for each value of s.
+
+The last two ignore `newx` so are really just alternative ways to query the model as far as I can tell. The vignette says: *For binomial models, results (link, response, coefficients, nonzero) are returned only for the class corresponding to the second level of the factor response*. (I think?) that means it matches the form of the model matrix.
+
+### Lambda Range
+
+The parameter $\lambda$ controls the strength of regularisation. Glmnet fits models for a sequence of $\lambda$ from which a model can be chosen. The function choses a default sequence or it can be specified. I haven't had any problems with the default until I started fitting ridge models which seemed to be failing to test small enough $\lambda$.
+
+The default sequence is based on $\lambda_{max}$ which is the smallest value of $\lambda$ for which all coefficients are zero (details [here](https://stats.stackexchange.com/questions/166630/glmnet-compute-maximal-lambda-value) or in Friedman etal's regularization paths paper). The formula has an $\alpha$ (the elastic net parameter) in the denominator so can't be calculated for ridge which has $\alpha=0$ (ridge has all non-zero coefficients). I saw somewhere that the calculation for ridge therefore uses $\alpha=0.001$. The sequence is then $k$ values from $\lambda_{min}=\epsilon\lambda_{max}$ to $\lambda_{max}$, with default $k=100$ and $\epsilon=0.0001$. The $\lambda$ range can be supplied directly, for example:
+```
+    grid=10^seq(1,-2,length=100) ##get lambda sequence
+    ridge_mod=glmnet(x,y,alpha=0,lambda=grid)
+```
+
+An insufficient range of $\lambda$ can be seen from plotting the fit object. Another diagnostic might be to check that `lambda.min` and `lambda.1se` are not too close together, which would imply a still decreasing score at the minimum. There are a few examples [here](https://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) of comparisons of difeerent elastic net models. I reran these, extending the `lambda` range for ridge and got better results for ridge on examples 2 and 3 but without changing the overall conclusions. In these examples the reaction to $\lambda$ varies between problems and methods. I think example 2 is a bit unusual since $p$ for the true model is greater than $n$. 
+
+### glmnet Misc
+
+[interpretting glmnet](https://stats.stackexchange.com/questions/77546/how-to-interpret-glmnet)
+
+[Standardisation for lasso](https://stats.stackexchange.com/questions/86434/is-standardisation-before-lasso-really-necessary) - suggests prestandardising variables.
+
+Use `set.seed()` to make the cross-validation reproducible.
+
+### Model Matrix
+
+It requires explantory factor variable data to be in the form of dummy variables. This can be done by using `model.matrix` to create an appropriate design matrix. 
+
+```{r model_mat1, eval=F}
+x_mat <- model.matrix( ~ ., data_input)
+fit <- glmnet(y=data$target, x=x_mat, family="binomial")
+```
+
+`model.matrix()` can also take a formula as input e.g. 
+```{r model_mat2, eval=F}
+f1 <- formula(data$target ~ data_input)
+x_mat <- model.matrix(f1)
+```
+
+The `~ .` in the first example indicates that all columns of `data_input` are used as inputs which is more practical for many variables than the standard `~ var1 + var2 + var3`. There is some code [here](https://stackoverflow.com/questions/13633734/model-matrix-using-multiple-columns) to create a formula from multiple column names using paste. See `?formula` for more on using formulas.
+
+Variables can be excluded via the formula or via the input data: `select(data_input, ...`. I had some confusion over the intercept and factors. By default `model.matrix()` creates a column for the intercept (first column) and creates k-1 dummy variable for each factor with k levels. The intercept can be excluded from the model matrix since `glmnet` adds this automatically. The standard suggestion is to use `model.matrix( ~ . -1, data_input)` or `model.matrix( ~ 0 + ., data_input)`. However, when using factors this has the effect of including a dummy variable for all k levels for the first factor so the number of columns in the model matrix remain the same. To avoid this effect use `model.matrix( ~ ., data_input)[, -1]` (this is what I have done in my work). The same model matrix can be used for new data with `predict()` since this also adds an intercept internally. The code below demonstrates this. Note that `lm()` here adds the intercept back in here since I specify it as a formula which have an implied intercept.
+
+```{r model_mat_demo}
+n = 100
+df = data.frame(X1 = rnorm(n), 
+                X2 = rpois(n, lambda = 5), 
+                X3= rnorm(100, mean = 4, sd = 2), 
+                Sex = factor(rep(c("Male", "Female"), each = 50)))
+df$Y = with(df, X1 + 3*X2 + rnorm(100, sd = 10))
+
+xm1 <- model.matrix(Y ~ ., df)
+head(xm1)
+xm2 <- model.matrix(Y ~ .-1, df)
+head(xm2)
+xm3 <- model.matrix(Y ~ ., df)[, -1]
+head(xm3)
+xm4 <- model.matrix(Y ~ . - 1 - Sex, df)
+head(xm4)
+
+lm(df$Y ~ X1 + X2 + X3 + Sex, data=df)
+lm(df$Y ~ xm1)
+lm(df$Y ~ xm2)
+lm(df$Y ~ xm3)
+lm(df$Y ~ xm4)
+```
+
+I assume `glm` creates the design matrix internally. The advantage of doing it explicitly is that I can see how big the design matrix is as this probably causes the bottlenecks with larger numbers of factor levels. 
+
+I needed a sanity check on the output of `model.matrix()` as the numbers didn't seem to be matching up. It creates columns for levels that are empty so it's worth removing these first (and any redundant variables with only one unique vaue). The logical variables seem to be treated as factors. I'm not sure if there is any advantage to me explicitly converting them (it will take more memory). 
+
+A column is created for each level except one in each factor. Adding interactions with a factor will effectively multiply by the number of levels in that factor e.g. say model `~.` has 100 columns (1 intercept + 99) then `.*y` will have 300 if `y` has three levels (1 intercept, 99 matched with level 1 of y, 2 for y alone, and 2 * 99 for interactions with levels 2 and 3 y).
+
+I have seen some suggestions that I should keep all levels explicitly in the model if I am regularising but, other than giving a more natural interpretation of coeficients, I'm not sure why this should be better (it would lead to larger model matrices and therefore slower regresssions). There are comments on this [here](https://stats.stackexchange.com/questions/69804/group-categorical-variables-in-glmnet). See [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) for how to do it. **Update** It does matter because the regularisation penalises *towards* the default factor level so the model is affected by which level is the default.
+
+### Output
+
+
+### Output Analysis
+
+You can test the calibration of a model by plotting predicted versus empirical probabilities. A method for binning which emphasises tails is given [here](https://stats.stackexchange.com/questions/25482/visualizing-the-calibration-of-predicted-probability-of-a-model).
+
+Agresti (section 5.1.2) has a bit on this. For categories it suggests using the sample logit $log[y_i+0.5/(n_i-y_i+0.5)]$ for each category $i$ ($y_i$ is the number of sucesses). The 0.5s reduce the bias for small $n,y$ to give the least biased estimator. For continuous variables it suggests using a smoothing mechanism such as a GAM. This replaces the linear predictor of a GLM by a smooth function - the plot should be S-shaped.
+
+An alternative is a ROC curve with associated summary stats such as AUC. R has a number of packages for doing this. The most common ones are `pROC` and `ROCR`. I went with the latter because I found suggestions that it was faster. See a explanation [here](https://stats.stackexchange.com/questions/269552/difference-between-proc-and-rocr-in-compute-time-and-accuracy). Two articles introducing ROC and `ROCR` are: [Illustrated Guide to ROC and AUC](https://www.r-bloggers.com/illustrated-guide-to-roc-and-auc/) and [A small intro to the ROCR package](https://hopstat.wordpress.com/2014/12/19/a-small-introduction-to-the-rocr-package/). The second has more detail. The first links to two useful papers by Fawcett and Hand which I've saved in the GLM folder. The Hand article gives a criticism of AUC.
+
+Later experience with ROC indicates it isn't a very useful assessment technique for logistic regression. It tests the model's ability to classify but does not test the accuracy of the predicted probabilities. It does not even need predictions as it only uses the ordering so it could use a real valued score instead. If we compare two models with different predicted probabilities but with the same order then they will give the same ROC and AUC. 
+
+#### Confidence Intervals
+
+[This thread](https://stackoverflow.com/questions/39750965/confidence-intervals-for-ridge-regression) says that `glmnet` does not give standard errors for prediction probabilities. This [Casella paper](http://www.stat.ufl.edu/archived/casella/Papers/BL-Final.pdf) and a [vignette for the penalised package](https://cran.r-project.org/web/packages/penalized/vignettes/penalized.pdf) (page 18) explain that they aren't meaningful for biased estimates (e.g. penalised regression). A bootstrap method can be used but it only gives an estimate of the variance of the estimates but this doesn't include any bias estimate. Some code is given [here](https://www.reddit.com/r/statistics/comments/1vg8k0/standard_errors_in_glmnet/) to calculate an estimate of se. It says that the estimates are biased and worse for Lasso than Ridge.
+
+There are more links and discussion in [this thread](https://stats.stackexchange.com/questions/91462/standard-errors-for-lasso-prediction-using-r) (includes more on the Bayesian Lasso).
+
+The Casella paper linked earlier has more detail on Bayesian options. A Gibbs sampler is used to get uncertainty estimates, which I assume is not practical for my problem. Note that this is for standard error estimates of coefficients while I only need estimates for the predictor. There is a part illustrating how bootstrap estimates for lasso coefficients are not reliable. 
+
+

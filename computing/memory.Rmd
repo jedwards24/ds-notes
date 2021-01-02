@@ -1,0 +1,53 @@
+---
+title: "Memory Notes"
+output: html_document
+---
+
+More recently, see `lobstr` package.
+
+## Functions
+
++ To find the memory size of any object in R use `object.size(x)`. 
++ To give this in different units use `print(object.size(x), units="auto")`.
++ `memory.size()` - gives the memory in Mb currently used. memory.size(TRUE) gives the maximum available memory.
++ `memory.limit()` - returns the memory limit. 
++ `memory.limit(nnnn)` sets the memory limit to `nnnn`. This is limited by windows. If greater than maximum memory size then the hard drive is used.
++ `gc()` – force garbage collection (clear memory). 
+`sort( sapply(ls(),function(x){object.size(get(x))}))`: Gives memory of all objects in workspace. From:
+http://stackoverflow.com/questions/1395270/determining-memory-usage
+
+## Data types memory allocation
+
++ Numeric is identical to double and real. 
++ Integer are 32 bit so have accuracy to about +/- 2*10^9.
++ Logical holds TRUE of FALSE.
++ Numeric takes 78.1Kb for vector of length 10000 while integer and logical take 39.1Kb.
+
+## Links
+
+http://stackoverflow.com/questions/1358003/tricks-to-manage-the-available-memory-in-an-r-session
+
+http://www.r-bloggers.com/memory-management-in-r-a-few-tips-and-tricks/
+
+http://www.matthewckeller.com/html/memory.html
+
+http://finzi.psych.upenn.edu/R/library/slam/html/array.html
+
+## Memory Profiling
+http://www.r-bloggers.com/examples-of-profiling-r-code/
+The example below profiles memory as well. Memory allocation can also be profiled with function `Rprofmem()`.
+
+```
+# profiling of both time and memory
+Rprof(“myFunction.out”, memory.profiling=T)
+y <- myFunction(x)
+Rprof(NULL)
+summaryRprof(“myFunction.out”, memory=”both”)
+```
+
+A detailed example of profiling R code can be found at
+http://www.stat.berkeley.edu/~nolan/stat133/Fall05/lectures/profilingEx.html. Also lineprof: `devtools::install_github("lineprof")`.
+
+http://adv-r.had.co.nz/memory.html
+https://github.com/hadley/lineprof
+http://www.hansenlab.org/rstats/2014/01/30/lineprof/

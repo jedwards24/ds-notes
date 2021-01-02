@@ -1,0 +1,201 @@
+---
+title: "Database Notes"
+output: html_document
+---
+
+*Relational databases* are multiple tables of data that are related. 
+
+Relational databases came from Cobb in a 1970 paper. 
+
+A *relation* is a mathematical term which we now call a *table*. It is built from sets called *domains* which are now more commonly known as  *attributes*, *columns* or *fields*. The *rows* or *records* of a table are  *tuples* in relation terms. Relations are defined between pairs of tables with all other relations built from these. Relational data is usually stored in a *relational database management system* ( or RDBMS).
+
+Links:
+
++ [article on the Cobb paper](https://twobithistory.org/2017/12/29/codd-relational-model.html)
++ [Chapter in R for DS](https://r4ds.had.co.nz/relational-data.html). This is mainly on dplyr joins but the introduction is generally useful.
+
+## Cousera DB Course Notes
+ 
+From "Database Management Essentials" by The University of Colorado. It is based on a book [Database Management Essentials by Michael Mannino](https://www.redshelf.com/book/940688/database-management-essentials-940688-none-mannino). 
+
+Concerned with Database Management Systems (DBMS). Software examples are Oracle, mySQL, PostgreSQL, MS Access. DBMSs are *persistent*, *inter_related*, and *shareable*. DBs need planning to use.
+
+DBs use *non-procedural access*:
+
++ DB info is retreived using queries.
++ Do not need programming loop.
++ Just ask for what you want, not how you want it to be retrieved.
++ Query can be via language (e.g. SQL) or via a form or graphical interface.
+
+*Transactions* are units of information work that must be processed as a unit.
+
+A *data warehouse* is a central repository used to integrate, clean and standardise data. This includes external sources of data.
+
+### Relational Data Model
+
+A collection of tables which can be combined using matching values. Each table has a heading (table name and column names), and a body (rows and occurences of data). Alternative terminology can be used:
+
++ Table-Oriented: Table, Row, Column.
++ Set-Oriented: Relation, Tuple, Attribute.
++ Record-Oriented: Record Type (or File), Record, Field.
+
+Definitions:
+
++ *Null value*. Missing, unknown or unapplicable value.
++ *Primary Key* (PK). Combination of one or more columns with unique values in each row. A minimal PK has no extranaeous columns.
++ *Foreign Key* (FK). Combination of one or more columns related to a PK in another table. Same data type and often same name as related PK.
+
+Integrity Rules:
+
++ *Entity Integrity*. A PK for each table. No null values in PK. Ensures traceable entities.
++ *Referential Integrity*. An FK in a row must either: match a PK value in related table, or be a null (unusual). This ensures valid references among tables.
+
+### Database Development
+
+The goals of DB development are to develop a common vocab, define business goals, ensure data quality, and efficient implementation. The main phases are:
+
+**DIAGRAM**
+
+
+### Entity Relationship Diagrams
+
+Two types of database diagrams were given in the course. The first wasn't clearly defined but I think it is an oracle relational model diagram but I'll call it a *table design* (TD) here. The second is the *entity relation diagrams* (ERD). They are similar but the main difference is that the TD has foreign keys while ERDs use a named relationship instead. The ERD is used earlier in the planning phase.
+
+Notation for ERDs isn't standardised. UML is closest to a standard. The next two diagrams show the basic notation.
+
+**DIAGRAMS. ERD * 2**
+
+Some important cardinalities are: 
+
++ *mandatory*: minimum cardinality >= 1.
++ *optional*: minimum cardinality = 0.
++ *functional/single valued*: minimum cardinality = 1.
++ *1-M*: max cardinality = 1 in one direction and > 1 in other.
++ *M-N*: max cardinality > 1 in both directions.
++ *1-1*: max cardinality = 1 in both directions.
+
+There are several special types of relationships and entities. They tend to be overused by beginners.
+
++ An *identification dependency* consists of an *identifying relationship* (solid line in ERD) and a *weak entity type* (borrows part or all of a PK and notified by diagonal lines in box corners in ERD).
++ Relationships can have attributes (typically M-N relationship). M-N relationships can be replaced by an *associative entity type* (convert relationship to an entity) and two 1-M relationships.
++ A *self-referencing relationship* relates an entity to itself. Found in heirarchical models (e.g. supervision structure for managers).
++ An *m-way relationship* is an association of >2 entity types (usually 3). Use associative entity types (always weak and often named as verbs).
+
+### Converting ERDs to Table Design
+
+Four stage process:
+
+1. Entity type rule. Indentify tables.
+2. 1-M relationships. FKs in child tables (M side).
+3. M-N relationships. Create new entities from relationship with combined PKs (and FKs).
+4. Identifying realtionships. Add components of PK.
+
+### Normalisation
+
+DB design needs to avoid *modification anomilies* where changes to rows of a table have unwanted side-effects, such as needing to change mutliple rows or deleting an entry also deletes information about entities that are not removed. These anomilies come from redundancies in table design. Normalisation is the process of removing unwanted redundancies.
+
+*Functional dependencies* (FD) are constraints on possible rows in a table. They are asserted, and looking at the table can only falsify them, never confirm them. The notation used is X->Y (X functionally determines Y). X is the determinant/LHS, Y is RHS. For each X value there is at most one Y value. 
+
+FDs can be shown in an FD diagram or an FD list. The list is easier to work with even though it is longer. To satisfy the FDs, the RHS and LHS of any FD should be in a table by themselves. The normalisation process takes an unormalised table design and FD list as inputs and detects violations and then splits a table to remove these violations. The FD list needs to be complete and minimal (not easy).
+
+Normalisation is easier to do if working from an ERD since FD with PK as LHS do not need to be checked. Normalisation is less important if data is not being changed or entered. There are a number of different *normal forms*. The most commonly used is Boyce-Codd NF (BCNF). In this every determinant in a table must be unique. BCNF has similar strength to 3NF, of which it is a modification. These are stricter than 2NF and 1NF but weaker than 4NF, 5NF, and DKNF.
+
+
+## Keys
+
+https://www.databasestar.com/database-keys/
+
++ Primary Key – A primary is a column or set of columns in a table that uniquely identifies rows in that table. The data in these columns must be uique, values cannot be NULL in these columns, and a table has one primary key.
++ Natural Key - An attribute that exists in the real world or used by the business that uniquely identifies each row e.g. social security number.
++ Surrogate Key - An attribute that is invented or made up for the sole purpose of being used as the primary key.
++ Composite Key – A primary key made up of more than one attribute.
++ Candidate Key – Any field that could be used as a primary key.
++ Alternate Key – All candidate keys that aren't chosen to be the primary key.
++ Unique key - Any set of columns that uniquely identify rows but may contain NULL entries.
++ Foreign Key – A set of columns in a table that points to the primary key of another table. They may have NULL values and duplicate values. They act as a cross-reference between tables.
++ Super Key – A set of one of more columns to uniquely identify rows in a table. Primary, alternate and unique keys are all subsets of a super key (some columns in the super key may not be needed to uniquely identify rows).
+
+## Mapping Relationships
+
+Multiple datasets that are related can be held in a relational database. These relationships can be recorded using an _entity-relationship model_  and displayed with an _entity-relationship diagram_ (ERD). See [wiki](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) and [ERD](https://www.smartdraw.com/entity-relationship-diagram/). ERDs record the connections between entities, their identifying atrributes, the type of relation, and their cardinality (e.g. one-to-one).
+
+some ERD software:
++ ER-Assistant. For windows. Free.
++ [dbdiagram](https://dbdiagram.io/home). Database diagrams rather than ERDs?
++ [Lucidchart](https://www.lucidchart.com/pages/). Online
++ [Visual Paradigm](https://www.visual-paradigm.com/)
+
+## Data Normalisationa and Denormalisation
+
+[When and How You Should Denormalize a Relational Database](https://rubygarage.org/blog/database-denormalization-with-examples)
+
++ Reasons: Convenience and speed. 
++ Disadvantages: extra storage space; additional documentation; potential data anomolies; more code; slower operations.
+How: 
++ Storing derivable data.
++ Using pre-joined tables. 
++ Using hardcoded values 
++ Keeping details with a master.
++ Repeating a single detail with its master.
++ Adding short-circuit keys.
+
+## In R
+
+The data.table package provides key attributes for its tables together with functions to set keys etc. This orders the table according to the key which gives faster and more memory efficient searching. Note uniqueness is not enforced. See
+[data.table key vignette](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html)
+
+[sparklyr](https://spark.rstudio.com/). An R interface for Apache spark (from RStudio).
+
+I couldn't find much for Functional Dependencies in R but there is [FDTool in Python](https://f1000research.com/articles/7-1667). Might be useful if I want to look at theory. I have written my own functions but the challenge is doing it efficiently for larger datasets.
+
+### Misc
+
+A data mart is a subset of a data warehouse oriented to a specific business line. [Data Warehousing and data marts](https://panoply.io/data-warehouse-guide/data-mart-vs-data-warehouse/). 
+
+At first glance a 1-1 relationship between tables seems odd since you could just combine the tables, but there are reasons to do this: [When a 1-1 makes sense](http://structuredsight.com/2015/01/12/its-o-k-that-its-just-the-two-of-us-when-a-1x1-table-relationship-makes-sense/). Note, this refers to a strict 1-1 realtionship but 1-1 can also mean thatr min cardinality can be 0.  
+
+### Links
+
++ [Slides on linking SQL and R](https://github.com/ianmcook/rstudioconf2020/blob/master/bridging_the_gap_between_sql_and_r.pdf)
++ [dbplyr: a database backend for dplyr](https://dbplyr.tidyverse.org/)
++ [SQL databases and R](https://datacarpentry.org/R-ecology-lesson/05-r-and-databases.html) - Data Carpentry
++ [Using postgreSQL in R](http://www.win-vector.com/blog/2016/02/using-postgresql-in-r/) -  Win Vector
++ [Databases in containers](http://www.win-vector.com/blog/2016/02/databases-in-containers/) - Win Vector
+
+
+Possible books:
++ [Database Design (free online)](https://opentextbc.ca/dbdesign01/)
++ [Inside relational databases](https://www.amazon.co.uk/Inside-Relational-Databases-Mark-Whitehorn/dp/1852334010)
++ [Database Design for Mere Mortals](https://www.amazon.co.uk/Database-Design-Mere-Mortals-Hands/dp/0321884493/)
++ [Six-Step Relational Database Design](https://www.amazon.co.uk/dp/1481942727)
+
+### Testing if a key is unique
+
+The checkr package has a `check_key()` function.
+
+[This thread](https://stackoverflow.com/questions/43154174/verify-that-the-key-of-a-data-table-is-unique) gives a data.table based solution. The fastest dplyr-based method I could find is below. It is ~15 times slower than the data.table one for the 10000 row data frame used. The dplyr one given in the thread is slower than the either method here.
+
+```
+library(tidyverse)
+library(microbenchmark)
+
+set.seed(1)
+dt <- tibble(z = sample(1:1e5, replace = T), y = sample(1:1e5))
+dt2 <- tibble(z = sample(1:1e5, replace = T), y = sample(5, 1e5, replace = T))
+
+test1 <- function(dt, ...) {
+  nrow(count(dt, ...)) == nrow(dt) 
+}
+
+test2 <- function(dt, ...) {
+  nrow(distinct(dt, ...)) == nrow(dt) 
+}
+
+test2(dt, y, z)
+test2(dt2, y, z)
+
+microbenchmark(test1(dt, y, z),
+                     test2(dt, y, z),
+                     times = 25)
+```
+

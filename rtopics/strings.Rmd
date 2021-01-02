@@ -1,0 +1,80 @@
+# Strings in R
+
+These are my notes on string manipulation in R. I will mainly use the `stringr` package so notes are mostly based on the [string chapter](http://r4ds.had.co.nz/strings.html) in Hadley's Data Science book. I avoid repeating too much from there. There is also a short [document](https://journal.r-project.org/archive/2010-2/RJournal_2010-2_Wickham.pdf) explaining why the `stringr` functions are preferred to the R base functions. 
+
+For me this subject also connects to reading and writing to text files (which `stringr` doesn't seem to have functions for - although see next paragraph). A good guide to this can be found [here](https://en.wikibooks.org/wiki/R_Programming/Text_Processing#Reading_and_writing_text_files). Briefly the main functions for reading are `scan()` and `readLines()` and for writing `cat()` and `writeLines()`. For example, `cat(mytext, "\r", file="name.txt", append=T, sep="")` will create a file if it does not already exist and add the text in `mytext` to the end of the file. If `append=FALSE` then a new file will be created overwriting any existing file. The "\r" adds a return after `mytext`. All lines in a text file can be cleared using `writeLines(c(""), "log.txt")`.
+
+`stringi` is the underlying package on which `sringr` is built. It contains many more functions including methods to read/write from/to a text file. 
+
+## stringr
+
+### Basic functions
+
+* `str_length()` - get length of a string. Using `length()` will only give the length of the vector i.e. `length("ddd")` is 1.
+* `str_sub()` - subsets strings e.g. `str_sub(string, start, end)`. Negative values of `start` or `end` count backwards from the end of the string so that the default `start=1`, `end=-1` returns the whole string.
+* `str_c` - combines strings. It is equivalent to `paste()` but `""` is the default separator. If working with a vector of strings i.e. a single string vector argument rather than multiple string arguments then the additional argument `collapse` must be used. e.g.
+
+```{r}
+library(stringr)
+vec <- c("a", "b", "c")
+str_c("a", "b", "c")
+str_c(vec)
+str_c(vec, collapse="")
+```
+Also `str_to_upper`, `str_to_lower`, `str_to_title` for changing cases.
+
+## Regular Expressions and Pattern Matching
+
+A regular expression (regex or regexp) is a sequence of characters that define a search pattern (usually, and in this case, for strings). The search pattern is very flexible. You can experiment with redexps at [this site](http://regexr.com/). I have saved some cheatsheets in the R cheatsheet folder. [This webpage](http://www.helicontech.com/isapi_rewrite/doc/regex.htm) looks ok for a guide to syntax. There are different versions of regex and I don't know how much variation there is between them or whether all guides are relevant for R. The most important difference is in how R escapes reserved characters (see below). 
+
+[This stringr vignette](https://stringr.tidyverse.org/articles/regular-expressions.html) gives a good introduction to regex with some info specific to strinr e.g. `\Q...\E` can be used to exactly match anything in `...` (to avoid the need to escape special characters).
+
++ Literal text or just _literals_ are characters that match themselves. All characters except ".", "*", "?", "+", "(", ")", "{", "}", "[", "]", "^" and "$" are literals.
++ The above non-literal characters can be used as literals by preceeding with "\\\\" in R (single backspace outside R). The extra "\\" is needed to escape the second "\\". To use "\\" as a literal you need "\\\\\\\\" (four). I will use the more general single backspace in the following.
++ Square brackets define a _character class_. This is a set which registers a match if any of the set are matched. A range can be created using a "-". So "[2-4]" is the same as "[234]". The "^" symbol create the complement of the following characters e.g. "[^abc]" is anything other than "a", "b", or "c".
++ A repeat is an expression that is repeated an arbitrary number of times. Following characters define how many times. 
+  + "*" is any number of times, "+" is at least once, and "?" is zero or once.
+  + The bounds operator "{}" can specify more precise ranges of repeats. "{2}" is exactly twice, "{2,}" is twice or more, and "{2,4}" is between two and four times.
+  + Using "?" after a repeat quantifier makes it _non_greedy_ so that the shortest possible string is matched. Note that matching is always done from the left.
++ Parentheses serve two purposes, to group items together into a sub-expression e.g. "(ab)*" will match all of "ababaab".
++ You can give alternatives to match by separating them with "|".
+
+There are many shorthands for character sets. These take the form of "[:classname:]" (e.g. "[:digit:]" matches digits and ":alpha:" matches alphabetical characters). There are even shorter versions of some of these e.g. "\d" is the same as "[:digit:]". Others are "\w", "\s", "\l", and "\u", which stand for ":word:", ":space:", ":lower:", and ":upper:". 
+
++ Word characters are alpha-numerics plus underscores.
++ The whitespace class "\s" is the same as "[ \t\n\r]" which includes tabs, new lines, and carriage returns. Non-whitespace is matched by "\S". Capitals often negate the set denoted by the corresponding lower case.
++ The dot character "." matches any single character except null character and newline character. 
++ Words can be defined by wrapping inside _word boundaries_ "\b" e.g. "\bat\b" will look for the word "at".
+
+### Using with stringr
+
+With a given pattern you can:
+
+* Determine which strings contain a pattern match with `str_detect()`, `str_which()` and `str_subset()` (these respectively return logical, integers, or characters).
+* Find the positions of matches with `str_locate()`.
+* Extract the content of matches with `str_extract()`.
+* Replace matches with new values with `str_replace()`.
+* Split a string based on a match with `str_split()`. Strings can also be split by character line, sentence and word boundaries e.g. with `boundary("word")` in place of the pattern. I'm not sure what counts as a word boundary. Standard regex seems to be anything other than a numeric, character or underscore but apostrophe is not a boundary in stringr.
+
+Some other functions discussed are `str_count()`, `str_view()` and `str_match()`. stringr functions come in pairs: one to work with a single match and one (with a `_all` suffix) to work with all matches. Where functions return a list you can use `simplify=TRUE` to return a matrix.
+
+If the pattern you are using is an exact string then it can be enclosed in `fixed(pattern)` to increase speed. A more flexible pattern can be created using collation rules with `coll()`.
+
+Two other useful applications of regexp are given:
+
+* `apropos()` searches all objects available from the global environment. This is useful if you can’t quite remember the name of the function. 
+* `dir()` lists all the files in a directory. The pattern argument takes a regular expression and only returns file names that match the pattern. For example, you can find all the R Markdown files in the current directory with `dir(pattern = "\\.Rmd$")`
+
+## PDF to table
+
+Notes from my `active` repo (2016 probably).
+
+There are a number of packages for reading from PDFs. I've looked at `pdftools`, `pdftables`, `tm` and `tabulizer`. There are two levels to what I want to do. the basic approach is to get text from the pdf which can be done by `pdftools` and I think `tm`. ideally I want something that can recognise tables and grab those in a table form. The other two packages seem to do this but there are complications in each case.
+
+The package [pdftables](https://github.com/expersso/pdftables) just automates access to [PDFTables](https://pdftables.com/) which is a website that converts PDFs to Excel. There are a limited number of pages for free. Seemed to work ok with the Arnside results.
+
+[tabulizer](https://github.com/ropensci/tabulizer) uses a Java library for extracting tables from PDFs but I couldn't get it to install.
+
+[tm](http://data.library.virginia.edu/reading-pdf-files-into-r-for-text-mining/) is a package for scanning and processing text. Reading the article I'm not sure it does anything more than pdftools which seems simpler to use.
+
+[pdftools](https://www.r-bloggers.com/introducing-pdftools-a-fast-and-portable-pdf-extractor/) is fairly simple. *The most important function is pdf_text which returns a character vector of length equal to the number of pages in the pdf. Each string in the vector contains a plain text version of the text on that page* - `txt <- pdf_text("name.pdf")`. The text can be viewed easily using `cat(txt)` which looks like a table but I have to do more to actually get it into a table.

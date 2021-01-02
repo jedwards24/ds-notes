@@ -1,0 +1,200 @@
+# New R Packages
+
+This records R packages for possible future use. I will add notes as I read about them.
+
+## [vctrs package](https://vctrs.r-lib.org/)
+
+This is a developer focused package but I am interested in the ideas of type and size stability of functions.
+
++ [video of talk ](https://resources.rstudio.com/rstudio-conf-2019/vctrs-tools-for-making-size-and-type-consistent-functions)
++ [Type and size stability](https://www.rdocumentation.org/packages/vctrs/versions/0.1.0/vignettes/stability.Rmd)
+
+
+## [vroom package](https://vroom.r-lib.org/)
+
+Faster reading of delimited data. Uses lazy loading.
+
+## [parallelMap](https://github.com/berndbischl/parallelMap)
+
+Interface some popular parallelization back-ends with a unified interface.
+
+## [sjmisc package](https://cloud.r-project.org/web/packages/sjmisc/index.html)
+
+Data and Variable Transformation Functions
+
+## [vtreat package paper](https://arxiv.org/abs/1611.09477)
+
+Nina Zumel and John Mount. Goes with their book. This package gives a methodology for preparing data for predictive modelling. It produces a *treatment plan* which can be applied to new as well as existing data which automates the handling of:
+
++ Missing data.
++ Novel categorical levels only found in new data.
++ High cardinality categorical variables.
++ Wide data: having too many candidate variables.
+
+These are very general problems for which I need standardised solution methods. It also has useful references.
+
+## [future](https://cran.r-project.org/web/packages/future/index.html)
+Unified Parallel and Distributed Processing.
+
+## [infer](https://teachdatascience.com/infer/)
+
+Adds verbs to tidyverse to aid hypothesis testing.
+
+## [glmnetutils](https://blog.revolutionanalytics.com/2016/11/glmnetutils.html)
+
+A collection of tools to streamline the process of fitting elastic net models with glmnet.
+
+
+## [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html)
+
+From Mango. Run a selection of tests on your packages to see if they conform to some good practice rules. Two vignettes.
+
+## [equisse](https://github.com/dreamRs/esquisse)
+
+Interactive Rstudio addin for viewing ggplots.
+
+## [githubinstall](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html)
+
+Makes it easier to install packages from github. The devtools version requires developer name while this just requires the package name.
+
+## lintr styler formatR
+
+Packages that check your code's formatting. 
+
+## [mlr](https://mlr.mlr-org.com/index.html)
+
+Machine learning with R.
+
+## carat and parsnip
+
+https://tidymodels.github.io/parsnip/index.html Parsnip is part of tidymodels.
+
+## Misc
+
+[funGraphs](https://github.com/kcf-jackson/funGraphs) Maps function dependencies in a package.
+
+[ggtext](https://github.com/clauswilke/ggtext) Improved text rendering support for ggplot2.
+
+[prismatic](https://github.com/EmilHvitfeldt/prismatic) Color manipulation tools
+
+[summarytools](https://github.com/dcomtois/summarytools)
+
+[packrat](http://rstudio.github.io/packrat/) A package management system. I believe this has been superceded by [renv](https://rstudio.github.io/renv/index.html)
+
+[prophet](https://facebook.github.io/prophet/) Automated forecasting package from facebook.
+
+[tidytext](https://cran.r-project.org/web/packages/tidytext/index.html)
+
+[janitor](https://cran.r-project.org/web/packages/janitor/) - some useful misc low level functions for data work.
+
+[fst](https://www.fstpackage.org/) Fast reading and writing of data frames. Uses a fast compression algorithm.
+
+[tsibble](https://tsibble.tidyverts.org/) Tools for wrangling temporal data in a tidy framework. Succeeds the tibbletime package. [Slides from RStudio course](https://github.com/rstudio-conf-2020/time-series-forecasting?fbclid=IwAR2K82TIWjzyCimYrDeH19oHKiUowrRxbcpKjUz2ed2achIm2tUt779k05o)
+
+[slider](https://github.com/DavisVaughan/slider) Sliding window functions. The tsibble news says that the sliding window in their package can be replaced by `slider::slide()`. rom RStudio - builds on purrr. [tidyverse blog](https://www.tidyverse.org/blog/2020/02/slider-0-1-0/).
+
+`furrr` and `future` - parallel processing. 
+
+[caret](http://topepo.github.io/caret/index.html)
+
+[bigstatsr](https://privefl.github.io/bigstatsr/index.html)
+
+[DiagrammeR](http://rich-iannone.github.io/DiagrammeR/). Flowcharts etc. in RMarkdown.
+
++ https://datascienceplus.com/how-to-build-a-simple-flowchart-with-r-diagrammer-package/
++ https://rstudio-pubs-static.s3.amazonaws.com/194240_c9bc85a7f24b41a2b1f42724c525a109.html#1
++ https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/
+
+
+[summarytools](https://cran.r-project.org/web/packages/summarytools/vignettes/Introduction.html). For quickly summarising data.
+
+
+[skimr](https://github.com/ropensci/skimr). Quick, simple summaries for variables in a data frame.
+
+[naniar](https://github.com/njtierney/naniar). Missing data functions. Tidy-based. Has a good collection of functions to replace strings with NAs (dplyr has `na_if()` but these are more usuable).
+
+[usethis](https://usethis.r-lib.org/). Workflow package helping to automate tasks.
+
+[checkr](https://github.com/poissonconsulting/checkr). Functions to check properties of objects. Has a `check_key()` function. The author also gives a [review of some assertive programming R packages](https://cran.r-project.org/web/packages/checkr/vignettes/assertive-programming.html). Superceded by [chk](https://github.com/poissonconsulting/chk) [github.io](https://poissonconsulting.github.io/chk/index.html). There is also the older related [datacheckr](https://github.com/poissonconsulting/datacheckr). 
+
+[snakecase](https://github.com/Tazinho/snakecase) - for parsing and conversion between snake, camel etc. cases. May be useful for general parsing too.
+
+[annotater](https://github.com/luisDVA/annotater). Adds version number and sources comments after `library()` commands. 
+
+[rebus](https://github.com/richierocks/rebus). Regular expression builder. Builds up regular expressions using readable functions.
+
+[qs](https://github.com/traversc/qs). An interface for quickly saving and reading objects to/from disk.
+
+[tinytest](https://github.com/markvanderloo/tinytest). Minimal dependency testing package.
+
+[cli](https://github.com/r-lib/cli). Command line interfaces - attractive messages for output from code processes.
+
+[renv](https://rstudio.github.io/renv/index.html). Reproducible environments for R projects. A way of controlling package and R versions in a project. Aims to replace packrat.
+
+[progressr](https://github.com/HenrikBengtsson/progressr). Package for progress updates. Author of futures package.
+
+[gluedown](https://github.com/kiernann/gluedown). Vectors to formatted markdown text.
+
+[benchmarkme](https://github.com/csgillespie/benchmarkme). Benchmarking the speed of your system.
+
+## tidyverse Packages and Related Packages
+
+[purrr package](https://purrr.tidyverse.org/). "This package completes R's functional programming tools with missing features present in other programming languages."
+
+The guide to purrr on the tidyverse site is limited but it recommends the [iteration chapter](https://r4ds.had.co.nz/iteration.html) in R for data science. There are detailed [cheat sheets](https://github.com/rstudio/cheatsheets/blob/master/purrr.pdf) which also include use of nested data frames with tidyr functions that often link with purrr functions. Also see,
+
++ [Jenny Bryan purrr tutorial](https://jennybc.github.io/purrr-tutorial/index.html). 
++ An example-based [purrr intro](https://emoriebeck.github.io/R-tutorials/purrr/).
++ [Purrr cookbook](http://colinfay.me/purrr-cookbook/)
+
+Also related to this are more general row wise operations on dataframes. Jenny Bryan gave an [Rstudio seminar on row oriented workflows](https://github.com/jennybc/row-oriented-workflows). This gives of options and things to consider but doesn't go into specific detail on the methods. More recently (as of 03/2020), there is a [rowwise operations vignette](https://dplyr.tidyverse.org/dev/articles/rowwise.html) for dplyr which is based on the most recent (beta) developments using `across()`. It uses `rowwise()` extensively (not mentioned in Jenny Bryan's talk) and says it can avoid use of purrr. It says, `rowwise()` was questioning for sometime, with purrr being preferred, but they now regard `rowwise()` as being easier to use and it is no longer questioning. This is the most up-to-date methodology for dplyr and dataframes but purrr is used more generally.
+
+Brief notes from the R4DS chapter:
+
++ `map()` has a `.f` argument which can be a function, formula, character vector or integer vector. Use `~` to create an anonymous function. In an anonymous function `.` refers to current list element.
++ `map()` is identical to `lapply()` but adds in some shortcuts.
++ Shortcuts extract named elements or by position e.g. `map_dbl("r.squared")` or `map(2)`.
++ The `map_*()` variants are like `vapply()` but need less typing. `vapply()` can ouput matrices while `map_*()` can't.
++ `map2()` and `pmap()` use multiple related inputs. `invoke_map()` applies multiple functions. `walk()` returns side_effects. See [https://purrr.tidyverse.org/reference/map2.html](https://purrr.tidyverse.org/reference/map2.html). + There are lots of other useful functions in the package e.g. `safely()`, `possibly()`, and `quietly()` manage errors in parallel actions. 
+
+Example `pmap()` use with a df:
+
+```{r eval = FALSE}
+ari <- function(ind, a, b) {
+  if (ind){
+    return(a + b)
+  }
+  a * b
+}
+
+tibble(ind = c(T, F, T, F), a = 1:4, b = 5:8) %>% 
+  mutate(out = pmap_int(., ari))
+```
+
+Use `...` in helper function to absorb extra cols in df/list passed to `pmap()`.
+
+**pryr**: Used to investigate the R language e.g. looking at the workings of base functions. Since replaced by **lobstr**
+
+**plyr**: Tools to split data apart, operate on all pieces, and then collect results. For data frames this has been replaced by dplyr which is easier to use and faster.
+
+[magrittr pipe guide](https://magrittr.tidyverse.org/reference/pipe.html). Note the use of braces and brackets and the availability of alias functions for many standard operators (see `?extract`). The dot can be used to create a named functional sequence.
+
+[tidyverse site](https://www.tidyverse.org/). This has regular articles on updates to the tidyverse packages. Often worth reading.
+
+[tidyverse 1.00 release](https://blog.rstudio.com/2016/09/15/tidyverse-1-0-0/) lists all of the packages installed. May be out of date now since magrittr isn't listed. 
+
+[rvest](https://cran.r-project.org/web/packages/rvest/index.html) is a web scraping package. Example (older now) tutorials are [here](https://rpubs.com/Radcliffe/superbowl), [here](https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/) and a [longer one](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/)
+
+[haven](https://haven.tidyverse.org/) is used to import SAS, SPSS, and Stata files. There are alternative packages but this should be faster. There are two vignettes.
+
+[tidylog](https://github.com/elbersb/tidylog). Provides feedback about dplyr and tidyr operations with simple wrapper functions.
+
+[itdepends](https://github.com/r-lib/itdepends). Explore dependencies for packages and projects. See [Blog post](https://www.tidyverse.org/blog/2019/05/itdepends/).
+
+[conflicted](https://www.tidyverse.org/blog/2018/06/conflicted/). Stricter handling of package conflicts.
+
+[strict](https://github.com/hadley/strict). Make R stricter. Not CRAN yet.
+
+[waldo](https://github.com/r-lib/waldo/). Differences between objects. Developed for use in testthat v3.
+
+[bench](https://github.com/r-lib/bench). Benchmarks code.

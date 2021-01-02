@@ -1,0 +1,52 @@
+---
+title: "Academic Material"
+output: html_document
+---
+
+This is a collection of some links to material connected with my academic work that I wanted to collect somewhere.
+
+## Bandits
+
++ [The complexities of optimization](https://blogs.princeton.edu/imabandit/orf523-the-complexities-of-optimization/). Sebatian Bubeck's course material on optimisation. It has been collected into a [monograph](https://arxiv.org/abs/1405.4980)
++ [Multi-Armed Bandits at Microsoft Silicon Valley](http://slivkins.com/work/bandits-svc/). I was interested in this primarily for the list of Slivikins work on similarity information, much of which I will have read.
++ [libbandit](https://github.com/tor/libbandit). Tor Lattimore's library for MABs.
++ [Bandit Algorithms](https://tor-lattimore.com/downloads/book/book.pdf). Book by Tor Lattimore and Csaba Szepesvari.
++ [Introduction to Multi-Armed Bandits](https://arxiv.org/abs/1904.07272). Alexsandrs Slivikins' book.
+
+## Dynamic Programming
+
++ https://homes.cs.washington.edu/~todorov/courses/amath579/Bertsekas_slides.pdf
++ https://web.mit.edu/dimitrib/www/DP2_Chapter%204_UPDATED.pdf
++ http://webee.technion.ac.il/shimkin/LCS11/ch2_DP_finite.pdf
++ http://athenasc.com/dpbook.html
++ https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-231-dynamic-programming-and-stochastic-control-fall-2015/
+
+## Optimisation (various)
+
++ [JRSS special edition on Numerical Optimization in R](https://www.jstatsoft.org/issue/view/v060)
++ I had a bit of a look at Bayesian Optimisation in R. There wasn't an obvious package but rBayesianOptimization was ok. There is some on this for ML tuning [here](https://www.r-bloggers.com/bayesian-optimization-of-machine-learning-models/).
++ [Powell's attempt to Stochastic Optimisation in sequential decision problems](https://castlelab.princeton.edu/jungle)
+
+## Effective Sample Size
+
+In the pricing work I wanted to adjust sample size for over concentrated price samples. These are some possible threads to pursue.
+
+[Design Effects and Effective Sample Size](https://docs.displayr.com/wiki/Design_Effects_and_Effective_Sample_Size)
+[Effective Sample Size](https://golem.ph.utexas.edu/category/2014/12/effective_sample_size.html)
+
+## Bivariate and Truncated Normal
+
+For pricing, I looked at Bayesian bivariate normal distributions for pricing parameters. 
+
+[Objective priors for the bivariate normal model](https://projecteuclid.org/euclid.aos/1205420525). Jim Berger.
+[Simulating from bivariate normal in R](https://blog.revolutionanalytics.com/2016/08/simulating-form-the-bivariate-normal-distribution-in-r-1.html)
+[Truncated Normal](https://www.r-bloggers.com/truncated-normal-distribution/amp/). Brief, for R.
+
+## Misc
+
++ [mathcha](https://www.mathcha.io/). A maths editor.
++ [mathpix](https://mathpix.com/). Extracts latex code from a pdf or written notes.
++ [texstudio](https://www.texstudio.org/). Possible latex editor to try.
++ Quasi-monte carlo is used in numerical integration where sampling is structured rather than random.
++ [Control Variates](https://en.wikipedia.org/wiki/Control_variates). A variance reduction technique used in Monte Carlo methods e.g. numerical integration.
++ [What’s Wrong with Probability Notation?](https://lingpipe-blog.com/2009/10/13/whats-wrong-with-probability-notation/). Issues with common uses of probability notation.

@@ -1,0 +1,212 @@
+# Tidy Evaluation
+
+```{r tidyeval_setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(tidyverse)
+```
+
+Tidy evaluation is a framework for metaprogramming in R. The notes here will focus on that framework but will also cover broader ideas such as standard and non-standard evaluation (NSE). There has been a lot of movement on this in the past year or two so it may change further, but these notes aim be current as of writing (April 2020).
+
+## Links
+
+There is an online bookdown [Tidy Evaluation](https://tidyeval.tidyverse.org/). This is still a work-in-progress as of writing (with incomplete parts). The [Programming dplyr vignette](https://dplyr.tidyverse.org/articles/programming.html) also covers similar ground and may be a better starting point. The [metaprogramming chapter in Advanced R](https://adv-r.hadley.nz/metaprogramming.html) has more on the general area.
+
+A difficulty in this area is that it is hard to tell what is current since the area is still evolving. I also have some confusion over terminology and the packages involved. I think the core of tidy eval is contained in rlang, while tidyselect adds select helpers and other functions on top. 
+
++ [rlang 0.4.0 blog post](https://www.tidyverse.org/blog/2019/06/rlang-0-4-0/). Introduces `{{` operator. This isn't mentioned in the Tidy Evaluation bookdown. It appears to be a shorthand for some of the methods given there.
++ [rlang blog 2020-02](https://www.tidyverse.org/blog/2020/02/glue-strings-and-tidy-eval/). Brings glue strings into tidy eval. Used together with `{{`.
++ [Data pronouns for tidy evaluation vignette](https://rlang.r-lib.org/reference/tidyeval-data.html). This gives `.data` and `.env` pronouns to be explicit in data masking. This might be what I should be doing in my packages.
++ [tidyselect package](https://tidyselect.r-lib.org/index.html) imports rlang (and other packages). Listed as dependency for dplyr but its functions are not loaded with the tidyverse. There are two vignettes: [Implementing tidyselect interfaces](https://tidyselect.r-lib.org/articles/tidyselect.html) and [Technical description of tidyselect](https://tidyselect.r-lib.org/articles/syntax.html). 
+
+The documentation of the various functions is useful too and my notes will include these. This [post on background of quotation](https://milesmcbain.xyz/the-roots-of-quotation/amp/) might be useful for deeper understanding. 
+
+## Tidy Evaluation
+
+Most dplyr functions use non-standard evaluation (NSE) which means they capture the expression you type and evaluate it in a custom way. This creates ambiguity depending on where variables were defined and can make it hard when passing column names via function argument. 
+
+Most dplyr arguments are not _referentially transparent_. That means you can’t replace a value with a seemingly equivalent object that you’ve defined elsewhere.
+
+**Quoting** is the action of capturing an expression instead of evaluating it. All expression-based functions quote their arguments and get the R code as an expression rather than the result of evaluating that code. Examples are *formulas* and `quote()`, which returns an expression. Expressions formed by `quote()` or `~` have tree structures. The double quote `"` is not a quoting operator since it generates a string, not an expression. A formula captures the execution environment as well as the code. 
+
+When an object keeps track of an environment, it is said to have an enclosure. This is the reason that functions in R are sometimes referred to as closures. A one-sided formulas is given a special name: **quosures**. One-sided formulas are quotes (they carry an expression) with an environment.
+
+**Quasiquotation** allows you to evaluate directly inside an expression that is otherwise quoted. All expression-based functions in the tidyeval framework support quasiquotation. Unquoting cancels quotation of parts of an expression. There are three types of unquoting:
+
++ Basic. Functional form is `UQ()` and the syntactic shortcut is `!!`.
++ Unquote splicing. Functional form is `UQS()` and the syntactic shortcut is `!!!`. It takes a vector and inserts each element of the vector in the surrounding function call.
++ Unquoting names. Uses the `:=` operator.
+
+Note that `UQ()` and `UQS()` are [deprecated now](https://rlang.r-lib.org/reference/nse-force.html). An alternative explanation of these terms from the [roots of quotation post](https://milesmcbain.xyz/the-roots-of-quotation/amp/) explains this better:
+
++ *quote* transforms code into data.
+  + That data being the machine-readable symbolic structure needed to *formally* evaluate it.
++ *quasiquotation* is a mode that assumes we want all code transformed to data.
++ *unquote* flags code that we wish to have the result of transformed to data.
+  + In the context of quasiquotation.
+
+So within dplyr functions the default is to use NSE and quote arguments (quasiquotation is used). Then unquoting is needed to force evaluation of any parts we want evaluated.
+
+The three pillars of tidy evaluation are quasiquotation, quosures, and the data mask.
+
+Functions (or more specifically, their arguments) can either be quoting or evaluating. Evaluating is the standard, while quoting captures the argument to process in a custom way. `library()` is a quoting function so it's first argument does not have to be a string or exist as an object. `[[` is an evaluating function while `$` is a quoting function. See [this chapter](https://tidyeval.tidyverse.org/sec-up-to-speed.html) for more details.
+
+### Tidyeval Functions
+
+I have tried to match-up base functions with tidyeval equivalents to understand where the newer functions come from.
+
++ Base R `quote()` "simply returns its argument". Similar to `rlang::expr()`. These return an expression without evaluating it (they are *defusing* operators). I don't think they record the environment. 
++ Formulas use the `~` operator. I am unsure how they differ from `quote()`. More specific structure?
++ `rlang::exprs()` is similar to `alist()`.
++ `rlang::quo()` is another defusing operator, but which returns an expression with an environment attribute (a *quosure*). It has similarities with `expr()`. It is possible it is replacing it - I am not sure they are both mentioned in the same document. 
++ `rlang::enquo()` is a user facing version of `quo` designed to deal with function arguments (`quo()` is developer facing). The base equivalent is `substitute()`.
++ I'm not sure about `sym()` and `syms()` (there is also `ensym()` and `ensyms()`. They convert strings to symbols. A defused expression can be a *call* or a *symbol*. Symbols represent named objects. I think they are stricter versions of the other quoting functions that restrict user input to strings.
++ The `!!` and `!!!` operators are unquoting (or forcing) operators which force evaluation of quoted code. There are function call versions of these, `UQ()` and `UQS()`, but Advanced R says these aren't really function calls, so they may be discouraged.
++ The `{{` operator is a recent development. It provides a shorthand for quote-unquote operation e.g. `!!enquo(x)`.
++ I used to use the base `as.name()` function with `!!`. I don't know how this relates, maybe similar to `sym()` (the base `as.symbol()` is identical to `as.name()`).
+
+Detail on tidyeval functions:
+
+`sym()` and `expr()` both produce name objects but they are not the same. `sym()` is an evaluating function, while `expr()` is a quoting function. The argument to `sym()` must evaluate to a string. This string is converted to a name. `expr()` directly converts its argument to a name, without evaluating.
+
+```{r sym}
+x <- "mpg"
+rlang::sym("word")
+rlang::sym(x) 
+rlang::expr(x)
+rlang::expr("word") #this returns a character
+```
+
+Like `expr()`, `quo()` is a quoting function that does not evaluate its argument, but it returns a quosure, which is an expression together with and environment. `enquo()` takes an unquoted argument (a symbol), which it evaluates and returns a quosure with an expression formed from the contents of the object named by the symbol argument.
+
+```{r enquo}
+x <- "mpg"
+rlang::enquo(x)
+```
+
+So to summarise:
+
+```{r table, echo = FALSE}
+dt <- tibble::tibble(
+  func = c("quo", "expr", "enquo", "sym"),
+  return = c("quosure", "name","quosure", "name"),
+  type = c("quoting", "quoting", "evaluating", "evaluating") 
+) 
+edwards::my_kable(dt)
+```
+
+I may be off in my definition of quoting/evaluating functions, but `enquo()` does evaluate its argument before quoting it. 
+
+### Questions/surprises
+
+`sym()` only works with strings so why does the following work?  
+
+```{r q1}
+x <- expr(mpg)
+sym(x)
+```
+
+Replacing `expr(mpg)` with `quo(mpg)` or `quo("mpg")` does error. since `sym()` cannot work with a quosure. Note that I have tried to use this expr/sym combo to solve the ggplot problem below but it is not a solution.
+
+## Usage
+
+Here are some examples of quote-unquoting with `select()`. The first 3 all select column `mpg`. The 4th select errors because it passes the string `"x"` to `select()`. 
+
+```{r select1, eval=FALSE}
+dt <- mtcars %>% as_tibble()
+x <- "mpg"
+select(dt, !!sym(x))
+select(dt, !!expr(x))
+select(dt, !!enquo(x))
+select(dt, !!expr("x")) #error - col x does not exist
+```
+
+The next 4 are less clear. `sym()` and `enquo()` both evaluate `vs`, but `expr(vs)` does not. If there was no column called `vs` then `expr()` would look for other objects called `vs` and evaluate those. The third example errors because `enquo()` tries to evaluate its argument (same with `sym()`).  
+
+```{r select2, eval = FALSE}
+vs <- "mpg"
+select(dt, !!sym(vs)) # mpg
+select(dt, !!enquo(vs)) # mpg
+select(dt, !!enquo(cyl)) # error - object `cyl` not found.
+select(dt, !!expr(vs)) # selects vs
+```
+
+There isn't one standard for handling tidyselect inputs across the tidyverse. `select()` is very flexible - from its help page: *For convenience it also supports strings and character vectors. This is unlike other verbs where strings would be ambiguous*. Other functions may differ, notably `ggplot()` which takes unquoted names for variables, but not strings or integer positions. If these are supplied, e.g. `x = "name"`, then it will draw the plot but treat x as a categorical variable with fixed value `"name"`. 
+
+Due to this, I have had issues using ggplot inside functions with dynamic naming. A simplified example is the following which takes the variables to plot as function arguments. It works with unquoted arguments but fails with strings, as might happen inside a shiny app, for example.
+
+The following functions are simplified versions of what I am looking to do. The aim is to produce a scatter plot using named variables. The first, `myplot1()` works with unquoted arguments, but is incorrect with string arguments. Note that `{{` is equivalent to `!!enquo()`. The second, `myplot2()` works with string arguments but errors with unquoted arguments. 
+
+```{r func1, eval = FALSE}
+myplot1 <- function(dt, x, y) {
+  gg <- ggplot(dt, aes({{x}}, {{y}})) + 
+    geom_point()
+  print(gg)
+}
+```
+
+```{r func2, eval = FALSE}
+myplot2 <- function(dt, x, y) {
+  gg <- ggplot(dt, aes(!!sym(x), !!sym(y))) + 
+    geom_point()
+  print(gg)
+}
+```
+
+Using `expr()` in place of `sym()` errors in both cases (`select()` would handle this but `ggplot()` is a much less flexible environment). Note ggplot2 only introduced tidyeval us in [version 3.0.0 blog post](https://www.tidyverse.org/blog/2018/07/ggplot2-tidy-evaluation/). That article says that variables are stored as quosures.
+
+Other verbs like `filter()` work like ggplot, not `select()` and behaviour can be suprising at first. 
+
+```{r filter, eval = F}
+x <- "vs"
+filter(mtcars, !!enquo(x) == 1) #empty df
+filter(mtcars, !!sym(x) == 1) #works
+```
+
+What is happening is that `!!enquo(x)` (or equivalently `{{`) is evaluating to the string `"vs"` and `"vs" == 1` is false. Like `ggplot()`, `filter()` doesn't accept variable names as strings due, I assume, to ambiguity. Because `sym()` creates a symbol this isn't evaluating to a string.
+
+The following is a workaround for the ggplot issue. I use `select()` to handle the tidyselect input, extract the column names, then use these with `ggplot()`. This works fine but it seems crude way to do it. 
+
+```{r func3, eval = FALSE}
+myplot3 <- function(dt, x, y) {
+  x <- names(select(dt, {{x}}))
+  y <- names(select(dt, {{y}}))
+  gg <- ggplot(dt, aes(!!sym(x), !!sym(y))) + 
+    geom_point()
+  print(gg)
+}
+```
+
+Before looking at alternatives there is still the question of what is the appropriate way for this sort of function to work. Should I commit to only accepting unquoted inputs to avoid any ambiguity? Also, at some point I will need to think about how different methods of handling tidyselect inputs will be effected by grouping.
+
+The way `select()` internally processes tidyselection ([select github page](https://github.com/tidyverse/dplyr/blob/master/R/select.R)) is using the `eval_select()` function to return integer column location. The returned vector is named with the column names so, rather than using `select()`, I could create a function to just return the named location vector and work with that. Not necesarily simpler though.
+
+```{r col_select}
+col_select <- function(data, ...) {
+  tidyselect::eval_select(expr(c(...)), data)
+col_select(mtcars, 1, wt, "vs")
+}
+```
+
+[Dynamic dots](https://rlang.r-lib.org/reference/dyn-dots.html) explains how `...` can be captured using `c()` or `list()`. Other functions used are `list2()`, `dots_list()`, `vars()`, and `call2()`.
+
+## Notes on Older Links
+
+The [lazyeval package](https://cran.r-project.org/web/packages/lazyeval/index.html)"This document outlines my [Hadley Wickham] previous approach to non-standard evaluation (NSE). You should avoid it unless you are working with an older version of dplyr or tidyr."
+
+The old NSE approach in dplyr was to have separate functions for SE e.g. `filter_()`. These underlay the NSE versions that were commonly used.
+
+[Tidy evaluation in ggplot2](https://www.tidyverse.org/blog/2018/07/ggplot2-tidy-evaluation/). Tidyverse blog from mid-2018 when ggplot2 switched to using tidy eval operators and introduced `vars()`. 
+
+**Notes from [lazyeval vignette](https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html)**
+
+Common uses of NSE:
+
++ Labelling of plots and tables where the expression supplied to a function is used as a label rather than their value.
++ Non-standard scoping to look for objects in places other than the current environment e.g. `with()`, `subset()`, `transform()` start the search for objects in the current data frame or list.
++ Metaprogramming is a catch-all term that involves computing on the unevaluated code in some way.
+
+In base R, an argument can be turned into a label using `deparse(substitute(x))`. Two problems are that `deparse()` may generate a vector of length > 1 and `substitue()` only looks one level up.
+
+Formulas are tool that captures (1) an unevaluated expression and, (2) the context (environment) in which the expression was created. The `~` character says: “I want to capture the meaning of this code, without evaluating it right away” (it is a sort of “quoting” operator). Technically, a formula is a “language” object (i.e. an unevaluated expression) with a class of “formula” and an attribute that stores the environment. lazyeval gives some functions that are useful for evaluating formulas.
+
+(I note) Formulas can be constructed as strings then converted to a formula using `as.formula()`. 

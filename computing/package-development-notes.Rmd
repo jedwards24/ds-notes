@@ -1,0 +1,206 @@
+---
+title: "Package Development"
+output: html_document
+---
+
+## Good Practice
+
+There are a number of sections in the [tidyverse style guide](https://style.tidyverse.org/package-files.html) on packages.
+
+[Package lifecycle badges](https://www.tidyverse.org/lifecycle/)
+
+[Using ggplot in packages](https://ggplot2.tidyverse.org/dev/articles/ggplot2-in-packages.html)
+
+[Using tidyr in packages](https://tidyr.tidyverse.org/articles/in-packages.html)
+
+[Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html)
+
+
+The following is from a Markus Gesmann talk:
+
+When I start today
+
+1.	I write small functions
+2.	Name them properly
+3.	Document them immediately
+4.	Include self-contained examples
+5.	Use a version control system
+6.	Start writing a vignette
+7.	Consider test scenarios
+8.	Prepare longer examples in demo files
+9.	Well, I try to do 1 to 8
+
+# My Notes on R package development
+
+Copied from a text file I had. 
+
+## Github setup
+
+I don't know if the following is the only way but this is how I have done it so far.
+
+1. Create a package in RStudio (New Project >> new directory). Tick the use git box.
+2. Tools >> Project Options >> Git/SVN in Rstudio. Should see that git is enabled but Origin will be "none". You should also see the Git pane in RStudio but push/pull will be greyed out. If you didn't tick the git box on setup then you'll need to select Git here (see http://r-pkgs.had.co.nz/git.html).
+3. In shell "git remote add origin https://github.com/jedwards24/gittins.git". This will change the Origin in the Git/SVN tab.
+4. Commit something.
+5. In shell "git push -u origin master". This will make first push and should ungrey Pull and Push (if not try restarting RStudio) https://landeco2point0.wordpress.com/2014/07/22/things-i-forget-pushpull-greyed-out-in-rstudio/
+
+A README.md file can be created on either github or in RStudio. I don't know about using an .rmd file instead.
+
+## Links
+
++ [HW's package book](http://r-pkgs.had.co.nz/) - this is the version published in 2015 but is out of date in some parts now. There is a [newer version](https://r-pkgs.org/) which is still in development (co-authored by JB).
++ [Karl Broman's package primer](http://kbroman.org/pkg_primer/) and [his personal package](https://github.com/kbroman/broman).
++ [HW's R packages book](http://r-pkgs.had.co.nz/) 
++ [Jeff Leek's guide](https://github.com/jtleek/rpackages).
++ [RStudio guide](https://support.rstudio.com/hc/en-us/articles/200486488-Developing-Packages-with-RStudio)
++ [HW roxygen text formatting reference](https://cran.r-project.org/web/packages/roxygen2/vignettes/formatting.html)
++ [Roxygen2 vignettes](https://cran.r-project.org/web/packages/roxygen2/)
+
+## Package Files
+
+**The DESCRIPTION file**
+
+The default explains what is needed on each line. It also needs an "Imports:" line with the names of any packages needed. The "Title:" should be in title case.
+
+```
+Package: gittins
+Type: Package
+Title: Calculate Gittins Indices
+Version: 0.1.0
+Author: James Edwards <j.edwards4@lancaster.ac.uk> 
+Maintainer: James Edwards <j.edwards4@lancaster.ac.uk>
+Description: Calculates Gittins indices for the multi-armed bandit problem.
+License: MIT + file LICENCE
+Encoding: UTF-8
+LazyData: true
+```
+
+Add a LICENCE.R file
+(must be called LICENCE or LICENSE and match the "file LICENCE" in DESCRIPTION.
+```
+YEAR: 2018
+COPYRIGHT HOLDER: James Edwards
+```
+
+Use `usethis::use_package("dplyr")` to add a package to `Imports:`.
+
+**R/ folder**
+
+This contains your R code for your functions. Can divide functions between files as you choose (HW: "While you’re free to arrange functions into files as you wish, the two extremes are bad: don’t put all functions into one file and don’t put each function into its own separate file. (It’s OK if some files only contain one function, particularly if the function is large or has a lot of documentation.). File names should be meaningful and end in .R.")
+
+**man/ folder** - This is the manual. These files (.Rd files) can be created automatically using Roxygen2. See the [Documentation section](#docs) for details on package documentation. 
+
+**NAMESPACE file** - this handles naming conflicts for your functions. It records which functions/packages are imported, and which functions from your package are exported. See the [Namespace]) section for details. 
+
+**Changelog/NEWS** - not much guidance given on this but the standard for packages seems to be to use a news file rather than a changelog (Hadley: "Generally you should use a NEWS file, and not ChangeLog. I think the purpose of ChangeLog (to list every change), has been subsumed by source code control").
+
+## Documentation {#docs}
+
+Documentation files are created by `.Rd` files in the `man/` directory. Although these can be edited by hand it is easier to generate them using the roxygen2 package. The comments that roxygen uses to create the `.Rd` files is written adjacent to the function code. To create the documentation use `devtools::document()`, which will also
+create a `NAMESPACE` file from the roxygen comments (see [Namespace]). roxygen2 will never overwrite a file it didn’t create. The following notes are primarily taken from the [roxygen2 vignettes](https://cran.r-project.org/web/packages/roxygen2/). 
+
+Roxygen comments start with a special comment characters `#'`. A sequence of roxygen comments forms a roxygen block. Additional structure is given by tags starting `@`. These must go at the start of a line and extend to the next tag. Each line of a tag after the first should be indented to make it easier to see where they start and end, unless the tag always spans multiple lines (e.g. `@examples`) 
+
+Text without tags form the description block. These are broken up by blank lines (just a `#'`). 
+
++ The first sentence is the title: that’s what you see when you look at `help(package = mypackage)` and is shown at the top of each help file. It should generally fit on one line, be written in sentence case, and not end in a full stop.
++ The second paragraph is the description: this comes first in the documentation and should briefly describe what the function does.
++ The third and subsequent paragraphs go into the details: an optional section that comes after the argument description and should provide any other important details of how the function operates.
+
+You can also use explicit `@title`, `@description`, and `@details` tags but this isn't usually necessary.
+
+Other used to create other parts of the help files are:
+
++ `@param name description` describes function arguments.
++ `@return description` describes what the function returns.
++ `@examples` are executable code showing how to use the code. This is run as part of `R CMD check` and so must run without errors. For examples that intentially give errors use `dontrun{}`. Two other options are `dontshow{}` which runs but are not displayed (an informal test), and `\donttest{}` which is run in examples but not `R CMD check` (for examples with long run time). 
+
+Add `@keywords internal` to prevent a function from showing up on the package help file list.
+
+### Formatting
+
+You can use markdown in roxygen generated man files: [Rd Formatting vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html). Add a line `Roxygen: list(markdown = TRUE)` to the DESCRIPTION file. Then the usual markdown (code, links, lists etc. can be used). Many markdown tags do not support markdown: @aliases, @backref, @docType, @encoding, @evalRd, @example, @examples, @family, @inheritParams, @keywords, @method @name, @md, @noMd, @noRd, @rdname, @rawRd, @usage. If markdown is not turned on then Rd tags can be used instead e.g. `\code, \url`. For hyperlinks: `\link{}` creates a link to other document pages, `\url{}` can link to a webpage without a separate name, and `\href{link}{name}` adds a different displayed name.
+
+### Reusing Roxygen Comments
+
+The [rd tags vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html) has a large section called "Do Repeat Yourself" which suggests that help files should be largely self-contained, and gives ways to do this without repeating the same roxygen comments across different functions.
+
++ **Cross-referencing.** 
+  + `@seealso` allows you to point to other resources with a web link <http://www.r-project.org> or another function     `[function_name()]`.
+  + `@family {family}` cross references each function to every other function in the family. Use a plural name.
++ **Inheriting documentation from other topics.** These can be functions in any package.
+  + `@inherit source_function` will inherit parameters, return, references, description, details, sections, and
+    seealso from source_function().
+  + `@inherit source_function return details` will inherit selected components from `source_function()`
+  + `@inheritParams source_function inherits` just the parameter documentation from `source_function()`.
+  + `@inheritSection source_function Section title` will inherit the single `@section` called “Section title” from
+    `source_function()`.
++ **Documenting multiple functions in the same file.** USe when functions have the same or very similar arguments.
+  + `@describeIn function_name`. Used for documenting method in a generic or class, and for functions with the same (or similar arguments). It generates a new section listing each function.
+  + `@rdname`. General purpose tool. Merges documentation for multiple objects into one file. Either add to an existing function or to a dummy function setup with a `@name` and `NULL` for code.
++ **Evaluating arbitrary code.** The `@eval` tag evaluates R code so that Roxygen tags can be put inside functions which can be called in multiple places.
+  
+Examples are given at [https://gist.github.com/jefferys/b79fe87314b0dc72fec9)].
+
+In my gittins package I created a dummy function to reuse arguments:
+
+```
+#' Function arguments
+#'
+#' @keywords internal
+#' @name nmab_args
+#' @param Sigma value of Sigma for the arm
+#' @param etc...
+#' @param delta value of delta (fineness of discretisation in the dynamic programmme)
+#'
+NULL
+```
+
+I then used `@inheritParams nmab_args` in other functions. It will only add arguments that are in the new function. If you want to change the description of an argument in some functions but not others you can overwrite the inheritance by adding the `@param` as normal, but you need to put the description you want **first**.
+
+Combining multiple files can change the order of function usage. This can be overridden using `@order`.  
+
+## Namespace
+
+The package `NAMESPACE` file handles naming conflicts for the functions. From [https://r-pkgs.org/namespace.html](https://r-pkgs.org/namespace.html):
+
++ The imports defines how a function in one package finds a function in another. 
++ The exports helps you avoid conflicts with other packages by specifying which functions are available outside of your package.
+
+For packages created in RStudio, the `NAMESPACE` file uses string matching to decide which functions to export. It is better to delete this, then roxygen2 will create it when `devtools::document()` is run.
+
+**Exporting**. Functions in the package are not automatically available for use outside the package. Any that have an `@export` tag in their Roxygen comments will be added to the `NAMESPACE` by roxygen. Datasets should not be exported because they exist outside the package namespace and are always publicly available.
+
+**Importing**. There are three main ways to import standard functions from other packages:
+
++ Add the package name to the `Imports:` field of the `DESCRIPTION` file and then use `::` to call the function explicitly. This is appropriate when using a few functions from another package. Use, e.g., `usethis::use_package("dplyr")` to add a package to `Imports:`. This method does not change the `NAMESPACE` file.
++ Add a roxygen tag `@import package` to one or more functions. This makes all functions from the package available, without using `::` and adds a line `import(package)` to the `NAMESPACE`.
++ Add  a roxygen tag `@importFrom package fun` to one or more functions.  Just that function is made available from the package, without needing  `::`. A line `importFrom(package, "fun")` to the `NAMESPACE`. "...no longer recommended due to its poor readability".
+
+There can be issues here: [Namespace problems](http://alyssafrazee.com/2014/01/21/namespaces.html). Other resources: [Connecting to other packages](https://kbroman.org/pkg_primer/pages/depends.html). [Roxygen namespace vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html).
+
+## Workflow
+
+The command `devtools::load_all()` (or in RStudio press Ctrl + Shift + L) will save all open files and reload your package code. It simulates what happens when use `library()` but uses the source package (that is being developed) rather than the installed package.
+
+Other devtools commands are:
+`build()` - build package
+`install()` - install package
+`document()` - creates Rd manual files using Roxygen. 
+
+Package [usethis](https://usethis.r-lib.org/) is a workflow package for automating package (and non-package) projects.
+
+## Testing
+
+There is a guide to using testthat within packages in [HW & JB package book](https://r-pkgs.org/tests.html). Most of the chapter is about testing generally but some specifics to packages are:
+
++ Setup your package to use testthat with `usethis::use_testthat()` which creates directories and ammends the description file.
++ Test the package with Ctrl/Cmd + Shift + T or `devtools::test()`.
++ Test files live in `tests/testthat/` and their name must start with `test`.
+
+For testing every time you upload to github try travis package. [Guide](https://juliasilge.com/blog/beginners-guide-to-travis/).
+Use `usethis::use_test()` to add a test (with template).
+
+## Misc
+
++ `importFrom()` is faster than adding a dependency and then using `::`.

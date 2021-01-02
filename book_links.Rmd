@@ -1,0 +1,68 @@
+# Data Science Books and Courses
+
+Mostly free online.
+
+## ML/Stats/DS
+
+[Hands-on Machine Learning with R - Brad Boehmke & Brandon Greenwell](https://bradleyboehmke.github.io/HOML/)
+
+[Data Visualisation - Kieran Healy](https://socviz.co/)
+
+[Interpretable Machine Learning - Christoph Molnar](https://christophm.github.io/interpretable-ml-book/)
+
+[Introduction to Data Science - Rafael A. Irizarry](https://rafalab.github.io/dsbook/)
+
+[Practical Data Science with R - Nina Zumel and John Mount](https://www.manning.com/books/practical-data-science-with-r-second-edition). Limited free preview.
+
+[Practical Data Science for Stats](https://peerj.com/collections/50-practicaldatascistats/). A collection of preprints curated by Hadley Wickham and Jenny Bryan. 
+
+[Advanced Statistical Computing - Roger Peng](https://bookdown.org/rdpeng/advstatcomp/). Work in progress. Seems stalled. Topics include general optimisation, EM, Integration, Monte Carlo, MCMC. 
+
+[Code Complete](http://aroma.vn/web/wp-content/uploads/2016/11/code-complete-2nd-edition-v413hav.pdf)
+
+[Data Science at the Command Line](https://www.datascienceatthecommandline.com/)
+
+[Standford Coursera ML series](https://www.coursera.org/learn/machine-learning)
+
+## R Specific
+
+[What They Forgot to Teach You About R](https://whattheyforgot.org/)
+
+[Advanced R 2nd Ed - Hadley Wickham](https://adv-r.hadley.nz/)
+
+[Efficient R](https://csgillespie.github.io/efficientR/)
+
+[R for Data Science - Hadley Wickham](https://r4ds.had.co.nz/) and [Solutions](https://jrnold.github.io/r4ds-exercise-solutions/)
+
+[R Packages - Hadley Wickham](http://r-pkgs.had.co.nz/)
+
+[Mastering Shiny](https://mastering-shiny.org/). HW. In development.
+
+[Mastering Software Development in R](https://bookdown.org/rdpeng/RProgDA/). Roger Peng.
+
+[Modern Dive](https://moderndive.com/index.html). Statistical Inference via Data Science. Modelling, Stat Inference and Tidyverse.
+
+[R Programming for Data Science - Roger Peng](https://bookdown.org/rdpeng/rprogdatascience/)
+
+[Text Mining with R](https://www.tidytextmining.com/)
+
+[Learning Statistics with R](https://learningstatisticswithr.com/)
+
+[R Graphics Cookbook](http://www.cookbook-r.com/Graphs/)
+
+[Fundamentals of Data Visualization](https://serialmentor.com/dataviz/)
+
+[Agile data Science with R](https://edwinth.github.io/ADSwR/)
+
+[Plotly](https://plotly-r.com/index.html)
+
+[Merely Useful: Using R for Research Software Engineering](https://merely-useful.github.io/r-rse/)
+
+[Modern R with the Tidyverse](https://b-rodrigues.github.io/modern_R/)
+
+[R Cookbook](https://rc2e.com/)
+
+## Project Management
+
++ [Art of project management](https://www.amazon.co.uk/Project-Management-Theory-Practice-OReilly/dp/0596007868)
++ [A Guide to the Project Management Body of Knowledge: PMBOK Guide](https://www.amazon.co.uk/Guide-Project-Management-Body-Knowledge/dp/193069945X)

@@ -1,0 +1,100 @@
+# R and RStudio General {#r-general}
+
+This section is for notes on general use of R and RStudio (not about specific code or functions.)
+
+## RStudio
+
+[Debugging](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-RStudio)
+[Keyboard shortcuts](http://www.rstudio.com/ide/docs/using/keyboard_shortcuts)
+[Cheatsheets](http://www.rstudio.com/resources/cheatsheets/)
+[Code snippets](https://support.rstudio.com/hc/en-us/articles/204463668-Code-Snippets)
+[Code folding and sections](https://support.rstudio.com/hc/en-us/articles/200484568-Code-Folding-and-Sections) 
+[Navigating code](https://support.rstudio.com/hc/en-us/articles/200710523-Navigating-Code):
+
++ Use the *Go to File/Function search box* on the main RStudio toolbar to enter a name of file/function.
++ Go to function definition/help. Place cursor on function name in code then: F1 goes to help, F2 to definition.
++ Navigate within source file: 
+  + Alt + Shift + G then line number.
+  + Ctrl + F9/F10 - go back/forward through tabs, function definitions, jumping to lines, jumping to a function.
+
+## Installing and Updating Packages
+
+Motivated by some problems with this in work I want to understand this process better.
+
+The problem I had in work with installing from Github stemmed from my TEMP environment path having spaces in it and I was able to fix it by setting a different path without spaces. However, later I had similar problems updating packages that were not fixed by this. I think the issue here is with the *session temporary path* which may be something different.
+
+### Environment variables
+
+ A non-exhaustive list of these is given at `` `r '?\x60environment variables\x60'` ``. The values currently set are displayed by `Sys.getenv()` or supply a character vector of names to just show some. To set a value (create new or change existing) use `Sys.setenv(name)` and `Sys.unsetenv(name_vec)` to remove. 
+
+Environmental variables are used when installing packages to say where packages are downloaded and installed to. The patha available for installing a package to can be returned/set using `.libPaths()`. Unless supplied as an argument   `install.packages()` uses the first element of `.libPaths()` to install to. Before installing, the package is downloaded to a different folder and removed at the end of the session. This folder can be supplied with a `destdir` argument to `install.packages()`, but, if missing, the *session temporary directory* will be used.
+
+`tempdir()` returns the `tmpdir` which is a subdirectory of the default "per-session temporary directory". This chosen by checking in order the environment variables `TMPDIR`, `TMP`, `TEMP`, `R_USER`. The `tmpdir` is just a sub-folder created to avoid clashes with previously used temporary folder. A possible name for this folder can be obtained using `tempfile()`.
+ 
+Changing environment variables during the session does not affect `tempdir()` since this is set before the interpreter is started. So these will have to be changed in within the `.Renviron` file to have an effect. (I'm not sure why changing TEMP fixed my Github problem then!). Alternatively I will have to use the `destdir` argument to `install.packages()`. If using `update.packages()` or `remotes::update_packages()` arguments can be passed to `install.packages()`.
+
+### Updating packages
+
+There is sometimes a difference between the latest version of package binary and source files. This means the latest source version hasn't yet been updated to a binary on CRAN. More info: [here](https://community.rstudio.com/t/meaning-of-common-message-when-install-a-package-there-are-binary-versions-available-but-the-source-versions-are-later/2431/4) and [here](https://community.rstudio.com/t/having-trouble-installing-and-loading-tidyverse-readr-no-hms-package/11268/2). 
++ On windows source files require Rtools to use. 
++ The availability of binaries is dependent on the R version so as your R becomes more out of date, binaries for the latest version are less likely to be available. 
+
+I have tended to update packages using RStudio drop down menus but the other option is to use `update.packages()` or `remotes::update_packages()`. There are arguments in each to use only binaries (`type = "win.binary"` and `build = FALSE` respectively. To see which packages are already installed use `installed.packages()`, which returns a data frame with a lot of information, or `.packages(all.available = TRUE)`, which just gives names (without the `all.available` arg it returns just *attached* packages).
+
+Also `remotes::package_deps(package_name)` gives dependencies of a package together with versions available and installed.
+
+## R Startup
+
+*R’s startup process follows three steps: starting R, setting environment variables, and sourcing profile scripts. In the last two steps, R looks for site-wide files and user- or project-specific files.* 
+
+Several scripts are run at R startup and these can be changed. The two files are `.Renviron` and `.Rprofile` and contain values for environmental variables or general code that is run upon startup. The location can be defined by environmental variables `R_ENVIRON` and `R_PROFILE`, but these don't exist by default (on my setup). If not present R will look in the current project directory, the home directory, and the R home directory (in that order). The last two of these can be found as `HOME` and `R_HOME` in the environmental variables (use `Sys.getenv()` to see them).
+
+On my setup I found the `Rprofile.site` file in `R_HOME/etc/`. This only had one uncommented line of code. The "site" part refers to it being shared by all users, as opposed to profile specific to a user. I was confused by the presence of another `Rprofile` file in `R_HOME/library/base/R/`. This identifies itself as the "system Rprofile file" and I assume is run regardless of the presence of other Rprofile files.
+
+The `.Renviron` file should be in `Sys.getenv('R_USER')` Can be edited directly or `usethis::edit_r_environ`. Also see `?Startup` for info on Renviron. 
+
+Resources:
+
++ [Efficient R chapter on R startup](https://csgillespie.github.io/efficientR/set-up.html#r-startup) 
++ Chapter in [What They Forgot to Teach You About R](https://rstats.wtf/r-startup.html). Shorter.
++ Use `?Startup` for definitive details.
++ [RStudio article](https://rviews.rstudio.com/2017/04/19/r-for-enterprise-understanding-r-s-startup/) - probably the most accessible.
++ [Rbloggers article](https://www.r-bloggers.com/fun-with-rprofile-and-customizing-r-startup/)
++ There a [startup package](https://github.com/HenrikBengtsson/startup). This gives some explanation on the R startup process.
+
+Some useful code:
+
++ The usethis package has functions to edit environ and profile scripts. 
++ Alternatives to `Sys.getenv()` are `path.expand("~")` and `R.home(component = "home")`.
+
+Or to check all likely places:
+```
+candidates <- c( Sys.getenv("R_PROFILE"),
+                 file.path(Sys.getenv("R_HOME"), "etc", "Rprofile.site"),
+                 Sys.getenv("R_PROFILE_USER"),
+                 file.path(getwd(), ".Rprofile"),
+                 file.path("~/.Rprofile"))
+Filter(file.exists, candidates)
+```
+
+## Searching R function docs
+
++ `help.search()`. Has shorthand `??` but full version gives more arguments such as which fields or packages to search in.
++ `appropos()` - searches for matches to a string (`??` uses a pattern). 
++ `find()` - gives location of matching objects.
++ `browseVignettes()` - list vignettes in all installed packages or a particular package. This displays as html, but to pull into a table in R see code below:
+
+```{r eval = F}
+browseVignettes() %>% 
+  map(~as_tibble(pluck(.))) %>% 
+  bind_rows()
+```
+
+To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit()` to see source code (although `browseVignettes()` seems easier to me). The `edit()` function needs to know which text editor to use (there isn't a default on my system). So for example I can use `edit(z, editor = "C:/Program Files/Notepad++/Notepad++.exe")`.
+
+## Misc
+
+
+[R internals](https://cran.r-project.org/doc/manuals/R-ints.html).  A guide to the internal structures of R.
+
+[The secret lives of R objects](https://www.brodieg.com/2019/02/18/an-unofficial-reference-for-internal-inspect/). Detailed blog on R internals (2019).

@@ -1,0 +1,22 @@
+# Data Exploration
+
+These notes relate to variable and data exploration. In particular exploring the relationship between input and output variables. This includes visualising model predictions for given variables.
+
+[Visualizing GLMs for binary outcomes](http://ddar.datavis.ca/pages/extra/titanic-glm-ex.pdf)
+
+[ggeffects package](https://strengejacke.github.io/ggeffects/index.html). Computes marginal effects from statistical models.
+
+[Checking functional form in logistic regression using loess plots](https://thestatsgeek.com/2014/09/13/checking-functional-form-in-logistic-regression-using-loess/)
+
+[Andrew Gelman Exploratory Data Analysis](http://www.stat.columbia.edu/~gelman/research/published/p755.pdf). Discussion paper. 22pp.
+
+## Visualisation
+
+[Data Visualisation workshop](http://stulp.gmw.rug.nl/21-03-2019/ggplotworkshop/). ggplot based. Should be a fairly quick read 
+
+## Automated Exploration Tools
+
++ [DataExplorer R package](https://blog.revolutionanalytics.com/2018/02/dataexplorer.html)
++ [Automatic Statistician](https://www.automaticstatistician.com/index/)
++ [DataWrangler](http://vis.stanford.edu/wrangler/). A Standford project that concluded in 2013 and transferred to a comercial version Trifacta.
++ [OpenRefine](http://openrefine.org/). Since bought by Google and renamed Google Refine.

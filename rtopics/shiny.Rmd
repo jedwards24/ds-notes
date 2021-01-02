@@ -1,0 +1,23 @@
+# Shiny Notes
+
+I have more unsorted notes in the old location.
+
+## Dynamic `selectInput()`
+
+I used the following code to get a drop-down menu that changed according to other dynamic inputs.
+
+```{r eval = FALSE}
+output$x_options <- renderUI({
+  selectInput("x_var", "Variables to show on x-axis:", input$clust_vars)
+})
+output$y_options <- renderUI({
+  selectInput("y_var", "Variables to show on y-axis:", input$clust_vars)
+})
+
+inputPanel(
+  uiOutput("x_options"),
+  uiOutput("y_options"),
+  sliderInput("label_n", "Number to label from each cluster:",
+              min = 1, max = 5, value = 2, step = 1)
+)  
+```

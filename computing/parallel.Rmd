@@ -1,0 +1,109 @@
+---
+title: "Parallelisation in R"
+output: html_document
+---
+
+OLD NOTES. Will probably need redoing.
+
+Also has some bits on HPC. Maybe rename file.
+
+# Links 
+
+http://www.bytemining.com/files/talks/larug/hpc2012/HPC_in_R_rev2012.pdf
+
+http://files.meetup.com/1781511/Parallel_Processing-Szczepanski.pdf
+
+Very general on HPC (lots of links):
+http://cran.r-project.org/web/views/HighPerformanceComputing.html
+
+Iterators package tutorial:
+http://www.exegetic.biz/blog/2013/11/iterators-in-r/
+
+Foreach
+
++ http://www.r-bloggers.com/a-brief-foray-into-parallel-processing-with-r/
++ http://vikparuchuri.com/blog/monitoring-progress-inside-foreach-loop/ displaying progress
++ http://www.r-bloggers.com/the-wonders-of-foreach/
++ http://r.adu.org.za/web/packages/foreach/vignettes/foreach.pdf
++ http://cran.r-project.org/web/packages/doMC/vignettes/gettingstartedMC.pdf
++ http://www.r-bloggers.com/a-very-short-and-unoriginal-introduction-to-snow/
++ http://www.sfu.ca/~sblay/R/snow.html
++ http://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf
++ http://cran.r-project.org/web/packages/foreach/vignettes/nested.pdf
++ http://stackoverflow.com/questions/18028452/reading-global-variables-using-foreach-in-r
++ http://stackoverflow.com/questions/17345271/r-how-does-a-foreach-loop-find-a-function-that-should-be-invoked
++ http://stackoverflow.com/questions/4765256/could-not-find-function-inside-foreach-loop
+
+# Packages
+
+## foreach
+
+Provides the main functions to use parallel processing in R. There are a number of packages that use it. Rmpi is not very user friendly but snow provides an interface for this and other parallisation packages. Snow (simple network of workstations works with many machines but only a single machine in windows. Snowfall is a wrapper for snow (easier to use?). sfcluster is a unix command line tool. Multicore/parallel are related packages for doing parallel processing on multiple cores or CPUs (does not work on windows). This is for single machines only. It may be independent of foreach but can be linked (see below). The problem with windows is that it does not support the fork system call (and so mclapply can’t be used).
+
+To use foreach a multicore backend is needed. foreach was written by Revolution Analytics. They provide several backends for this.
+
+## doParallel
+
+There is a recent [vignette](https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf).Works with windows. Merges multicore and snow functionality (uses multicore on unix-like systems, snow on windows).
+```
+library(foreach)
+library(doParallel)
+     
+iters <- 1e4 #number of iterations
+
+#setup parallel backend to use 8 processors
+cl <- makeCluster(8)
+registerDoParallel(cl)
+ 
+#start time
+strt <- Sys.time()
+ 
+#loop
+ls <- foreach(icount(iters)) %dopar% {
+    to.ls<-rnorm(1e6)
+    to.ls<-summary(to.ls)
+    to.ls
+    }
+ 
+print(Sys.time()-strt)
+stopCluster(cl)
+```
+
+## doMC
+
+Acts as an interface between foreach and multicore. Only works with a single computer and OS that support fork system call (windows not yet supported). 
+
+## doSnow
+
+Seems to be more for multiple computers but it works for single computers. I haven’t looked at how yet (guides are less simple than for the other options). 
+
+doNWS – another backend for foreach.
+
+doSMP – like multicore package but works with windows. No longer on CRAN. May be being rewritten but current advice is to use doSNOW instead.
+
+# Implementation notes
+
+The foreach function is fairly easy to use and is well explained in the guide and help files. Bringing in the backend was harder with some complications which may not apply if using linux. The code that needs adding for doParallel is: (see above also)
+```
+cl <- makeCluster(8)
+registerDoParallel(cl, cores=4)
+…………foreach code
+stopCluster(cl)
+```
+The number of nodes to be created is given as an argument to `makeCluster()`. The optional argument, cores, sets the number of cores used. The default is half the number detected by detectCores() from the parallel package. My laptop has 4 cores but different settings didn’t make much speed difference on the small jobs I tested.
+NOTE: [this thread](https://stackoverflow.com/questions/28829300/doparallel-cluster-vs-cores) says that, on a windows machine, using `makeCluster()` doesn’t add anything so I can create the cluster with just `registerDoParallel(8)`.
+
+The main problem is in scoping of variables and functions. The foreach loop sends jobs out to each worker but the functions and variables they need may not be in their scope and so they need to be passed explicitly. This is done using the .export argument to foreach e.g. `.export=c('ActKG', 'ActGreedyPlus', 'ActGI', 'GetGI', 'index'))`.
+
+This was what I exported when using foreach in the nmab_DO code. Variables that are given as arguments in called functions do not seem to be needed to export (only global variables used). Passing very large variables can slow things down but only if large (or if written to). Also any packages needed must be passed using `.packages`. 
+
+The doParallel package uses snow on windows (parallel also) so I will have to get to know that package to use effectively.
+
+## Memory issues
+
+Using doParallel with glmnet I had some failures with error message doParallel error in R: `Error in serialize(data, node$con) : error writing to connection`. I assume this is due to memory – I had a large model matrix and if this was being copied to each slave then that would fill RAM.
+
+[This thread](https://stackoverflow.com/questions/37750937/doparallel-package-foreach-does-not-work-for-big-iterations-in-r) says that doSNOW can be used to process the results as they are returned by the workers (with the combine function), which can save memory.
+
+[Another thread](https://stackoverflow.com/questions/45380099/error-in-parallel-r-error-in-serializedata-nodecon-error-writing-to-conne) says to leave one core for regular window processes (`detectCores()-1`). It also notes that connections can stay open after failures, even with `stopCluster()`. Re-initialising the backend can work but restarting R might be needed.
+
