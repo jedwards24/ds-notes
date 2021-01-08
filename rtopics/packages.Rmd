@@ -1,8 +1,8 @@
-# New R Packages
+# R Packages Collection
 
 This records R packages for possible future use. I will add notes as I read about them.
 
-## [vctrs package](https://vctrs.r-lib.org/)
+[vctrs package](https://vctrs.r-lib.org/)
 
 This is a developer focused package but I am interested in the ideas of type and size stability of functions.
 
@@ -10,21 +10,15 @@ This is a developer focused package but I am interested in the ideas of type and
 + [Type and size stability](https://www.rdocumentation.org/packages/vctrs/versions/0.1.0/vignettes/stability.Rmd)
 
 
-## [vroom package](https://vroom.r-lib.org/)
+[vroom package](https://vroom.r-lib.org/). Faster reading of delimited data. Uses lazy loading.
 
-Faster reading of delimited data. Uses lazy loading.
+[parallelMap](https://github.com/berndbischl/parallelMap). Interface some popular parallelization back-ends with a unified interface.
 
-## [parallelMap](https://github.com/berndbischl/parallelMap)
+[sjmisc package](https://cloud.r-project.org/web/packages/sjmisc/index.html). Data and variable transformation functions.
 
-Interface some popular parallelization back-ends with a unified interface.
+[vtreat package paper](https://arxiv.org/abs/1611.09477)
 
-## [sjmisc package](https://cloud.r-project.org/web/packages/sjmisc/index.html)
-
-Data and Variable Transformation Functions
-
-## [vtreat package paper](https://arxiv.org/abs/1611.09477)
-
-Nina Zumel and John Mount. Goes with their book. This package gives a methodology for preparing data for predictive modelling. It produces a *treatment plan* which can be applied to new as well as existing data which automates the handling of:
+By Nina Zumel and John Mount. Goes with their book. This package gives a methodology for preparing data for predictive modelling. It produces a *treatment plan* which can be applied to new as well as existing data which automates the handling of:
 
 + Missing data.
 + Novel categorical levels only found in new data.
@@ -33,43 +27,22 @@ Nina Zumel and John Mount. Goes with their book. This package gives a methodolog
 
 These are very general problems for which I need standardised solution methods. It also has useful references.
 
-## [future](https://cran.r-project.org/web/packages/future/index.html)
+[future](https://cran.r-project.org/web/packages/future/index.html)
 Unified Parallel and Distributed Processing.
 
-## [infer](https://teachdatascience.com/infer/)
+[infer](https://teachdatascience.com/infer/). Adds verbs to tidyverse to aid hypothesis testing.
 
-Adds verbs to tidyverse to aid hypothesis testing.
+[glmnetutils](https://blog.revolutionanalytics.com/2016/11/glmnetutils.html). A collection of tools to streamline the process of fitting elastic net models with glmnet.
 
-## [glmnetutils](https://blog.revolutionanalytics.com/2016/11/glmnetutils.html)
+[goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html). From Mango. Run a selection of tests on your packages to see if they conform to some good practice rules. Two vignettes.
 
-A collection of tools to streamline the process of fitting elastic net models with glmnet.
+[equisse](https://github.com/dreamRs/esquisse). Interactive Rstudio addin for viewing ggplots.
 
+[githubinstall](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html). Makes it easier to install packages from github. The devtools version requires developer name while this just requires the package name.
 
-## [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html)
+**lintr styler formatR**. Packages that check your code's formatting. 
 
-From Mango. Run a selection of tests on your packages to see if they conform to some good practice rules. Two vignettes.
-
-## [equisse](https://github.com/dreamRs/esquisse)
-
-Interactive Rstudio addin for viewing ggplots.
-
-## [githubinstall](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html)
-
-Makes it easier to install packages from github. The devtools version requires developer name while this just requires the package name.
-
-## lintr styler formatR
-
-Packages that check your code's formatting. 
-
-## [mlr](https://mlr.mlr-org.com/index.html)
-
-Machine learning with R.
-
-## carat and parsnip
-
-https://tidymodels.github.io/parsnip/index.html Parsnip is part of tidymodels.
-
-## Misc
+[mlr](https://mlr.mlr-org.com/index.html). Machine learning with R.
 
 [funGraphs](https://github.com/kcf-jackson/funGraphs) Maps function dependencies in a package.
 
@@ -105,9 +78,7 @@ https://tidymodels.github.io/parsnip/index.html Parsnip is part of tidymodels.
 + https://rstudio-pubs-static.s3.amazonaws.com/194240_c9bc85a7f24b41a2b1f42724c525a109.html#1
 + https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/
 
-
 [summarytools](https://cran.r-project.org/web/packages/summarytools/vignettes/Introduction.html). For quickly summarising data.
-
 
 [skimr](https://github.com/ropensci/skimr). Quick, simple summaries for variables in a data frame.
 
@@ -137,7 +108,7 @@ https://tidymodels.github.io/parsnip/index.html Parsnip is part of tidymodels.
 
 [benchmarkme](https://github.com/csgillespie/benchmarkme). Benchmarking the speed of your system.
 
-## tidyverse Packages and Related Packages
+## purrr
 
 [purrr package](https://purrr.tidyverse.org/). "This package completes R's functional programming tools with missing features present in other programming languages."
 
@@ -172,6 +143,103 @@ tibble(ind = c(T, F, T, F), a = 1:4, b = 5:8) %>%
 ```
 
 Use `...` in helper function to absorb extra cols in df/list passed to `pmap()`.
+
+## tibbles
+
+**OLD NOTES**
+
+**tibbles** are an alternative to data frames. Main differences are printing and subsetting.
+
+* Print just shows 10 rows and columns that fit on screen. Use arguments `n=` and `width=` to change. Can change defaults using `options()`.
+* Other displaying options are `glimpse()` and `View()`. `glimpse()` is the dplyr version of `str()` and shows all variables with data transposed
+* Row names are not printed. they should not contain data in tidy data.
+* Standard dplyr methods always return a tibble. To subset to a vector use `[[` or `$`. To use with a pipe use `.$x` or `.[["x"]]`. Alternatively use `unlist(use.names = FALSE)` (or just `unlist()` to keep names).
+* Create using `tibble()` or `tribble()` (transposed tibble), or using `as_tibble()` to coerce an existing df. I think `tbl_df()` and `data_frame()` are the functions in the dplyr package while the others are newer from the tibble package.
+* It’s possible for a tibble to have column names that are not valid R variable names, aka non-syntactic names e.g. they might not start with a letter, or they might contain unusual characters like a space. To refer to these variables, you need to surround them with backticks, \`.
+
+## dplyr
+
+**THESE NOTES ARE OLD**
+
+In dplyr there are five basic verbs: `filter`, `select`, `arrange`, `mutate`, `summarise`. The first argument for these is the data.
+
+* `filter` subsets observations. There are also a number of other functions to do this is specific ways (see cheatsheet), in particular `slice()` which selects rows by position.
+* `select` subsets variables. select columns by giving names as arguments or use helper functions as an argument.
+* `arrange` orders rows by a column. Default is low to high. Reverse order using `desc(colname)` instead.
+* `mutate` transforms variables to create new ones. `transmute` creates the new variable but drops other columns.
+* `summarise` summarises a column with a single value. Usually used following `group_by()` to create summaries for subgroups of a column. Use `ungroup()` to remove grouping.
+
+`count()` and `tally()` can be used to count unique values. The following are equivalent:
+
+```{r eval=F}
+mtcars %>% group_by(cyl) %>% summarise(n=n())
+mtcars %>% group_by(cyl) %>% tally
+count(mtcars, cyl)
+```
+
+By using the weight argument to `count()` it can also be used to sum a column:
+
+```{r eval=F}
+mtcars %>% group_by(cyl) %>% summarise(tot = sum(mpg))
+count(mtcars, cyl, wt=mpg)
+```
+
+### `mutate()` and `Summarise()`
+
+Grouping and summarise creates a new tibble with new variables which you name in `summarise`. Therefore summarise and mutate are related and have similar structure. The difference is that `summarise` uses **summary or aggregation functions** which take a vector of values and return a single value while `mutate` uses **window functions** which take a vector of values and return a vector of the same length. Therefore `mutate` won't work directly with a user defined function that has scalar inputs. A way around this is to use `rowwise()` before the mutate call. See [this discussion](https://stackoverflow.com/questions/21818181/applying-a-function-to-every-row-of-a-table-using-dplyr). It is probably better to write a vectorised version of the function I wish to use.
+
+There is a _all, _at, and _if versions of each function (and transmute). These replace the depreciated _each functions that will be found in many guides. They apply operations to multiple variables and the variants are different ways of selecting these variables. Each has an argument `.funs` by which you give the function call that operates on each variable. You can supply a multiple functions to apply by using `funs()` or a character vector (`funs()` can also be used to define transformations inline). See the help file for good examples. Variable selection differs by:
+
+* _all affects every variable.
+* _at affects variables selected with a character vector or `vars()`.
+* _if affects variables selected with a predicate function e.g `is.numeric` (good for changing variable types).
+
+The predicate or variable arguments come before `.funs`. There are help files for `funs()` and `vars()`. To use `select_helpers` such as `contains()` use `_at` with the helper enclosed in `vars()`.
+
+## Selecting columns as inputs to `mutate()`
+
+This is where I want to use mutate where the new variable is a function of many columns such that I don't want to type them all out explicitly. Note that this is different from selecting columns _to_ mutate. I found several Stack Overflow threads wanting to do this for a sum for which `mutate(sum = rowSums(.[1:4]))` or `mutate(sum=Reduce("+",.[1:4]))` could be used (possibly with `na.rm=T` argument to `rowSSums()`). The indices in square brackets could be replaced by a character vector of variable names also. I'm not as sure about the more general case asked [here](https://stackoverflow.com/questions/28095526/summarise-over-all-columns). `Reduce()` can be used more generally and might be enough (I think it only works with pairwise operations). `?Reduce` gives some other possibly useful functions too. Remember `rowwise` is needed for non-vectorised functions. The link gives an answer using `do()` and `unlist()` which might help understanding.
+
+## Other notes
+
+* There are versions of each verb followed by an underscore which have standard evaluation semantics (see section below). These are now depreciated as their functionality is included in the basic versions (but see below).
+* `select()` can be used to rename variables but there is also`rename(..., new=old)` to do this. 
+* To reorder columns use `select()` then the new order (numbers or names).
+* Slice/filter behaved weirdly on the OCT project, not picking all columns correctly when working with date/time data. Subsetting was ok. Retry with updated packages.
+* [Replacing NAs in a dataframe](https://stackoverflow.com/questions/8161836/how-do-i-replace-na-values-with-zeros-in-an-r-dataframe). Lots of different ways of doing this but `mutate_all(d, funs(ifelse(is.na(.), "missing", .)))` illustrates a dplyr method.
+* [Useful catalog of argument variations for select](https://www.r-bloggers.com/the-complete-catalog-of-argument-variations-of-select-in-dplyr/)
++ [pivot_](https://speakerdeck.com/yutannihilation/a-graphical-introduction-to-tidyrs-pivot-star). Nice slides on how to use `pivot_longer()` and `pivot_wider()`.
+
+### Issues with NSE
+
+When using `dplyr` inside my own function I had a problem with lots of `Note: no visible binding for global variable xxxx` messages. This doesn't stop code from running an isn't an error, but is annoying. It has been a bigger problem for people producing packages and there are several threads (e.g. [compiler issues](https://stackoverflow.com/questions/24258770/using-compiler-package-and-suppress-no-visible-binding-for-global-variable)
+[main thread - ggplot](https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when)) about it (the problems occur with `ggplot` and `compiler` too). I didn't find any of the solutions ideal but did manage to fix it.
+
+My example is the function:
+
+```
+summarise_over <- function(results_df, mean_var){
+  summary <- results_df %>% 
+    group_by_("exper_no", "pol_no", mean_var) %>%
+    summarise(mean_r1 = mean(expect_r1), mean_r2 = mean(expect_r2)) %>%
+    mutate(mean_r_all = (mean_r1 + mean_r2) / 2)
+  return(summary)
+}
+```
+When run this will give messages that no visible binding is found for ... `expect_r1`, `expect_r2`, `mean_r1` and `mean_r2`. These are variable names is `results_df` so are handled correctly because `dplyr` understands them to be e.g. `df$expect_r1` but R thinks they are don't exist.
+
+Some solutions are to create the variables somewhere, either as global variables e.g. `globalVariables(c("expect_r1", "expect_r2"))` "somewhere in the top-level of your package" or in the function as `expect_r1 <- expect_r2 <- NULL`. For `dplyr`/`ggplot` use of SE functions e.g. `mutate_()` to avoid NSE can fix this but it was tricky to implement in my example. due too the operations I was doing on the variables (`mean_r1 + mean_r2`). Elsewhere Jenny Bryant suggests this for piping (but it didn't fix my problem):
+```
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+```
+The version check is to ensure it works with older versions.
+
+### Other Issues
+
+[Fixing a multiple warning “unknown column”](https://stackoverflow.com/questions/39041115/fixing-a-multiple-warning-unknown-column/42536153). There is an interaction with RStudio's disgnostics that can produce unnecessary warnings. It's quite annoying so worth avoiding. It may be fixed in future versions of RStudio but a workaround is to either turn off diagnostics in `Preferences/Code/Diagnostics` or add `# !diagnostics off` at the top of files.
+
+## Other tidyverse
 
 **pryr**: Used to investigate the R language e.g. looking at the workings of base functions. Since replaced by **lobstr**
 
