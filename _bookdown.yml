@@ -29,6 +29,7 @@ rmd_files: [
   "computing/testing.Rmd",
   "computing/git.Rmd",
   "computing/memory.Rmd",
+  "computing/package-development.Rmd",
   "computing/parallel.Rmd",
   "computing/speed-profiling.Rmd",
   "computing/databases.Rmd",

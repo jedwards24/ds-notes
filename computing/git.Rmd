@@ -1,7 +1,4 @@
----
-title: "Git Notes"
-output: html_document
----
+# Git Version Control
 
 ## Guides and Links
 
@@ -39,9 +36,9 @@ https://stackoverflow.com/questions/927358/how-to-undo-the-most-recent-commits-i
 
 ## Github Collaboration
 
-I learnt a bit about collaborating on a Github project while doing my academic website since the repository is on Rhian’s Github. I can clone it onto my computer as normal but I won’t be able to push changes.
+I haven't had a lot of collaborative work. 
 
-The easiest way and the way we used is for Rhian to add me as a collaborator on GitHub. I can then treat the project as though it is my own. The URL is https://github.com/trianglegirl/james-edwards-website (i.e. still on Rhian’s github), and this is used for cloning and setting up a project in RStudio, but it will be listed in my projects on github.
+The easiest way to work freely on a project is for the repo owner to add me as a collaborator on GitHub. I can then clone and push to the project as though it is my own. The URL is remains as it was originally (i.e. still on the owner's github). This URL is used for cloning and setting up a project in RStudio, but it will be listed in my projects on github.
 
 If I am not a collaborator then I can fork the project into my github (create a copy), which I can then clone. To push changes to the original project I have to create a pull request (request that Rhian pulls the changes), which will be added to the main project if Rhian accepts the changes. The pull request is performed on Rhian’s github page. I think I followed this guide to [collaborating on projects with git](https://github.com/codepath/android_guides/wiki/Collaborating-on-Projects-with-Git). More on forking [here](https://stackoverflow.com/questions/3611256/forking-vs-branching-in-github) and [here](https://stackoverflow.com/questions/6286571/are-git-forks-actually-git-clones) (the second thread says forks aren’t a command in git but a higher level concept – cloning is the corresponding git action). There is an [introduction to git and Rstudio](http://r-bio.github.io/intro-git-rstudio/).
 

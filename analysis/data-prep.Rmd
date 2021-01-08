@@ -77,6 +77,9 @@ I am unclear on the structure for XML  but it seems to based on ideas from relat
 
 [Preparing data for classifiers](http://www.win-vector.com/blog/2014/12/a-comment-on-preparing-data-for-classifiers/). John Mount. I have downloaded the paper mentioned here.
 
+[Variable Importance](https://win-vector.com/2018/12/17/vtreat-variable-importance/). Suggests that variable screening (before passing to model fitting) is important. Wide data can cause any algorithm to fail. The vtreat package has several functions to value the variables individually (using linear, piecewise linear, or knn fits).
+
+
 [Advanced tricks with data table](https://brooksandrew.github.io/simpleblog/articles/advanced-data-table/)
 
 [Speed Comparison for basic row/column operation](http://www.win-vector.com/blog/2019/05/timing-working-with-a-row-or-a-column-from-a-data-frame/). dplyr can be quite a bit slower than base R once the data frame gets to a decent size.

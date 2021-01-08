@@ -1,7 +1,4 @@
----
-title: "Profiling and Speed Notes"
-output: html_document
----
+# Profiling and Speed Notes
 
 http://tgmstat.wordpress.com/2013/09/25/profiling-r-code/
 This references: [Tidying and profiling R code Chapter](http://www.hep.by/gnu/r-patched/r-exts/R-exts_69.html#SEC69)

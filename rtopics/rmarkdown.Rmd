@@ -1,4 +1,4 @@
-# R Markdown Notes
+# R Markdown
 
 ```{r init, include = FALSE}
 library(tidyverse)
@@ -75,7 +75,7 @@ How to generate a code chunk that is not parsed by R so that the whole chunk (in
 
 A summary of several options are given [here](https://rmarkdown.rstudio.com/articles_verbatim.html). There are various solutions given by the knitr author:  [knitr FAQ](https://yihui.name/knitr/faq/), [blog post](https://yihui.name/en/2017/11/knitr-verbatim-code-chunk/). Also see links in the Jenny Bryan article. Those didn't all work as given for me but seem ok if enclosed in four back ticks or indented. The zero width space worked when indented. Most options seem to mess up the code highlighting in RStudio (not the method given in the FAQ with tabs). The easiest to read is probably to enclose in `<pre><code>` and `</pre></code>` (this doesn't need the four backticks or indenting).
 
-[Another article](https://rmarkdown.rstudio.com/articles_verbatim2.html) gives a function (I think). Need to look in detail.
+[Another article](https://rmarkdown.rstudio.com/articles_verbatim2.html) gives a function (I think). Have not looked at in detail.
 
 ## Tables
 
@@ -113,7 +113,7 @@ my_kable(mytbl, escape = FALSE,
 
 Sparklines can be created easily using the sparklines package, but I found it hard to find good general information adding them to tables. [This guide to the formattable package](https://www.displayr.com/formattable/) has a section on adding sparklines, but the code is very unclear, there is little explanation  about how it works, and it isn't clear how to apply it to general data.
 
-Here is some adapted code to add a sparkline column. Here I use data added a simple intger vector. The sparkline is created by `sparkline()` then converted to text for `formattable()`. The two lines after the `df` creation tell the `formattable` HTML widget that it contains sparklines.
+Here is some adapted code to add a sparkline column. I use data added as a simple integer vector. The sparkline is created by `sparkline()` then converted to text for `formattable()`. The two lines after the `df` creation tell the `formattable` HTML widget that it contains sparklines.
 
 ```{r spark1}
 data_vec <- c(1,2,7,6,5)
@@ -201,26 +201,27 @@ To add internal hyperlinks in html (via pandoc) either, use the exact section na
 
 I have found that `"-"` displays as a large dot in html tables. This happens because it is read as a bullet by pandoc. One fix is to replace with `"--"` to get an endash, but this doesn't always work (`"---"` is used in markdown for an emdash). Another suggestion is `"\\-"`. [kableExtra issue thread](https://github.com/haozhu233/kableExtra/issues/223). 
 
-# Bookdown
+## Bookdown
 
 + [bookdown book](https://bookdown.org/yihui/bookdown/)
 + [Getting started](https://bookdown.org/home/about/)
++ [Section in rstudio4edu book](https://rstudio4edu.github.io/rstudio4edu-book/intro-bookdown.html). This is useful.
+
+There is a minimal bookdown example but I found it more helpful to look at the source code of a larger book, such as at the [R4DS github](https://github.com/hadley/r4ds).  
 
 The bookdown project can be created in RStudio when creating a new project (like a package). It can then be linked to github. An alternative is to create a new repo on github then clone locally using *File >> New project* in RStudio. The project created won't be a bookdown project so create a bookdown project with a different name then copy the files from this new project to the folder of the one linked to github. Change the name of the R Project file to the match its new folder and delete the folder with the incorrect name (after closing the project).
 
-# Website
+## Website
 
-Rhian set up a personal academic website for me on github. It is hosted at https://james-edwards.netlify.com/. It was created using blogdown, which is a package, based on R markdown, used to create websites. There is an [online book](https://bookdown.org/yihui/blogdown/) about its use. There is a [guide](http://www.mit.edu/~k2smith/post/getting-started/) to the Hugo academic website theme. Also see [Nemeth’s github](https://github.com/chris-nemeth/academic-kickstart) for his website.
+My personal academic website was written in R. The website is not hosted anywhere now but was at https://james-edwards.netlify.com/. Rhi set it up originally and the source is on [her Github](https://github.com/StatsRhian/james-edwards-website). It was created using blogdown, which is a package based on R markdown. There is an [online book](https://bookdown.org/yihui/blogdown/) about its use. There is a [guide](http://www.mit.edu/~k2smith/post/getting-started/) to the Hugo academic website theme.
 
-## Structure in R
-
-There are four top level folders:  public, content, static, themes.
+The folder structure of the R project has four top level folders: public, content, static, themes.
 
 +	`Themes` – this contains themes for the website. The website uses Hugo-academic theme. I won’t be altering this.
 +	I put slides, PDFs, or other files in the `static` folder inside appropriate subfolders (which I can create). They are copied to the public folder when the website is rendered. The .bib files for citations are in `files`, PDFs in `pdf`, talk slides in `slides`. There is an example of how to do this [here](https://github.com/yihui/blogdown-static)
 +	I haven’t altered anything in `public` directly yet. Not sure if I ever should. 
 +	`Content` – this is the content of the website i.e. the text, objects etc.
 
-You are supposed to be able to preview the website in R but it requires Hugo to be installed and RStudio always crashes when I use `blogdown::install_hugo()`
+You are supposed to be able to preview the website in R but it requires Hugo to be installed and RStudio always crashes when I use `blogdown::install_hugo()`.
 
-If unsure how I did something in the past then the best place to look is my commits.
+The best place to work out how I did something in the past is to look at my commits.

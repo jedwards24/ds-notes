@@ -1,7 +1,6 @@
----
-title: "Package Development"
-output: html_document
----
+# Package Development
+
+**OLDISH NOTES - NEED REVIEWING**
 
 ## Good Practice
 
@@ -29,10 +28,6 @@ When I start today
 7.	Consider test scenarios
 8.	Prepare longer examples in demo files
 9.	Well, I try to do 1 to 8
-
-# My Notes on R package development
-
-Copied from a text file I had. 
 
 ## Github setup
 
@@ -67,8 +62,8 @@ Package: gittins
 Type: Package
 Title: Calculate Gittins Indices
 Version: 0.1.0
-Author: James Edwards <j.edwards4@lancaster.ac.uk> 
-Maintainer: James Edwards <j.edwards4@lancaster.ac.uk>
+Author: James Edwards <j.edwards4\@lancaster.ac.uk> 
+Maintainer: James Edwards <j.edwards4\@lancaster.ac.uk>
 Description: Calculates Gittins indices for the multi-armed bandit problem.
 License: MIT + file LICENCE
 Encoding: UTF-8
@@ -99,7 +94,7 @@ This contains your R code for your functions. Can divide functions between files
 Documentation files are created by `.Rd` files in the `man/` directory. Although these can be edited by hand it is easier to generate them using the roxygen2 package. The comments that roxygen uses to create the `.Rd` files is written adjacent to the function code. To create the documentation use `devtools::document()`, which will also
 create a `NAMESPACE` file from the roxygen comments (see [Namespace]). roxygen2 will never overwrite a file it didn’t create. The following notes are primarily taken from the [roxygen2 vignettes](https://cran.r-project.org/web/packages/roxygen2/). 
 
-Roxygen comments start with a special comment characters `#'`. A sequence of roxygen comments forms a roxygen block. Additional structure is given by tags starting `@`. These must go at the start of a line and extend to the next tag. Each line of a tag after the first should be indented to make it easier to see where they start and end, unless the tag always spans multiple lines (e.g. `@examples`) 
+Roxygen comments start with a special comment characters `#'`. A sequence of roxygen comments forms a roxygen block. Additional structure is given by tags starting `\@`. These must go at the start of a line and extend to the next tag. Each line of a tag after the first should be indented to make it easier to see where they start and end, unless the tag always spans multiple lines (e.g. `\@examples`) 
 
 Text without tags form the description block. These are broken up by blank lines (just a `#'`). 
 
@@ -107,38 +102,38 @@ Text without tags form the description block. These are broken up by blank lines
 + The second paragraph is the description: this comes first in the documentation and should briefly describe what the function does.
 + The third and subsequent paragraphs go into the details: an optional section that comes after the argument description and should provide any other important details of how the function operates.
 
-You can also use explicit `@title`, `@description`, and `@details` tags but this isn't usually necessary.
+You can also use explicit `\@title`, `\@description`, and `\@details` tags but this isn't usually necessary.
 
 Other used to create other parts of the help files are:
 
-+ `@param name description` describes function arguments.
-+ `@return description` describes what the function returns.
-+ `@examples` are executable code showing how to use the code. This is run as part of `R CMD check` and so must run without errors. For examples that intentially give errors use `dontrun{}`. Two other options are `dontshow{}` which runs but are not displayed (an informal test), and `\donttest{}` which is run in examples but not `R CMD check` (for examples with long run time). 
++ `\@param name description` describes function arguments.
++ `\@return description` describes what the function returns.
++ `\@examples` are executable code showing how to use the code. This is run as part of `R CMD check` and so must run without errors. For examples that intentially give errors use `dontrun{}`. Two other options are `dontshow{}` which runs but are not displayed (an informal test), and `\donttest{}` which is run in examples but not `R CMD check` (for examples with long run time). 
 
-Add `@keywords internal` to prevent a function from showing up on the package help file list.
+Add `\@keywords internal` to prevent a function from showing up on the package help file list.
 
 ### Formatting
 
-You can use markdown in roxygen generated man files: [Rd Formatting vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html). Add a line `Roxygen: list(markdown = TRUE)` to the DESCRIPTION file. Then the usual markdown (code, links, lists etc. can be used). Many markdown tags do not support markdown: @aliases, @backref, @docType, @encoding, @evalRd, @example, @examples, @family, @inheritParams, @keywords, @method @name, @md, @noMd, @noRd, @rdname, @rawRd, @usage. If markdown is not turned on then Rd tags can be used instead e.g. `\code, \url`. For hyperlinks: `\link{}` creates a link to other document pages, `\url{}` can link to a webpage without a separate name, and `\href{link}{name}` adds a different displayed name.
+You can use markdown in roxygen generated man files: [Rd Formatting vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html). Add a line `Roxygen: list(markdown = TRUE)` to the DESCRIPTION file. Then the usual markdown (code, links, lists etc. can be used). Many markdown tags do not support markdown: \@aliases, \@backref, \@docType, \@encoding, \@evalRd, \@example, \@examples, \@family, \@inheritParams, \@keywords, \@method \@name, \@md, \@noMd, \@noRd, \@rdname, \@rawRd, \@usage. If markdown is not turned on then Rd tags can be used instead e.g. `\code, \url`. For hyperlinks: `\link{}` creates a link to other document pages, `\url{}` can link to a webpage without a separate name, and `\href{link}{name}` adds a different displayed name.
 
 ### Reusing Roxygen Comments
 
 The [rd tags vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html) has a large section called "Do Repeat Yourself" which suggests that help files should be largely self-contained, and gives ways to do this without repeating the same roxygen comments across different functions.
 
 + **Cross-referencing.** 
-  + `@seealso` allows you to point to other resources with a web link <http://www.r-project.org> or another function     `[function_name()]`.
-  + `@family {family}` cross references each function to every other function in the family. Use a plural name.
+  + `\@seealso` allows you to point to other resources with a web link <http://www.r-project.org> or another function     `[function_name()]`.
+  + `\@family {family}` cross references each function to every other function in the family. Use a plural name.
 + **Inheriting documentation from other topics.** These can be functions in any package.
-  + `@inherit source_function` will inherit parameters, return, references, description, details, sections, and
+  + `\@inherit source_function` will inherit parameters, return, references, description, details, sections, and
     seealso from source_function().
-  + `@inherit source_function return details` will inherit selected components from `source_function()`
-  + `@inheritParams source_function inherits` just the parameter documentation from `source_function()`.
-  + `@inheritSection source_function Section title` will inherit the single `@section` called “Section title” from
+  + `\@inherit source_function return details` will inherit selected components from `source_function()`
+  + `\@inheritParams source_function inherits` just the parameter documentation from `source_function()`.
+  + `\@inheritSection source_function Section title` will inherit the single `\@section` called “Section title” from
     `source_function()`.
 + **Documenting multiple functions in the same file.** USe when functions have the same or very similar arguments.
-  + `@describeIn function_name`. Used for documenting method in a generic or class, and for functions with the same (or similar arguments). It generates a new section listing each function.
-  + `@rdname`. General purpose tool. Merges documentation for multiple objects into one file. Either add to an existing function or to a dummy function setup with a `@name` and `NULL` for code.
-+ **Evaluating arbitrary code.** The `@eval` tag evaluates R code so that Roxygen tags can be put inside functions which can be called in multiple places.
+  + `\@describeIn function_name`. Used for documenting method in a generic or class, and for functions with the same (or similar arguments). It generates a new section listing each function.
+  + `\@rdname`. General purpose tool. Merges documentation for multiple objects into one file. Either add to an existing function or to a dummy function setup with a `\@name` and `NULL` for code.
++ **Evaluating arbitrary code.** The `\@eval` tag evaluates R code so that Roxygen tags can be put inside functions which can be called in multiple places.
   
 Examples are given at [https://gist.github.com/jefferys/b79fe87314b0dc72fec9)].
 
@@ -147,18 +142,18 @@ In my gittins package I created a dummy function to reuse arguments:
 ```
 #' Function arguments
 #'
-#' @keywords internal
-#' @name nmab_args
-#' @param Sigma value of Sigma for the arm
-#' @param etc...
-#' @param delta value of delta (fineness of discretisation in the dynamic programmme)
+#' \@keywords internal
+#' \@name nmab_args
+#' \@param Sigma value of Sigma for the arm
+#' \@param etc...
+#' \@param delta value of delta (fineness of discretisation in the dynamic programmme)
 #'
 NULL
 ```
 
-I then used `@inheritParams nmab_args` in other functions. It will only add arguments that are in the new function. If you want to change the description of an argument in some functions but not others you can overwrite the inheritance by adding the `@param` as normal, but you need to put the description you want **first**.
+I then used `\@inheritParams nmab_args` in other functions. It will only add arguments that are in the new function. If you want to change the description of an argument in some functions but not others you can overwrite the inheritance by adding the `\@param` as normal, but you need to put the description you want **first**.
 
-Combining multiple files can change the order of function usage. This can be overridden using `@order`.  
+Combining multiple files can change the order of function usage. This can be overridden using `\@order`.  
 
 ## Namespace
 
@@ -169,13 +164,13 @@ The package `NAMESPACE` file handles naming conflicts for the functions. From [h
 
 For packages created in RStudio, the `NAMESPACE` file uses string matching to decide which functions to export. It is better to delete this, then roxygen2 will create it when `devtools::document()` is run.
 
-**Exporting**. Functions in the package are not automatically available for use outside the package. Any that have an `@export` tag in their Roxygen comments will be added to the `NAMESPACE` by roxygen. Datasets should not be exported because they exist outside the package namespace and are always publicly available.
+**Exporting**. Functions in the package are not automatically available for use outside the package. Any that have an `\@export` tag in their Roxygen comments will be added to the `NAMESPACE` by roxygen. Datasets should not be exported because they exist outside the package namespace and are always publicly available.
 
 **Importing**. There are three main ways to import standard functions from other packages:
 
 + Add the package name to the `Imports:` field of the `DESCRIPTION` file and then use `::` to call the function explicitly. This is appropriate when using a few functions from another package. Use, e.g., `usethis::use_package("dplyr")` to add a package to `Imports:`. This method does not change the `NAMESPACE` file.
-+ Add a roxygen tag `@import package` to one or more functions. This makes all functions from the package available, without using `::` and adds a line `import(package)` to the `NAMESPACE`.
-+ Add  a roxygen tag `@importFrom package fun` to one or more functions.  Just that function is made available from the package, without needing  `::`. A line `importFrom(package, "fun")` to the `NAMESPACE`. "...no longer recommended due to its poor readability".
++ Add a roxygen tag `\@import package` to one or more functions. This makes all functions from the package available, without using `::` and adds a line `import(package)` to the `NAMESPACE`.
++ Add  a roxygen tag `\@importFrom package fun` to one or more functions.  Just that function is made available from the package, without needing  `::`. A line `importFrom(package, "fun")` to the `NAMESPACE`. "...no longer recommended due to its poor readability".
 
 There can be issues here: [Namespace problems](http://alyssafrazee.com/2014/01/21/namespaces.html). Other resources: [Connecting to other packages](https://kbroman.org/pkg_primer/pages/depends.html). [Roxygen namespace vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html).
 

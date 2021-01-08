@@ -1,7 +1,6 @@
----
-title: "testthat Notes"
-output: html_document
----
+# Code Testing
+
+## testthat
 
 Notes from 2018 (or earlier) so may not all be relevant now. See also [chapter in R packages book](http://r-pkgs.had.co.nz/tests.html).
 
@@ -27,7 +26,7 @@ I used a separate (short) file for the code to run the tests (load testthat, sou
 
 Some tests compared output to a saved object. This doesn't really test the function but it does test that output is unchanged is I later change the function. I kept these objects in a separate folder "test_data" and had a file which creates the data in the main project folder.
 
-## Variable domains
+### Variable domains
 
 I had a problem with one test for a reason I don't fully understand. The setup was the following:
 
@@ -50,7 +49,7 @@ The testthat package gives a way to test but the more difficult question is what
 
 http://blog.stevensanderson.com/2009/08/24/writing-great-unit-tests-best-and-worst-practises/. This says that unit testing is *not* about finding bugs (more usefully done through integration tests) but more about documenting design - specifying the software's behaviour. Some of the comments disagree though.
 
-## Misc
+## Resources
 
 [Testing R Code book review](https://pdfs.semanticscholar.org/7459/e9a0ede1f16679ba3058218a7e4b304f4450.pdf)
 
