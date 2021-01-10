@@ -84,6 +84,23 @@ Additionally, note that `0.y.z` is kept aside for quick iteration, so that initi
 
 ---
 
+## Paths in R
+
+[R for DS workflow chapter](https://r4ds.had.co.nz/workflow-projects.html) says never to use absolute paths in scripts. Gives differences in paths between mac/linux and windows: 
+
++ Absolute paths in Windows start with a drive letter (`C:`) or two backslashes, while in Mac/Linux they start with a slash.
++ `~` is a shortcut to the home directory in Mac/Linux, but to Documents in Windows.
+
+## Scheduling Tasks
+
+[How to run R from the Windows Task Scheduler](https://www.r-bloggers.com/how-to-run-r-from-the-task-scheduler/). I had some difficulties adding the R folder to the Windows system path (I think I may need to restart the shell). [Path editing instructions are here](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/). I need to add `C:\Program Files\R\R-3.6.3\bin\` (the folder containing Rscript, with appropriate version number).
+
+Scheduling can also be done from within R using the [taskscheduleR package](https://cran.r-project.org/web/packages/taskscheduleR/).
+
+[More on the windows task scheduler](https://www.dummies.com/computers/pcs/how-to-open-windows-task-scheduler/).
+
+[Scheduling R Markdown reports via R](https://beta.rstudioconnect.com/content/3132/Job_Scheduling_R_Markdown_Reports_via_R.html)
+
 ## Installing R on New Computer
 
 I think these notes are out of date now as there are better ways of doing this but it might still be useful for getting info on installed packages.

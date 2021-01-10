@@ -7,10 +7,7 @@ This is a place for collecting links and small notes for which there isn't yet a
 
 ## Functions to look at or use
 
-+ `crossing()`, `separate()`, `extract()` - all tidyverse.
-+ `cut()`, `hmisc::cut2()` - bucketing continuous values
 + `anyDuplicated()` - test for duplicated rows in selected columns in a data frame. 
-+ `purrr::pluck()` - generalised form of `[[`.
 
 ## Tabulation functions
 
@@ -25,11 +22,32 @@ vec_count <- function(x) {
 }
 ```
 
+## Comparing Two Data Frames
+
+I often want to test data frames for equality, for example when testing that a change to data processing code has not changed the output. If it has changed then I would want to track down the differences. Another application is to look for changes in a dataset.
+
+This [blog post](https://sharla.party/post/comparing-two-dfs/) looks at packages for comparing columns' names and types. There is a summary table of four options in the blog post are: `dplyr::all_equal()`, `janitor::compare_df_cols()`, `vetr::alike()`, `diffdf::diffdf()`. The harder problem is displaying changes to the values in the rows.
+
+I found `all_equal()` to be quite useful. By default it ignores column and row order. Optionally it can convert similar classes (double/integer and character/factor). I found the output didn't help much when many rows were different, which happened mostly when there were small numeric difference between values. I would like an option to ignore a given tolerance. Also it is "questioning" as of version 1.0.0.
+
+There is a newer tidyverse package [waldo](https://www.tidyverse.org/blog/2020/10/waldo/) to compare objects but with improved messenging over `testthat::expect_equal()`. I will try this but still perhaps not ideal the larger data frames I've been using.
+
+The `visdat::vis_compare()` function visualises difference and so is good for getting an overall view when there are lots of differences. I could then go into more detail on individual columns. When there were many columns, I found it hard to tell which columns the differences belonged to and so I would prefer table output usually. Looking into the function the main comparison was done using this code:
+
+```{r, eval = FALSE}
+v_identical <- Vectorize(identical)
+purrr::map2_df(df1, df2, v_identical)
+```
+
+So it is testing for pairwise identical which loses the order-ignoring options of `all_equal`.
+
+Other packages that do the comparison in more detail with are `compare_df` from [compareDF package](https://github.com/alexsanjoseph/compareDF) (gives HTML output) and `arsenal::comparedf()` [vignette](https://cran.r-project.org/web/packages/arsenal/vignettes/comparedf.html).
+
 ## A/B Testing
 
 [A/B testing links](http://www.win-vector.com/blog/2015/06/designing-ab-tests/)
 
-[Multiworld testing](https://www.microsoft.com/en-us/research/project/multi-world-testing-mwt/). Bandit-based (?) alternative to A/B testing from microsoft.
+[Multiworld testing](https://www.microsoft.com/en-us/research/project/multi-world-testing-mwt/). Bandit-based (?) alternative to A/B testing from Microsoft.
 
 [Why Multi-armed Bandit Algorithm is Not “Better” than A/B Testing](https://vwo.com/blog/multi-armed-bandit-algorithm/) Poor straw man argument against bandit use, but I am saving it because I suspect it is widely read. There is a commentary on this in [Why Multi-armed Bandit algorithms are superior to A/B testing](https://www.chrisstucchio.com/blog/2012/bandit_algorithms_vs_ab.html), but also see the later [Don't use bandit algorithms](https://www.chrisstucchio.com/blog/2015/dont_use_bandits.html) by the same author. 
 
@@ -74,22 +92,7 @@ nested <- nest(allw, data = c(week, n)) %>%
   mutate(p_val = unlist(map(chisq, ~.$p.value)))
 ```
 
-## Scheduling Tasks
 
-[How to run R from the Windows Task Scheduler](https://www.r-bloggers.com/how-to-run-r-from-the-task-scheduler/). I had some difficulties adding the R folder to the Windows system path (I think I may need to restart the shell). [Path editing instructions are here](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/). I need to add `C:\Program Files\R\R-3.6.3\bin\` (the folder containing Rscript, with appropriate version number).
-
-Scheduling can also be done from within R using the [taskscheduleR package](https://cran.r-project.org/web/packages/taskscheduleR/).
-
-[More on the windows task scheduler](https://www.dummies.com/computers/pcs/how-to-open-windows-task-scheduler/).
-
-[Scheduling R Markdown reports via R](https://beta.rstudioconnect.com/content/3132/Job_Scheduling_R_Markdown_Reports_via_R.html)
-
-## Paths
-
-[R for DS workflow chapter](https://r4ds.had.co.nz/workflow-projects.html) says never to use absolute paths in scripts. Gives differences in paths between mac/linux and windows: 
-
-+ Absolute paths in Windows start with a drive letter (`C:`) or two backslashes, while in Mac/Linux they start with a slash.
-+ `~` is a shortcut to the home directory in Mac/Linux, but to Documents in Windows.
 
 ## Misc Links
 
@@ -110,12 +113,6 @@ https://data36.com/data-coding-101-introduction-bash/. Intro to bash coding.
 [Some methods for testing for equality of all elements of a numeric vector](https://stackoverflow.com/questions/4752275/test-for-equality-among-all-elements-of-a-single-vector). I looked into this with functional dependencies.
 
 **Partial unlisting**. `unlist()` has `recursive` and `use.names` arguments. `recursive = FALSE` is useful if you only want to remove the first level of the list. See `purrr::flatten()` for alternative (type stable).
-
-[Removing NA values in a data frame](https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame). 
-
-+ `na.omit()` removes rows with any missing values.
-+ `tidyr::drop_na()` does the same but has tidyselect option for columns to inspect for NAs. 
-+ `complete.cases()` is base option to only consider some columns e.g. `df[complete.cases(df[ , 5:6]),]` only check columns 5 and 6 of `df`.
 
 **Style for table captions**. There wasn't a clear answer to whether to use title or sentence case in tabel/plot captions except to be consistent. Perhaps sentence case in captions and title case in titles?
 
