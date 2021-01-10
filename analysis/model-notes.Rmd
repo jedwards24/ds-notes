@@ -7,16 +7,59 @@ These are notes/links relating to comparisons of model fitting algorithms for cl
 
 Might be very general until I decide where these should go.
 
-## Modelling in R
+## Formulas and Model Inputs
 
-I'll record here basic information on formulas, model matrices etc.
+This [lazyeval vignette](https://cran.r-project.org/web/packages/lazyeval/vignettes/lazyeval.html) describes formulas as “language” objects (unevaluated expression) of class "formula" which also store the environment in which they were created (as attributes).
 
-Max Kuhn has a a pair of posts on the R formula method which motivates what was done in the carat and parsnip packages.
-[R formula method: good parts](https://rviews.rstudio.com/2017/02/01/the-r-formula-method-the-good-parts/) and 
-[R formula method: bad parts](https://rviews.rstudio.com/2017/03/01/the-r-formula-method-the-bad-parts/)
+They can be created from using `formula()`, `as.formula()`, `reformulate()`, and using the `~` operator (see [this thread](https://stackoverflow.com/questions/4951442/formula-with-dynamic-number-of-variables) on creating formulas from dynamic variables). The `~` is a kind of quoting operator that delays evaluation. It is used beyond defining formulas, for example in tidy evaluation in packages like purrr.
+
+The structure of a formula differs depending on whether it is one-sided or two-sided. One sided:
+
+```{r eval = TRUE, echo = TRUE}
+f <- ~x + log(x)
+f[[1]]
+f[[2]]
+```
+
+Two-sided:
+
+```{r eval = TRUE, echo = TRUE}
+g <- y ~ x + z
+g[[1]]
+g[[2]]
+g[[3]]
+```
+ 
+The rlang package has `f_rhs()`, `f_lhs()` to simplify this. Note the returned parts are language objects, not strings. `rlang::f_text()` will return the RHS as a string.
+
+Formulas are commonly used in R as inputs to modelling functions, together with a data frame, to generate design matrices. When used this way the `.` can be used to indicate all columns not otherwise in the formula.
+
+Max Kuhn goes into detail with how `lm()` uses the formula and other arguments in [R formula method: good parts](https://rviews.rstudio.com/2017/02/01/the-r-formula-method-the-good-parts/). 
+
+The `model.frame()` functions returns a data frame containing the variables used in the formula. A `subset` argument can be used to select included row, using either an index or a condition on the variables.
+
+```{r, echo = T, eval = TRUE}
+model.frame(mpg ~ disp + log(hp), data = mtcars, subset = cyl == 6) 
+```
+
+The model frame adds a new attribute `terms`. "The `terms` object contains the data that defines the relationships between variables in the formulas, as well as any transformations of the individual predictors". It "...will be used to generate design matrices on new data". In `lm()` the design matrix is created with `model.matrix()` using terms and the data. The `"factor"` attribute of `terms` is a matrix with a row for each predictor in the formula and a column for each model term (this is mainly interesting when there are interactions).
+
+See `?terms` and `?terms.object`.
+
+Operations on variables included in the formula can only be on single columns (plus simple interactions).
+
+### Retrieving variable names from a formula
+
+* `all.vars(fmla)` gets the variable names in the formula as a character vector but retains the `.` and does not indicate which side of the `~` the variables are on. it ignores operations on variables in the formula.  
+* `terms(fmla)` returns more information about the formula. If the formula contains a `.` term then will need to supply a data argument as well: `terms(fmla, data = dt)`.  
+* `labels(terms(fmla, data = dt))` will return all variable names in the RHS of the formula as a character vector. This comes from the term's attributes (`term.labels`).
+* See above for subsetting to get parts of a formula. The most robust way is to use rlang functions. The formula.tools package contains similar functions. 
+
+### Resources
+
+Max Kuhn has a a pair of posts on the R formula method which motivates what was done in the carat and parsnip packages. [R formula method: good parts](https://rviews.rstudio.com/2017/02/01/the-r-formula-method-the-good-parts/) and [R formula method: bad parts](https://rviews.rstudio.com/2017/03/01/the-r-formula-method-the-bad-parts/).
 
 From the R core team (2003): [How To Write Model-Fitting Functions in R](https://developer.r-project.org/model-fitting-functions.html)
-
 
 ## Tidymodels
 
