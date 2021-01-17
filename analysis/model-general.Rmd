@@ -1,11 +1,4 @@
----
-title: "Model Notes"
-output: html_document
----
-
-These are notes/links relating to comparisons of model fitting algorithms for classification and regression. 
-
-Might be very general until I decide where these should go.
+# Model General
 
 ## Formulas and Model Inputs
 
@@ -32,7 +25,7 @@ g[[3]]
  
 The rlang package has `f_rhs()`, `f_lhs()` to simplify this. Note the returned parts are language objects, not strings. `rlang::f_text()` will return the RHS as a string.
 
-Formulas are commonly used in R as inputs to modelling functions, together with a data frame, to generate design matrices. When used this way the `.` can be used to indicate all columns not otherwise in the formula.
+Formulas are commonly used in R as inputs to modelling functions, together with a data frame, to generate design matrices. When used this way the `.` can be used to indicate all columns in the data not otherwise in the formula. This is more practical for many variables than the standard `~ var1 + var2 + var3`. There is some code [here](https://stackoverflow.com/questions/13633734/model-matrix-using-multiple-columns) to create a formula from multiple column names using paste. Variables can also be excluded using `-var`.
 
 Max Kuhn goes into detail with how `lm()` uses the formula and other arguments in [R formula method: good parts](https://rviews.rstudio.com/2017/02/01/the-r-formula-method-the-good-parts/). 
 
@@ -54,6 +47,35 @@ Operations on variables included in the formula can only be on single columns (p
 * `terms(fmla)` returns more information about the formula. If the formula contains a `.` term then will need to supply a data argument as well: `terms(fmla, data = dt)`.  
 * `labels(terms(fmla, data = dt))` will return all variable names in the RHS of the formula as a character vector. This comes from the term's attributes (`term.labels`).
 * See above for subsetting to get parts of a formula. The most robust way is to use rlang functions. The formula.tools package contains similar functions. 
+
+## Design Matrix {#design-matrix}
+
+The standard method in modelling functions in R is to take formula and data arguments and create a design matrix internally. However, some methods (Glmnet for example) instead takes a design matrix input. This has the advantage of avoiding the creation of a `terms` object which can be large for wide data.
+
+To create a design matrix in R use `model.matrix()`. This takes a formula or terms input, and a data argument if needed (e.g. if `.` is used in the formula). It will call `model.frame()` internally, if needed, to get the data into the correct form. By default `model.matrix()` creates a column for the intercept (first column) and creates $k-1$ dummy variable for each factor with $k$ levels.
+
+For some models the standard design matrix may not be wanted. For example, glmnet creates an intercept internally and regularisation means that factors could be handled differently. __Maybe move these notes to glmnet.Rmd__
+
+### Intercept
+
+The standard suggestion for excluding an intercept is to use `model.matrix( ~ . -1, data_input)` or `model.matrix( ~ 0 + ., data_input)`. This also changes the dummy variables for factors by adding one for all levels for the first factor only. To remove the intercept without changing how factors are processed use `model.matrix( ~ ., data_input)[, -1]`. If using `predict()` then use the same model matrix method with new data.
+
+### Factors
+
+When `model.matrix()` creates a design matrix, by default it adds $N-1$ binary dummy variable columns for an $N$-level factor. The level not added as a dummy variable for each factor is the first (by default factor levels are ordered alphabetically). Levels that are empty count towards $N$. Logical variables are converted to factors with levels `c(FALSE, TRUE)`.
+
+Ordered factors have $N-1$ columns labelled with the variable column name with suffix `.L`, `.Q`, `.C`, `.^4`, `.^5` etc.
+
+Adding interactions with a factor will effectively multiply by the number of levels in that factor e.g. say model `~.` has 100 columns (1 intercept + 99) then `.*y` will have 300 if `y` has three levels (1 intercept, 99 matched with level 1 of y, 2 for y alone, and 2 * 99 for interactions with levels 2 and 3 of y).
+
+I have seen some suggestions that I should keep all levels explicitly in the model if I am regularising but, other than giving a more natural interpretation of coeficients, I'm not sure why this should be better (it would lead to larger model matrices and therefore slower regresssions). There are comments on this [here](https://stats.stackexchange.com/questions/69804/group-categorical-variables-in-glmnet). See [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) for how to do it. **Update** It does matter because the regularisation penalises *towards* the default factor level so the model is affected by which level is the default.
+
+These can be overridden by supplying a `contrasts` argument.
+
+### To look at
+
+modelr and hardhat have `model_matrix()`. Uses `terms` inputs so the model frame is constructed externally.
+
 
 ### Resources
 
