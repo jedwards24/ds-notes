@@ -1,0 +1,87 @@
+# The glmnet Package
+
+__REWRITE__
+
+
+This package performs elasticnet regularisation. There is a [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_beta.html) (2016).
+
+There are two main functions for fitting models `glmnet()` and `cv.glmnet()`. The former does a single fit while the second uses cross validation. They produce different objects for the purposes of plotting - coefficient values and loss respectively. Each function fits models over a sequence of `lambda` values which adjust the regularisation strength (larger `lambda` includes fewer variables). 
+
+I'll concentrate on  `cv.glmnet()`. The argument `type.measure` states the loss measure for cross-validation. Default is `deviance` but alternatives for two-class binomial models are `class` (misclassification error), `auc` (area under ROC curve), and  `mae`. The returned object is an S4 list of length 10. There is a vector of `lambda` values and corresponding mean, sd, number of non-zero cofficients, and upper and lower intervals for the cv loss measures. The scalars `lambda.min` and `lambda.1se` give the `lambda` values that, respectively, minimise the cv loss and give the simplest model with 1 se of the minimum loss. Detailed information on the fitted models is in a sublist `glmnet.fit`.
+
+The coefficients can be retrieved using `coef(fit, s="lambda.1se")` where `s` is a value of `lambda`. Note that `plot(fit)` gives `log(s)` and corresponding number of non-zero coefs. 
+
+For predictions use `predict(fit, newx, type, s)` where `newx` gives new inputs as a model matrix in the same form as used to fit the regression, `type` gives the type of output, and `s` is the value of `lambda` of the model used. Note `s` can be given as a vector. Options for `type` are:
+
+- "response" gives the fitted probabilities
+- "class"" produces the class label corresponding to the maximum probability.
+- "coefficients" computes the coefficients at values of s
+- "nonzero" retuns a list of the indices of the nonzero coefficients for each value of s.
+
+The last two ignore `newx` so are really just alternative ways to query the model as far as I can tell. The vignette says: *For binomial models, results (link, response, coefficients, nonzero) are returned only for the class corresponding to the second level of the factor response*. (I think?) that means it matches the form of the model matrix.
+
+### Lambda Range
+
+The parameter $\lambda$ controls the strength of regularisation. Glmnet fits models for a sequence of $\lambda$ from which a model can be chosen. The function choses a default sequence or it can be specified. I haven't had any problems with the default until I started fitting ridge models which seemed to be failing to test small enough $\lambda$.
+
+The default sequence is based on $\lambda_{max}$ which is the smallest value of $\lambda$ for which all coefficients are zero (details [here](https://stats.stackexchange.com/questions/166630/glmnet-compute-maximal-lambda-value) or in Friedman etal's regularization paths paper). The formula has an $\alpha$ (the elastic net parameter) in the denominator so can't be calculated for ridge which has $\alpha=0$ (ridge has all non-zero coefficients). I saw somewhere that the calculation for ridge therefore uses $\alpha=0.001$. The sequence is then $k$ values from $\lambda_{min}=\epsilon\lambda_{max}$ to $\lambda_{max}$, with default $k=100$ and $\epsilon=0.0001$. The $\lambda$ range can be supplied directly, for example:
+```
+    grid=10^seq(1,-2,length=100) ##get lambda sequence
+    ridge_mod=glmnet(x,y,alpha=0,lambda=grid)
+```
+
+An insufficient range of $\lambda$ can be seen from plotting the fit object. Another diagnostic might be to check that `lambda.min` and `lambda.1se` are not too close together, which would imply a still decreasing score at the minimum. There are a few examples [here](https://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) of comparisons of difeerent elastic net models. I reran these, extending the `lambda` range for ridge and got better results for ridge on examples 2 and 3 but without changing the overall conclusions. In these examples the reaction to $\lambda$ varies between problems and methods. I think example 2 is a bit unusual since $p$ for the true model is greater than $n$. 
+
+### Input
+
+Glmnet takes an x (vector) and y (design matrix) inputs rather than formula and data, as is more usual in R for models. The design matrix can be prepared using `model.matrix` which creates dummy variables for factor inputs. 
+
+```{r model_mat1, eval=F}
+x_mat <- model.matrix( ~ ., data_input)
+fit <- glmnet(y=data$target, x=x_mat, family="binomial")
+```
+
+`model.matrix()` can also take a formula as input e.g. 
+```{r model_mat2, eval=F}
+f1 <- formula(data$target ~ data_input)
+x_mat <- model.matrix(f1)
+```
+
+### glmnet Misc
+
+[interpretting glmnet](https://stats.stackexchange.com/questions/77546/how-to-interpret-glmnet)
+
+[Standardisation for lasso](https://stats.stackexchange.com/questions/86434/is-standardisation-before-lasso-really-necessary) - suggests prestandardising variables.
+
+Use `set.seed()` to make the cross-validation reproducible.
+
+## Computation and Speed
+
+Once I'd tidied my dataset I didn't have problems with speed or memory but here are a few links I collected when looking into this. See `glmnet` section for using parallelisation.
+
++ Some [advice](https://stackoverflow.com/questions/16284766/how-to-speed-up-glm-estimation-in-r) on speeding up glm fitting in R.
++ [Article on reducing the size of models when using `glm()`](http://www.win-vector.com/blog/2014/05/trimming-the-fat-from-glm-models-in-r/). 
+
+
+### glmnetUtils
+
+[glmnetUtils](https://github.com/hongooi73/glmnetUtils) is a CRAN package to aid fitting glmnet models. It has one [vignette](https://cran.r-project.org/web/packages/glmnetUtils/vignettes/intro.html).
+
+* Formula interface for glmnet instead of the usual model matrix and target vector inputs.
+* New options for sparse model matrix and model frame use.
+* Cross-validation over alpha as well as lambda using `cva.glmnet()`. The `plot()` for this is nice.
+
+The package rewrites `glmnet()` and `cv.glmnet()`. These call internal functions `glmnet.formula()` and `cv.glmnet.formula()` which have a formula/data inputs as is commonly used in R modelling functions. The model matrix and response vector are created inside the function. The `predict` method just requires the new data as a data frame. 
+There is an optional `use.model.frame=FALSE` argument which, if `TRUE`, will build a model frame as in other R modelling functions. Two issues:
+
+* The terms object in the model frame can be very large for wide datasets as it is ~ $p \times p$ matrix. Can cause slow down as well as memory issues.
+* Factors. `model.matrix()` turns an N-level factor into N-1 indicator columns. For regularised models there is no linear dependency issue and, done this way, the regularisation shrinks coefficients to reduce the difference between each factor and the baseline factor, which is often not what is wanted.
+
+The alternative (default) is to build the model matrix  directly using a column for each factor level. In examples given, speed is same at ~1000 columns but x3 at 10000.
+
+Setting the argument `sparse = TRUE` will use a `sparse.model.matrix` from the Matrix package.
+
+NOTE: I think the model matrix method treats ordered factors as unordered.
+
+### Output
+
