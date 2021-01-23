@@ -24,6 +24,10 @@ Mostly free online.
 
 [Standford Coursera ML series](https://www.coursera.org/learn/machine-learning)
 
+[Applied Statistics with R](https://daviddalpiaz.github.io/appliedstats/)
+
+[R for Statistical Learning](https://daviddalpiaz.github.io/r4sl/)
+
 ## R Specific
 
 [What They Forgot to Teach You About R](https://whattheyforgot.org/)
@@ -61,6 +65,11 @@ Mostly free online.
 [Modern R with the Tidyverse](https://b-rodrigues.github.io/modern_R/)
 
 [R Cookbook](https://rc2e.com/)
+
+## Coding 
+
++ The Pragmatic Programmer - Andrew Hunt
++ Clean Code
 
 ## Project Management
 

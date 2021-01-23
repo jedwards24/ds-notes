@@ -1,5 +1,11 @@
 # Profiling and Speed Notes
 
+This could be combined with the memory chapter.
+
+Code profiling is a lot easier than it used to be. RStudio has an inbuilt  [profiler](https://support.rstudio.com/hc/en-us/articles/218221837-Profiling-with-RStudio) which just needs the profvis package. It does memory and speed. 
+
+The remaining links here are old:
+
 http://tgmstat.wordpress.com/2013/09/25/profiling-r-code/
 This references: [Tidying and profiling R code Chapter](http://www.hep.by/gnu/r-patched/r-exts/R-exts_69.html#SEC69)
 or [full pdf](http://cran.r-project.org/doc/manuals/R-exts.pdf)

@@ -86,10 +86,21 @@ I am unclear on the structure for XML  but it seems to based on ideas from relat
 
 The [variablekey vignette](https://cran.r-project.org/web/packages/kutils/vignettes/variablekey.pdf) in the kutils package gives a method for recording changes in variables in data frames. It is based on a table of old/new variable names/classes/values (where the number of distinct values is not too large). The ordering of the values can be recorded. The table can be changed in, e.g. excel, then these changes can be applied to the data frame. I like the general idea of recording and displaying changes but I want to only make changes via R code.
 
+
 ### Missing Values
+
+The `visdat::vis_miss()` could be useful for seeing quickly if missing values in different columns are in the same rows.
 
 [Amelia package](https://www.rdocumentation.org/packages/Amelia/versions/1.7.4/topics/amelia) - creates imputed datasets using a bootstrap EM algorithm. 
 
 [Chapter from Gelman on missing data](http://www.stat.columbia.edu/~gelman/arm/missing.pdf)
 
 To replace empty strings with `NA` in a tibble use `mutate_all(df, ~na_if(.,""))` or `mutate_if(df, is_character, ~na_if(.,""))`.
+
+[Removing NA values in a data frame](https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame). 
+
++ `na.omit()` removes rows with any missing values.
++ `tidyr::drop_na()` does the same but has tidyselect option for columns to inspect for NAs. 
++ `complete.cases()` is base option to only consider some columns e.g. `df[complete.cases(df[ , 5:6]),]` only check columns 5 and 6 of `df`.
+
+

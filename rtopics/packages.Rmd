@@ -62,6 +62,8 @@ Unified Parallel and Distributed Processing.
 
 [fst](https://www.fstpackage.org/) Fast reading and writing of data frames. Uses a fast compression algorithm.
 
+[qs](https://github.com/traversc/qs) Quick seralization of R objects. Gives comparison to fst and `saveRDS()`.
+
 [tsibble](https://tsibble.tidyverts.org/) Tools for wrangling temporal data in a tidy framework. Succeeds the tibbletime package. [Slides from RStudio course](https://github.com/rstudio-conf-2020/time-series-forecasting?fbclid=IwAR2K82TIWjzyCimYrDeH19oHKiUowrRxbcpKjUz2ed2achIm2tUt779k05o)
 
 [slider](https://github.com/DavisVaughan/slider) Sliding window functions. The tsibble news says that the sliding window in their package can be replaced by `slider::slide()`. rom RStudio - builds on purrr. [tidyverse blog](https://www.tidyverse.org/blog/2020/02/slider-0-1-0/).
@@ -107,6 +109,14 @@ Unified Parallel and Distributed Processing.
 [gluedown](https://github.com/kiernann/gluedown). Vectors to formatted markdown text.
 
 [benchmarkme](https://github.com/csgillespie/benchmarkme). Benchmarking the speed of your system.
+
+[logger](https://daroczig.github.io/logger/)
+
+[rsthemes](https://www.garrickadenbuie.com/project/rsthemes/) More themes for RStudio.
+
+[multiplyr](https://multidplyr.tidyverse.org/) Backend for dplyr for using multi-cores. Not CRAN yet.
+
+[dtplyr](https://dtplyr.tidyverse.org/) dplyr backend for calling data table
 
 ## purrr
 

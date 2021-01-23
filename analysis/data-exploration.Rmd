@@ -20,3 +20,8 @@ These notes relate to variable and data exploration. In particular exploring the
 + [Automatic Statistician](https://www.automaticstatistician.com/index/)
 + [DataWrangler](http://vis.stanford.edu/wrangler/). A Standford project that concluded in 2013 and transferred to a comercial version Trifacta.
 + [OpenRefine](http://openrefine.org/). Since bought by Google and renamed Google Refine.
+
+## Data Analysis GUIs for R
+
+There is an [article](http://r4stats.com/articles/software-reviews/r-gui-comparison/) comparing various GUIs for R with links to detailed reviews for each. Some are packages while others are separate programs. Examples are the rattle package and the [bluesky application](https://www.blueskystatistics.com/Default.asp).
+

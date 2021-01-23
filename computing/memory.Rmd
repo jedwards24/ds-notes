@@ -1,7 +1,4 @@
----
-title: "Memory Notes"
-output: html_document
----
+# Memory in R
 
 More recently, see `lobstr` package.
 
@@ -34,6 +31,7 @@ http://www.matthewckeller.com/html/memory.html
 http://finzi.psych.upenn.edu/R/library/slam/html/array.html
 
 ## Memory Profiling
+
 http://www.r-bloggers.com/examples-of-profiling-r-code/
 The example below profiles memory as well. Memory allocation can also be profiled with function `Rprofmem()`.
 

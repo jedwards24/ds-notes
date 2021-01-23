@@ -1,6 +1,5 @@
 # Model Evaluation
 
-
 ## Variable Importance
 
 Records notes on variable importance (VI) measures for random forests. May drift into other evaluation methods.
@@ -13,11 +12,23 @@ Some modelling methods have *model-specific* measures of importance which can on
 
 **TBC**
 
+[glmnet VI](https://stackoverflow.com/questions/35461839/glmnet-variable-importance/39017938)
+
+## Model explanation
+
+[DALEX](https://modeloriented.github.io/DALEX/) and 
+[DALEXtra](https://modeloriented.github.io/DALEXtra/index.html)
+
+[lime](https://github.com/thomasp85/lime) Local interpretable model-agnostic interpretations.
+
 ## Misc
 
 [Model Explanation System](http://www.blackboxworkshop.org/pdf/Turner2015_MES.pdf) and [MES update](https://arxiv.org/pdf/1606.09517.pdf). Method for explaining complex ML model output.
 
 [Brier Score](https://en.m.wikipedia.org/wiki/Brier_score) This is score function that measures the accuracy of probabilistic predictions for discrete outcomes. Basically a mean squared error.
+
+You can test the calibration of a model by plotting predicted versus empirical probabilities. A method for binning which emphasises tails is given [here](https://stats.stackexchange.com/questions/25482/visualizing-the-calibration-of-predicted-probability-of-a-model).
+
 
 ## Model Validation
 
@@ -63,4 +74,8 @@ ggplot(rocdt, aes(x = x, y = y, col = model)) +
   ylab("True Positive Rate") +
   theme_minimal()
 ```
+
+The most common packages in R for ROC curves are `pROC` and `ROCR`. I went with the latter because I found suggestions that it was faster. See an explanation [here](https://stats.stackexchange.com/questions/269552/difference-between-proc-and-rocr-in-compute-time-and-accuracy). Two articles introducing ROC and `ROCR` are: [Illustrated Guide to ROC and AUC](https://www.r-bloggers.com/illustrated-guide-to-roc-and-auc/) and [A small intro to the ROCR package](https://hopstat.wordpress.com/2014/12/19/a-small-introduction-to-the-rocr-package/). The second has more detail. The first links to two useful papers by Fawcett and Hand which I've saved in the GLM folder. The Hand article gives a criticism of AUC.
+
+ROC tests a model's ability to classify but does not directly test the accuracy of the responses as it only uses the ordering of the scores. Two models with different predicted probabilities but with the same order will have the same ROC and AUC. 
 

@@ -1,7 +1,7 @@
 # Dataset Notes
 
 ```{r dataset_setup, include = F}
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = TRUE)
 library(tidyverse)
 library(kableExtra)
 library(edwards)
