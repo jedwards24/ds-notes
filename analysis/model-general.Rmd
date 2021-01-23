@@ -64,18 +64,22 @@ The standard suggestion for excluding an intercept is to use `model.matrix( ~ . 
 
 When `model.matrix()` creates a design matrix, by default it adds $N-1$ binary dummy variable columns for an $N$-level factor. The level not added as a dummy variable for each factor is the first (by default factor levels are ordered alphabetically). Levels that are empty count towards $N$. Logical variables are converted to factors with levels `c(FALSE, TRUE)`.
 
-Ordered factors have $N-1$ columns labelled with the variable column name with suffix `.L`, `.Q`, `.C`, `.^4`, `.^5` etc.
+These can be overridden by supplying a `contrasts` argument. Contrasts are linear combinations of variables whose coefficients sum to one. They are used in statistics to compare treatments. The default is to standard dummy encoding for non-ordered factors as described above and polynomial encoding for ordered factors (see below). See [this post](https://rstudio-pubs-static.s3.amazonaws.com/65059_586f394d8eb84f84b1baaf56ffb6b47f.html) for more detail on contrasts in R. I won't get into the detail of this since I'm only interested in two areas: including all factor levels (see below) and understanding ordered factor encoding.
+
+Ordered factors are encoded using a contrast matrix but with non-binary entries. The default, polynomial encoding, replaces the $N$-level factor variable with $N-1$ columns labelled with the variable column name with suffix `.L`, `.Q`, `.C`, `.^4`, `.^5` etc. The contrasts are generated to orthogonal to each other. The polynomial contrast matrix for a $N$-level factor can be obtained with `contr.poly(n)`. As for all contrasts the columns sum to one. Model coefficients will have to reference this matrix when being interpreted. [This post](https://stats.stackexchange.com/questions/105115/polynomial-contrasts-for-regression) has more detail on how R uses polynomial contrasts. There are other contrast methods that can be used (see `?contr.poly`).
 
 Adding interactions with a factor will effectively multiply by the number of levels in that factor e.g. say model `~.` has 100 columns (1 intercept + 99) then `.*y` will have 300 if `y` has three levels (1 intercept, 99 matched with level 1 of y, 2 for y alone, and 2 * 99 for interactions with levels 2 and 3 of y).
 
-I have seen some suggestions that I should keep all levels explicitly in the model if I am regularising but, other than giving a more natural interpretation of coeficients, I'm not sure why this should be better (it would lead to larger model matrices and therefore slower regresssions). There are comments on this [here](https://stats.stackexchange.com/questions/69804/group-categorical-variables-in-glmnet). See [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) for how to do it. **Update** It does matter because the regularisation penalises *towards* the default factor level so the model is affected by which level is the default.
-
-These can be overridden by supplying a `contrasts` argument.
+If fitting a regularised then there is a case for keeping all factor levels in. One disadvantage is a slower fit due to a larger model matrix. The advantages are that the coefficients are more easily interpretable rather than as contrasts from the reference factor level and because the regularisation penalises towards the intercept rather than towards the reference factor level. Creating binary dummy variables for all factor levels is called one-hot encoding in ML. See [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) for how to include all levels in the model matrix. The contrast matrix for each factor has a row and column for each level with just 1s on the diagonal.
 
 ### To look at
 
 modelr and hardhat have `model_matrix()`. Uses `terms` inputs so the model frame is constructed externally.
 
+Tidymodels (recipes) on dummny variables: 
+[categorical predictors](https://recipes.tidymodels.org/articles/Dummies.html) [Dummy Variables Creation](https://recipes.tidymodels.org/reference/step_dummy.html)
+
+[Alternatives to one-hot encoding](https://towardsdatascience.com/stop-one-hot-encoding-your-categorical-variables-bbb0fba89809) - if the design matrix size is an issue.
 
 ### Resources
 
