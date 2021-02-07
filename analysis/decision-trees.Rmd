@@ -1,0 +1,51 @@
+# Decision Trees
+
+I don't generally use decision trees since they are usually less effective and also harder to tune than supposedly methods such as random forests. However, I did have a situation where the infrastructure only allowed simple rules to be used. They also might be wanted when full interpretability is needed.
+
+For implementation in R I will just look at the __rpart__ package (very brief notes). See [Long introduction to RPART](https://cran.r-project.org/web/packages/rpart/vignettes/longintro.pdf).
+
+rpart implements the CART algorithm. This splits on a single variable into two child nodes. The same procedure is then applied recursively to each _child_. There are various stopping criteria which decide when to not split on a node. That node is then a _terminal node_. Each terminal node is uniquely defined by a set of rules and each observation falls into exactly one terminal node. An optional further stage once all splitting is finished is to _prune_ the tree to remove splits.
+
+It is possible to split into more than two parts at each stage but these isn't usually done in practice since it adds greatly to the computation required.
+
+## Splitting Criteria
+
+Splits are made without looking ahead to the next split because this is computationally costly. Instead greedy heuristics are used. For classification trees these are based on measures of impurity or diversity of child nodes. For regression (numeric target variable $y$) the splitting criteria maximises the reduction in sum of squares of $y$ which is equivalent to simple ANOVA. The `method` argument set to either `"class"` or "`anova`" to choose with the `parms` argument controlling the exact splitting criteria for classification. With $J$ classes the Options are:
+
+* `parms = list(split = "gini")` uses Gini impurity (or index) $\sum_{i=1}^Jp_i(1-p_i)=1-\sum_{i=1}^Jp_i^2$. This is the expected error rate if the class label is chosen randomly from the class distribution at the node.
+* `parms = list(split = "information")` uses information $\sum_{i=1}^Jp_ilog(p_i)$.
+
+Note `anova` can also be used for binary classes. The anova measure is just double the Gini in this case (seems to work differently so need to check this)?
+For classification there are several ways to incorporate asymmetric losses.
+
+* Priors as `priors` element of `parms`. Numeric vector of prior probabilities for target classes. Defaults to proportion in the data.
+* Loss matrix as `loss` element of `parms`. Matrix with zeroes on the diagonal.
+* Weights for observations as `weight` argument (numeric vector). 
+
+Weights and priors can have the same effect by setting weights so that the weighted class frequencies are the same as given by the priors.  
+ 
+## Stopping Criteria and Pruning
+
+These can be passed directly as arguments to `rpart()` but are listed under `?rpart.control`. Most are straightforward such as `minsplit`, `minbucket` and `maxdepth`. The less obvious one is the complexity parameter `cp` (CP).
+
+The CP is primarily a parameter used for pruning, but using it the initial fit saves computation time by not adding branches that would later be pruned. Pruning of a completed tree is done using `prune()`. CP is in $(0, \infty)$ and controls the cost of adding another variable to the model. 
+
+CP for pruning can be chosen by examining the fitted tree using `plotcp()` and `printcp()`. Two possible strategies are to choose the CP associated with the minimum cross-validated error or, for a more parsimonious model, use the CP of smallest tree that is within one standard deviation of the tree with the minimum cross-validated error. 
+
+So you would have to guess a CP value in the first fit then refine it for pruning.
+
+## Misc
+
+Cross-validation is used in rpart. The number of folds is set using `xval` argument (see `rpart.control`).
+
+To get information about a fitted tree try `summary()`, `print()`, and `plot()`.
+
+There are in-built procedures for fitting decision trees in [mlr](https://mlr3.mlr-org.com/) and caret.
+
+## Extracting Tree branches
+
+I want to extract from a tree the full branch as a conditional rule that could be used to subset data using `dplyr::filter()`. I ended up writing my own functions to do this but [tidyrules](https://github.com/talegari/tidyrules/) might do something similar (I wasn't able to use that at work at the time due to an older R version).
+
+The starting point was to use `rpart.plot::rpart.rules()`.
+
+The [rpart.plot package](http://www.milbo.org/doc/prp.pdf) is useful for plotting trees.

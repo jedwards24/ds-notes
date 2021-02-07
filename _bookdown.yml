@@ -20,6 +20,7 @@ rmd_files: [
   "analysis/logistic-reg.Rmd",
   "analysis/glmnet.Rmd",
   "analysis/random-forests.Rmd",
+  "analysis/decision-trees.Rmd",
   "analysis/text-model.Rmd",
   "analysis/dataset-notes.Rmd",
   
