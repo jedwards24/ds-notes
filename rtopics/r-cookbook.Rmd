@@ -1,0 +1,25 @@
+# Cookbook for R
+
+This is a place to put miscellaneous solutions to routine problems I have met in R. 
+
+## Data frame rows to a list
+
+Data frames naturally split into lists by columns. I wanted to make a list where each element holds a single row of the data frame as a list with elements named with column names. The base option works fine, but I later found `purrr::transpose()`. The `group_split()` function is currently marked as _experimental_.
+
+```{r, eval = FALSE}
+split(dt, seq(nrow(dt))) %>% map(as.list)
+rowwise(dt) %>% group_split %>% map(as.list)
+purrr::transpose(dt)
+```
+
+The first options adds numeric names at the top level, while the others leave it unnamed. `setNames` or `rlang::set_names()` can be used to name or rename the list.
+
+Much of this came from [thread](https://stackoverflow.com/questions/3492379/data-frame-rows-to-a-list).
+
+## Passing list of named parameters to a function
+
+Arguments can be passed to another function inside a function easily using `...` but the issue here was that the arguments to the first function were a named list e.g. `list_of_args = list(a = 1, b = 3)` where I wanted to call `f(list_of_args)` and have the inner function handle this e.g. `f2(...)`.
+
+Firstly the contents of `...` can be captured in the function using `c(...)` or `list(...)`. Secondly, arguments in a list can be passed directly to a function using `do.call(fun_name, args_list)`. See this [thread](https://stackoverflow.com/questions/9129673/passing-list-of-named-parameters-to-function) (mainly about managing lists). Interesting how the output of `c()` depends on the deepest list level in its inputs. 
+
+Maybe useful in this context is `alist()` which handles its arguments as if they describe function arguments.
