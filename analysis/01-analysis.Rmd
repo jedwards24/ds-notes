@@ -2,4 +2,15 @@
 
 # Introduction {#analysis-intro}
 
+## Terminology
 
+Modelling terms vary in how they are described in different disciplines. Here is a quick summary of alternatives.
+
+* Variable, column, field, attribute.
+* Observation, row, example, record, tuple.
+* Response, target, label, output, dependent variable.
+* Predictors, inputs, features, independent variable.
+
+I think feature specifically refers to input columns, not any column.
+
+[Google ML glossary](https://developers.google.com/machine-learning/glossary)

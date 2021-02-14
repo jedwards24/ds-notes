@@ -45,6 +45,7 @@ rmd_files: [
   "rtopics/strings.Rmd",
   "rtopics/dates.Rmd",
   "rtopics/tidyeval.Rmd"
+  "rtopics/r-cookbook.Rmd"
 ]
     
 

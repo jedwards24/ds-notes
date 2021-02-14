@@ -57,10 +57,14 @@ http://blog.stevensanderson.com/2009/08/24/writing-great-unit-tests-best-and-wor
 
 [assertive](https://github.com/cran/assertive) is featured in the *Testing R Code* book. On the github page it links to five other packages:
 
-+ Tony Fishettti's [assertr](https://github.com/ropensci/assertr)
++ Tony Fishettti's [assertr](https://github.com/ropensci/assertr). For checking data. ropensci and some recent activity. 
 + Hadley Wickham's [assertthat](https://github.com/hadley/assertthat). Not updated in 2 years. Not used in most of the tidyverse packages. I think tidyverse uses internal functions.
 + Michel Lang's [checkmate](https://mllg.github.io/checkmate/)
 + Stefan Bache's [ensurer](https://github.com/smbache/ensurer)
 + Gaston Sanchez's [tester](https://github.com/gastonstat/tester). Quite old and not heavily developed.
 
+Out of these ensurer and tester have not had updates in a long time. checkmate is quite active and looks promising.
+
 I've also considered [chk](https://poissonconsulting.github.io/chk/index.html) which says it is for checking user supplied arguments.
+
+`rlang::abort()` is an alternative to `stop()` but with `call. = FALSE` as default. It also uses message formatting e.g. bullets, colours.

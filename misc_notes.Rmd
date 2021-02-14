@@ -92,8 +92,6 @@ nested <- nest(allw, data = c(week, n)) %>%
   mutate(p_val = unlist(map(chisq, ~.$p.value)))
 ```
 
-
-
 ## Misc Links
 
 [http://www.win-vector.com/blog/2015/02/does-balancing-classes-improve-classifier-performance/](Balancing classifiers)
@@ -118,3 +116,5 @@ https://data36.com/data-coding-101-introduction-bash/. Intro to bash coding.
 
 + [Full stops at end of captions](https://english.stackexchange.com/questions/121551/caption-text-punctuation-full-stops-always-necessary-at-the-end). Says this depends on house style. One suggestion is to omit for short sentence fragments but use for full sentences. But the same source says this could be trumped by consistency.
 + [Which words to capitalise in a title](https://english.stackexchange.com/questions/14/which-words-in-a-title-should-be-capitalized). 
+
+**Underscores or dashes in file names**. [Blog post](https://blog.codinghorror.com/of-spaces-underscores-and-dashes/). Most suggest using dashes now since Google recognises this as a word separator while underscores do not split words. This matches how Regex and operating systems generally see things. [This article](https://medium.com/@maddendan/hyphens-vs-underscores-in-file-names-295025782912) suggests using both to leverage this behaviour by using underscores within word groupings and dashes between groupings. This makes sense but it still felt natural to me to use the opposite in e.g. *my-data_2020-08-01.RDS*. I realise this is because humans see the opposite of the computer - the dash links words while underscores are a stronger separator. I am not sure what to do for the best.

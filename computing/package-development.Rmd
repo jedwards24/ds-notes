@@ -14,6 +14,8 @@ There are a number of sections in the [tidyverse style guide](https://style.tidy
 
 [Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html)
 
+[rOpenSci Dev Guide](https://devguide.ropensci.org/)
+
 
 The following is from a Markus Gesmann talk:
 
@@ -50,6 +52,11 @@ A README.md file can be created on either github or in RStudio. I don't know abo
 + [RStudio guide](https://support.rstudio.com/hc/en-us/articles/200486488-Developing-Packages-with-RStudio)
 + [HW roxygen text formatting reference](https://cran.r-project.org/web/packages/roxygen2/vignettes/formatting.html)
 + [Roxygen2 vignettes](https://cran.r-project.org/web/packages/roxygen2/)
+
+Blogs:
+
+* [NEWS files](https://www.r-bloggers.com/2020/05/why-and-how-maintain-a-news-file-for-your-r-package/)
+* [Usethis and CI](https://www.r-bloggers.com/2018/08/developing-r-packages-with-usethis-and-gitlab-ci-part-i/)
 
 ## Package Files
 
@@ -199,3 +206,24 @@ Use `usethis::use_test()` to add a test (with template).
 ## Misc
 
 + `importFrom()` is faster than adding a dependency and then using `::`.
+
+[Internal functions in R packages](https://www.r-bloggers.com/2019/12/internal-functions-in-r-packages/). Various links that will probably be useful.
+
+* Internal functions in packages are not exported. 
+* They can be accessed using `:::`. 
+* Use them to avoid conflicts and clutter, and so that you can re-factor or remove some functions without fear of breaking others' code.  
+* Functions of other packages that are not exported shouldn't be used in your own code.
+
+[Dependency talk](https://rstudio.com/resources/rstudioconf-2019/it-depends-a-dialog-about-dependencies/) and [post](https://www.tidyverse.org/blog/2019/05/itdepends/).
+
+* Not all dependencies are the same.
+* Consider: size, installation time, system requirements, features, bugfixes, tests.
+* Trade-offs depend on users.
+* You will overestimate your ability to replace a dependency and you are likely to introduce new bugs.
+
+Packages related to assessing dependencies:
+
+* [miniCRAN](https://github.com/andrie/miniCRAN)
+* [itdepends](https://github.com/r-lib/itdepends)
+* [pkgapi](https://github.com/r-lib/pkgapi) Create the map of function calls in a package, including calls to imported packages. WIP and not updated for a long time. 
+* [CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/) Call maps and function dependencies.
