@@ -28,9 +28,6 @@ Predictions will tend to overfit to the data, but a better estimate of model fit
 
 In ranger, the in-bag status of each observation can be found by using the argument `keep.inbag = TRUE` when growing the forest. This adds an extra element `inbag.counts` to the forest object which is a list of counts of how often an observation was used for each tree (`num.trees` vectors each of length `n`). Predictions for each separate tree can be obtained using `predict(rf, data, predict.all = TRUE)`. The `.$predictions` of the output will then be a matrix rather than a vector with each column corresponding to individual trees.
 
-
-
-
 ## Parallel
 
 `ranger` has built in parallel processing (implemented by default). For `randomForest` you need to use explicitly use foreach and doParallel or similar.

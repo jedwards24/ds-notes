@@ -94,7 +94,8 @@ To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit
 
 ## Misc
 
-
-[R internals](https://cran.r-project.org/doc/manuals/R-ints.html).  A guide to the internal structures of R.
-
-[The secret lives of R objects](https://www.brodieg.com/2019/02/18/an-unofficial-reference-for-internal-inspect/). Detailed blog on R internals (2019).
+* [R internals](https://cran.r-project.org/doc/manuals/R-ints.html).  A guide to the internal structures of R.
+* [The secret lives of R objects](https://www.brodieg.com/2019/02/18/an-unofficial-reference-for-internal-inspect/). Detailed blog on R internals (2019).
+* Internal functions in packages can be accessed using `:::`.
+* [Precedence order of operators](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Syntax.html)
+* [Coming to R from other languages](https://www.burns-stat.com/documents/tutorials/impatient-r/r-coming-programming-languages/)

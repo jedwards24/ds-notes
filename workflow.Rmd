@@ -44,7 +44,17 @@ For notes on changelogs and version numbering see `software_development_notes.Rm
 
 [Worse is Better](https://en.m.wikipedia.org/wiki/Worse_is_better). This is the idea that adding functionality can make software worse due to increased complexity. In decreasing order of importance: simplicity, correctness, consistency, and completeness. The MIT approach also gives these principles but correctness and consistency are prioritised, with simplicity least important.
 
-**Task-lists**
+## R workflow links
+
+[Project oriented workflow thread](https://community.rstudio.com/t/project-oriented-workflow-setwd-rm-list-ls-and-computer-fires/3549/26) - there  is a lot in here. Worth going through again.
+
+[Automation with make](https://stat545.com/automation-overview.html)
+
+[callr package](https://callr.r-lib.org/). Calls a function in a new R process that does not affect the current session.
+
+[What they forgot to teach you about R](https://rstats.wtf/)
+
+## Task-lists
 
 + [todo.txt](https://computers.tutsplus.com/tutorials/how-to-manage-your-tasks-with-todotxt--cms-20293). A framework to create task-lists using text files. 
 + [Github-flavoured markdown task-lists](https://pandao.github.io/editor.md/examples/task-lists.html). The `[ ]` and `[x]` syntax renders as tickboxes in markdown and R markdown if used at the start of a list entry, e.g.

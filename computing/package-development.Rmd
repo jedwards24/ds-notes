@@ -1,5 +1,14 @@
 # Package Development
 
+There is a second edition of HW and JBs [R Packages](https://r-pkgs.org/index.html) in development. I found it much easier to use than the first edition so the notes below need redoing. I will add some quick notes here until I do that.
+
+Documentation
+
+* [Roxygen2 Rd tags vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html)
+* [Roxygen2 Rd formatting vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html). This is on using markdown within Roxygen tags.
+* [Roxygen2 markdown article](https://roxygen2.r-lib.org/articles/markdown.html). This is for version 6 so possibly older than the previous vignette.
+* [roxygen2md](https://roxygen2md.r-lib.org/). Package that replaces Rd syntax with Markdown. 
+
 **OLDISH NOTES - NEED REVIEWING**
 
 ## Good Practice

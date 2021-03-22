@@ -40,7 +40,9 @@ Unified Parallel and Distributed Processing.
 
 [githubinstall](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html). Makes it easier to install packages from github. The devtools version requires developer name while this just requires the package name.
 
-**lintr styler formatR**. Packages that check your code's formatting. 
+**lintr styler formatR**. Packages that check your code's formatting. [styler](https://styler.r-lib.org/) and [lintr](https://github.com/jimhester/lintr) both support the tidyverse style guide - styler is for interactive use while lintr uses automated checks. styler has a Rstudio addin. [formatR](https://yihui.org/formatr/) by Yihui Xie 
+
+[withr](https://withr.r-lib.org/index.html). Run code from a temporarily altered state. Ensures that you do not permanently alter global options/variables. Locally change a random number seed might be useful.
 
 [mlr](https://mlr.mlr-org.com/index.html). Machine learning with R.
 
@@ -88,7 +90,7 @@ Unified Parallel and Distributed Processing.
 
 [usethis](https://usethis.r-lib.org/). Workflow package helping to automate tasks.
 
-[checkr](https://github.com/poissonconsulting/checkr). Functions to check properties of objects. Has a `check_key()` function. The author also gives a [review of some assertive programming R packages](https://cran.r-project.org/web/packages/checkr/vignettes/assertive-programming.html). Superceded by [chk](https://github.com/poissonconsulting/chk) [github.io](https://poissonconsulting.github.io/chk/index.html). There is also the older related [datacheckr](https://github.com/poissonconsulting/datacheckr). 
+[checkr](https://github.com/poissonconsulting/checkr). Functions to check properties of objects. Has a `check_key()` function. The author also gives a [review of some assertive programming R packages](https://cran.r-project.org/web/packages/checkr/vignettes/assertive-programming.html). Superseded by [chk](https://github.com/poissonconsulting/chk) [github.io](https://poissonconsulting.github.io/chk/index.html). There is also the older related [datacheckr](https://github.com/poissonconsulting/datacheckr). 
 
 [snakecase](https://github.com/Tazinho/snakecase) - for parsing and conversion between snake, camel etc. cases. May be useful for general parsing too.
 
@@ -116,8 +118,17 @@ Unified Parallel and Distributed Processing.
 
 [multiplyr](https://multidplyr.tidyverse.org/) Backend for dplyr for using multi-cores. Not CRAN yet.
 
-[dtplyr](https://dtplyr.tidyverse.org/) dplyr backend for calling data table
+[dtplyr](https://dtplyr.tidyverse.org/) dplyr backend for calling data table.
 
+[disk.frame](https://github.com/xiaodaigh/disk.frame) To manipulate tabular data that doesn't fit in RAM.
+
+[dupree](https://github.com/russHyde/dupree) Identify chunks / blocks of highly duplicated code within a set of R scripts.
+
+[spelling](https://github.com/ropensci/spelling/) Tools for automated spell checking. Based on Hunspell.
+
+[miniCRAN](https://github.com/andrie/miniCRAN) Create a mini version of CRAN containing only selected packages.
+
+[CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/vignettes/intro.html) Analyses dependencies between functions and variables in scripts (not package dependencies).
 ## purrr
 
 [purrr package](https://purrr.tidyverse.org/). "This package completes R's functional programming tools with missing features present in other programming languages."

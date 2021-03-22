@@ -89,7 +89,7 @@ From the R core team (2003): [How To Write Model-Fitting Functions in R](https:/
 
 ## Tidymodels
 
-[Tidymodels] is a collection of packages to give a framework for modelling/machine learning. It is built on ideas from the carat package which is no longer developed.
+[Tidymodels] is a collection of packages to give a framework for modelling/machine learning. It is built on ideas from the carat package which is no longer developed. There is also the tidyverse's [modelr package](https://github.com/tidyverse/modelr) which provides similar utility but not in as much detail (simpler though). **Add more detail on modelr?**
 
 Links to guides:
 

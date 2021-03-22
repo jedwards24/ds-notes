@@ -67,4 +67,8 @@ Out of these ensurer and tester have not had updates in a long time. checkmate i
 
 I've also considered [chk](https://poissonconsulting.github.io/chk/index.html) which says it is for checking user supplied arguments.
 
+[vetr](https://github.com/brodieG/vetr) seems to do a similar job, based on comparing objects in a a similar way to `vapply()`. No dependencies. Also gives a list of alternatives.
+
+[Comparison of packages](http://htmlpreview.github.io/?https://github.com/brodieG/vetr/blob/master/extra/compare.html)
+
 `rlang::abort()` is an alternative to `stop()` but with `call. = FALSE` as default. It also uses message formatting e.g. bullets, colours.

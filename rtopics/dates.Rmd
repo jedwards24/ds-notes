@@ -40,7 +40,7 @@ There are two broad kinds of time-based objects:
 
 Use intervals to change between durations and periods. The different objects are stored quite differently:
 
-```{r dur, eval = TRUE}
+```{r dur, eval = TRUE, echo = TRUE}
 tm1 <- as.POSIXct("2013-07-24 23:55:26")
 tm1
 tm2 <- as.POSIXct("25072013 08:32:07", format = "%d%m%Y %H:%M:%S")
@@ -86,7 +86,7 @@ The tsibble news says that the sliding window in their package can be replaced b
 
 This code is an example of how to use slider to obtain fixed windows. This uses the `slide_period_dfr()` which outputs a data frame.
 
-```{r}
+```{r, eval = FALSE, echo = TRUE}
 # helper function to apply to tiles
 weekly_summary <- function(data) {
   summarise(data, 
@@ -106,7 +106,7 @@ slide_period_dfr(dt, dt$date_notified, .period = "week", .f = weekly_summary, .o
 
 Next is a similar example for a 7-day moving average using slider.
 
-```{r}
+```{r, eval = FALSE, echo = TRUE}
 dt <- tibble(date = seq.Date(ymd("2020-01-01"), ymd("2020-2-01"), by = "day"), 
              total = rpois(length(date), 5))
 
@@ -119,7 +119,7 @@ dt7d <- dt %>%
 
 The next block is not specifically about slider but is a plotting recipe to compare moving averages from two years (assuming same processing as above but a longer data date range). This uses 01 Jan as an origin.  
 
-```{r}
+```{r, eval = FALSE, echo = TRUE}
 dt7d %>% 
   mutate(year = year(date),
          yday = yday(date)) %>%
@@ -159,7 +159,7 @@ https://stackoverflow.com/questions/46199638/convert-decimal-number-double-to-ho
 
 A date is stored as a double. `as.Date()` or `lubridate::as_date()` applied to a POSIXt will drop fractional part (i.e. time part). However, `as.Date()`  or `lubridate::as_date()` applied to a numeric will retain any fraction but the date correctly has 0 hours, mins, secs.
 
-```{r}
+```{r, eval = TRUE, echo = TRUE}
 x <- as_date(10000.38, origin = "1970-01-01")
 x
 second(x)

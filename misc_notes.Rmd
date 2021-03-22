@@ -30,7 +30,7 @@ This [blog post](https://sharla.party/post/comparing-two-dfs/) looks at packages
 
 I found `all_equal()` to be quite useful. By default it ignores column and row order. Optionally it can convert similar classes (double/integer and character/factor). I found the output didn't help much when many rows were different, which happened mostly when there were small numeric difference between values. I would like an option to ignore a given tolerance. Also it is "questioning" as of version 1.0.0.
 
-There is a newer tidyverse package [waldo](https://www.tidyverse.org/blog/2020/10/waldo/) to compare objects but with improved messenging over `testthat::expect_equal()`. I will try this but still perhaps not ideal the larger data frames I've been using.
+There is a newer tidyverse package [waldo](https://www.tidyverse.org/blog/2020/10/waldo/) to compare objects but with improved messaging over `testthat::expect_equal()`. I will try this but still perhaps not ideal the larger data frames I've been using.
 
 The `visdat::vis_compare()` function visualises difference and so is good for getting an overall view when there are lots of differences. I could then go into more detail on individual columns. When there were many columns, I found it hard to tell which columns the differences belonged to and so I would prefer table output usually. Looking into the function the main comparison was done using this code:
 
@@ -118,3 +118,17 @@ https://data36.com/data-coding-101-introduction-bash/. Intro to bash coding.
 + [Which words to capitalise in a title](https://english.stackexchange.com/questions/14/which-words-in-a-title-should-be-capitalized). 
 
 **Underscores or dashes in file names**. [Blog post](https://blog.codinghorror.com/of-spaces-underscores-and-dashes/). Most suggest using dashes now since Google recognises this as a word separator while underscores do not split words. This matches how Regex and operating systems generally see things. [This article](https://medium.com/@maddendan/hyphens-vs-underscores-in-file-names-295025782912) suggests using both to leverage this behaviour by using underscores within word groupings and dashes between groupings. This makes sense but it still felt natural to me to use the opposite in e.g. *my-data_2020-08-01.RDS*. I realise this is because humans see the opposite of the computer - the dash links words while underscores are a stronger separator. I am not sure what to do for the best.
+
+## Importing from SAS with haven
+
+The haven package can read directly from SAS files using `read_sas()`. It attaches some extra attributes from the original data. At the top level there is a `label` attribute which has the dataset name. There may also be attributes for each column: a `format` and a `label`. These can be removed by using `zap_formats()` and `zap_label()` directly on the tibble. The function `zap_labels()` are for _value_ labels which are attached to individual values in a vector. Haven reads these columns in as vector of a new class `labelled`. See `semantics` vignette for details. There is also a `zap_missing()` function which replaces empty strings with `NA`. This takes vectors as an input so for a tibble use `mutate_if(is_character, zap_missing)`. This does the same as using `na_if()` but _might_ be faster.
+
+## Exploring Package Dependencies
+
+The `available.packages()` function returns a matrix of information about available packages whether installed or not (I think all on CRAN by default). There are columns `Depends`, `Imports` and `Suggests` so using `x["ggplot2","Depends"]` will give the dependencies for ggplot2. The output is a string. I would like recursive imports for this, but can't find obvious functions to do this.
+
+`tools:::package.dependencies()` is suggested lots but it is depreciated (although still usable). Package miniCRAN has functions but these are based on `package.dependencies()`. There is `renv::dependencies()` but this is used to check code for dependencies by looking for `library()` etc. calls.
+
+[cranly](https://cran.r-project.org/web/packages/cranly/index.html) looks like the best solution. It does the cleaning of the `available.packages()` table and also adds tools for visualising networks. See vignettes but `clean_CRAN_db() %>% build_network(perspective = "package")` will give me the cleaned package table that I am after. Most of the functions operate on a package network built by `build_network(package_table, perspective = "package")`.
+
+

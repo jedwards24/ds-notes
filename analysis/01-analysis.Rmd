@@ -14,3 +14,7 @@ Modelling terms vary in how they are described in different disciplines. Here is
 I think feature specifically refers to input columns, not any column.
 
 [Google ML glossary](https://developers.google.com/machine-learning/glossary)
+
+## Courses
+
+[Google ML crash course](https://developers.google.com/machine-learning/crash-course)

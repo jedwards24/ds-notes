@@ -45,3 +45,5 @@ todo.md
 /_bookdown_files/
 book.bib
 packages.bib
+/docs/
+temp.txt

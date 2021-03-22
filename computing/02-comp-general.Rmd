@@ -149,8 +149,6 @@ load("installed_packages.RDATA")
 for (count in 1:length(installedpackages)) install.packages(installedpackages[count])
 ```
 
-
-
 ## IT Issues
 
 ###Blinking White Dot in RStudio

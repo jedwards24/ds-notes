@@ -2,7 +2,7 @@
 
 ## New additions
 
-**Ordering variables in a plot**. By default the plot will use natural ordering i.e. numeric, alphabetic or by factor. With factors the order of the factor levels will be used even if the factor is not ordered. The common way to force an ordering in a plot is to convert variables to a factor with the desired ordering. This is what happens using `reorder()` which converts to a factor (by default unorded) then applies ordering based on another vector or a function (a minus in front of the ordering variable will reverse the order). 
+**Ordering variables in a plot**. By default the plot will use natural ordering i.e. numeric, alphabetic or by factor. With factors the order of the factor levels will be used even if the factor is not ordered. The common way to force an ordering in a plot is to convert variables to a factor with the desired ordering. This is what happens using `reorder()` which converts to a factor (by default unordered) then applies ordering based on another vector or a function (a minus in front of the ordering variable will reverse the order). 
 
 **Text label positioning**. Use the [ggrepel package](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html) via the functions `geom_text_repel()` and `geom_label_repel()`. There are options but they work well just used as they are.
 
@@ -122,6 +122,8 @@ ggplot(df,aes(x,y)) +
 {if(flag)geom_hline(yintercept=15)} +
   geom_point()
 ```
+
+[Demo of multiple y axes](https://github.com/alex-koiter/Weather-and-Climate-figures)
 
 ## Other Packages
 
