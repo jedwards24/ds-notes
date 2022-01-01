@@ -48,8 +48,11 @@ I'll put some links here relating to handling test/training data splits (or cros
 
 [ROC Curve, Lift Chart and Calibration Plot](http://www.stat-d.si/mz/mz3.1/vuk.pdf)
 
+[ROCket package](https://cran.r-project.org/web/packages/ROCket/index.html). This includes parametric ROC curves.
+
 [Multiple ROC curves in ROCR](https://stackoverflow.com/questions/14085281/multiple-roc-curves-in-one-plot-rocr)
 I adapted this to use with ggplot. Three methods:
+
 ```{r roclines, eval = F}
 # There are 2 performance objects perf1 and perf2
 #option 1

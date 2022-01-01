@@ -24,7 +24,7 @@ library(edwards)
 
 In brief, random forest predictions are a combination of multiple trees. The observations used to fit each tree are sampled, with replacement, from the data. At each split only a subset (of size `mtry`) of variables are available. This makes makes the trees more dissimilar from each other.
 
-Predictions will tend to overfit to the data, but a better estimate of model fit can be found using *out-of-bag* (OOB) predictions. If an observation was used to grow a given tree then it is said to be *in-bag*. Observations not used are OOB. Just using predicitions from trees for which the observation was OOB gives an OOB predicition (using majority vote as normal). I think ties are split randomly but I'm not sure.
+Predictions will tend to overfit to the data, but a better estimate of model fit can be found using *out-of-bag* (OOB) predictions. If an observation was used to grow a given tree then it is said to be *in-bag*. Observations not used are OOB. Just using predictions from trees for which the observation was OOB gives an OOB prediction (using majority vote as normal). I think ties are split randomly but I'm not sure.
 
 In ranger, the in-bag status of each observation can be found by using the argument `keep.inbag = TRUE` when growing the forest. This adds an extra element `inbag.counts` to the forest object which is a list of counts of how often an observation was used for each tree (`num.trees` vectors each of length `n`). Predictions for each separate tree can be obtained using `predict(rf, data, predict.all = TRUE)`. The `.$predictions` of the output will then be a matrix rather than a vector with each column corresponding to individual trees.
 
@@ -71,7 +71,7 @@ The paper finds, in simulations and real data, that the one time ordering method
 An earlier example (artificial) example of this is given in a [blog post](http://www.win-vector.com/blog/2016/05/on-ranger-respect-unordered-factors/). I ran the code given there with `respect.unordered.factors` set to TRUE, FALSE and 'partition', as well as `randomForest()` with standard settings (mtry=2 to match the ranger models). The mse prediction errors were:
 
 ```{r wv_results}
-tibble(model = c("TRUE", "FALSE", 'partition', "randomForest"), 
+tibble(model = c("FALSE", "TRUE", 'partition', "randomForest"), 
        mse_oob = c(4.16, 0.84, 1.92, 2.53),
        mse_test = c(2.69, 1.15, 1.50, 3.20)) %>% 
   my_kable()

@@ -13,17 +13,14 @@ Documentation
 
 ## Good Practice
 
-There are a number of sections in the [tidyverse style guide](https://style.tidyverse.org/package-files.html) on packages.
 
-[Package lifecycle badges](https://www.tidyverse.org/lifecycle/)
-
-[Using ggplot in packages](https://ggplot2.tidyverse.org/dev/articles/ggplot2-in-packages.html)
-
-[Using tidyr in packages](https://tidyr.tidyverse.org/articles/in-packages.html)
-
-[Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html)
-
-[rOpenSci Dev Guide](https://devguide.ropensci.org/)
++ [tidyverse style guide](https://style.tidyverse.org/package-files.html). About half of this is on packages.
++ [Package lifecycle badges](https://www.tidyverse.org/lifecycle/)
++ [Using ggplot in packages](https://ggplot2.tidyverse.org/dev/articles/ggplot2-in-packages.html)
++ [Using tidyr in packages](https://tidyr.tidyverse.org/articles/in-packages.html)
++ [Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html)
++ [rOpenSci Dev Guide](https://devguide.ropensci.org/)
++ [Tidyverse design guide](https://principles.tidyverse.org/)
 
 
 The following is from a Markus Gesmann talk:
@@ -190,6 +187,8 @@ For packages created in RStudio, the `NAMESPACE` file uses string matching to de
 
 There can be issues here: [Namespace problems](http://alyssafrazee.com/2014/01/21/namespaces.html). Other resources: [Connecting to other packages](https://kbroman.org/pkg_primer/pages/depends.html). [Roxygen namespace vignette](https://cran.r-project.org/web/packages/roxygen2/vignettes/namespace.html).
 
+[Eliminating R CMD check NOTEs when using tidyselect](https://dplyr.tidyverse.org/articles/programming.html#eliminating-r-cmd-check-notes)
+
 ## Workflow
 
 The command `devtools::load_all()` (or in RStudio press Ctrl + Shift + L) will save all open files and reload your package code. It simulates what happens when use `library()` but uses the source package (that is being developed) rather than the installed package.
@@ -236,3 +235,5 @@ Packages related to assessing dependencies:
 * [itdepends](https://github.com/r-lib/itdepends)
 * [pkgapi](https://github.com/r-lib/pkgapi) Create the map of function calls in a package, including calls to imported packages. WIP and not updated for a long time. 
 * [CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/) Call maps and function dependencies.
+
+[usethis setup](https://usethis.r-lib.org/articles/articles/usethis-setup.html). Includes what to add to your .Rprofile

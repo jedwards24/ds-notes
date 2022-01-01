@@ -28,7 +28,13 @@ Mostly free online.
 
 [R for Statistical Learning](https://daviddalpiaz.github.io/r4sl/)
 
+[Applied Predictive Modelling](http://appliedpredictivemodeling.com/). Max Kuhn and Kjell Johnson.
+
+[Feature Engineering and Selection](http://www.feat.engineering/index.html). Max Kuhn and Kjell Johnson
+
 ## R Specific
+
+[R Porject Site - Books Related to R](https://www.r-project.org/doc/bib/R-books.html)
 
 [What They Forgot to Teach You About R](https://whattheyforgot.org/)
 
@@ -66,6 +72,10 @@ Mostly free online.
 
 [R Cookbook](https://rc2e.com/)
 
+[Tidyverse Design Guide (book)](https://design.tidyverse.org/)
+
+[3rd edition of ggplot book](https://ggplot2-book.org/index.html)
+
 ## Coding 
 
 + The Pragmatic Programmer - Andrew Hunt
@@ -75,3 +85,7 @@ Mostly free online.
 
 + [Art of project management](https://www.amazon.co.uk/Project-Management-Theory-Practice-OReilly/dp/0596007868)
 + [A Guide to the Project Management Body of Knowledge: PMBOK Guide](https://www.amazon.co.uk/Guide-Project-Management-Body-Knowledge/dp/193069945X)
+
+## General
+
+[Teaching Tech Together](https://teachtogether.tech/)

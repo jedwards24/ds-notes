@@ -48,7 +48,7 @@ Other resources:
 + [NLP Cousera course](https://www.coursera.org/learn/language-processing) from the National Research University - Higher School of Economics. Part of a [advanced ML specialisation](https://www.coursera.org/specializations/aml#courses).
 * [List of free resources to learn NLP](https://hackernoon.com/list-of-free-resources-to-learn-natural-language-processing-5bc4b76db552)
 
-### Notes from HSE Coursera Course
+## Notes from HSE Coursera Course
 
 From [NLP Cousera course](https://www.coursera.org/learn/language-processing). Some parts are low on detail since I wasn't equally interested in all material.
 
@@ -238,3 +238,14 @@ Adding lexicon to NLU
 
 Dialog manager tracks the state of the dialog. The state records probability distributions over goals, method, and requested slots. Given the state you need a policy for the response. Can be hand-crafted or RL. Supervised learning is difficult because labelled data is expensive to collect.
 
+## Text R Packages Notes
+
+Some quick notes on some enrichment datasets available in R packages.
+
+`common_names` is in the lexicon package. 5493 names (US). They contain many common words that we might not want removed e.g. lane, van, son, man, lady, long, sunday, miles, angle, ok, mercedes, chase.
+
+`stopwords_en` is in the corpus package (175 words).
+
+The lexicon `corpus::affect_wordnet` is a hand-curated collection of emotion-curated words. Each word is given one or more categories which each have an emotion (positive, neutral, negative, ambiguous).
+
+`tidytext::get_sentiments` has four options for lexicons to use with default "bing" lexicon, which is included in the package as `tidytext::sentiments`. The others are obtained using textdata package functions.  The "afinn" lexicon contains 2477 words each rated for positivity/negativity on a -5 to +5 scale (rated by hand). 

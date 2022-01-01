@@ -201,6 +201,8 @@ To add internal hyperlinks in html (via pandoc) either, use the exact section na
 
 I have found that `"-"` displays as a large dot in html tables. This happens because it is read as a bullet by pandoc. One fix is to replace with `"--"` to get an endash, but this doesn't always work (`"---"` is used in markdown for an emdash). Another suggestion is `"\\-"`. [kableExtra issue thread](https://github.com/haozhu233/kableExtra/issues/223). 
 
+Column widths in tables can be inappropriate. I use `kable_styling(full_width = F)` but this can be over narrow for some tables, especially with captions. There are some suggestions in [this thread](https://stackoverflow.com/questions/41900335/adjusting-width-of-tables-made-with-kable-in-rmarkdown-documents).
+
 ## Bookdown
 
 + [bookdown book](https://bookdown.org/yihui/bookdown/)

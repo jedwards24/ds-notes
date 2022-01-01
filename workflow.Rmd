@@ -56,7 +56,7 @@ For notes on changelogs and version numbering see `software_development_notes.Rm
 
 ## Task-lists
 
-+ [todo.txt](https://computers.tutsplus.com/tutorials/how-to-manage-your-tasks-with-todotxt--cms-20293). A framework to create task-lists using text files. 
++ [todo.txt](https://computers.tutsplus.com/tutorials/how-to-manage-your-tasks-with-todotxt--cms-20293). A framework to create task-lists using text files. [More on this](https://www.howtogeek.com/355890/every-to-do-list-app-sucks-switch-to-todo.txt-instead/).
 + [Github-flavoured markdown task-lists](https://pandao.github.io/editor.md/examples/task-lists.html). The `[ ]` and `[x]` syntax renders as tickboxes in markdown and R markdown if used at the start of a list entry, e.g.
     + [ ] task 1
     + [x] Another
@@ -67,8 +67,11 @@ A template for how to structure these lists and what to put in them could be [Gi
 
 + [Nice R Code](https://nicercode.github.io/). A collection of blog posts on writing nicer R code. From 2013.
 + [Data organisation in spreadsheets](https://kbroman.org/dataorg/)
++ [Best Practices for Scientific Computing](https://software-carpentry.org/blog/2012/10/best-practices-for-scientific-computing.html)
 + [Good Enough Practices for Scientific Computing](https://swcarpentry.github.io/good-enough-practices-in-scientific-computing/)
 + [Guide to data sharing](https://github.com/jtleek/datasharing)
++ [Tidyverse design guide](https://principles.tidyverse.org/)
++ [ropensci](https://ropensci.org/). May be something here.
 
 Efficient R chapter 9 *Efficient Collaboration*:
 

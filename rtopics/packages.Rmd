@@ -86,7 +86,7 @@ Unified Parallel and Distributed Processing.
 
 [skimr](https://github.com/ropensci/skimr). Quick, simple summaries for variables in a data frame.
 
-[naniar](https://github.com/njtierney/naniar). Missing data functions. Tidy-based. Has a good collection of functions to replace strings with NAs (dplyr has `na_if()` but these are more usuable).
+[naniar](https://github.com/njtierney/naniar). Missing data functions. Tidy-based. Has a good collection of functions to replace strings with NAs (dplyr has `na_if()` but these are more usuable). Related [visdat](https://cran.r-project.org/web/packages/visdat/vignettes/using_visdat.html) has a few possibly useful plotting functions for missing values.
 
 [usethis](https://usethis.r-lib.org/). Workflow package helping to automate tasks.
 
@@ -129,6 +129,11 @@ Unified Parallel and Distributed Processing.
 [miniCRAN](https://github.com/andrie/miniCRAN) Create a mini version of CRAN containing only selected packages.
 
 [CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/vignettes/intro.html) Analyses dependencies between functions and variables in scripts (not package dependencies).
+
+[Rando](https://github.com/MyKo101/rando) Context aware repoducible random numbers. Stronger checks than base.
+
+[fs](https://fs.r-lib.org/) File system operations. More consistent naming and return values than base with better checks.  
+
 ## purrr
 
 [purrr package](https://purrr.tidyverse.org/). "This package completes R's functional programming tools with missing features present in other programming languages."
@@ -287,3 +292,16 @@ The version check is to ensure it works with older versions.
 [waldo](https://github.com/r-lib/waldo/). Differences between objects. Developed for use in testthat v3.
 
 [bench](https://github.com/r-lib/bench). Benchmarks code.
+
+## Package Maintainence
+
+From HW keynote RStudio Conf 2021
+
+Lifecycle: 
+
+* Stable, superceded are “in-warranty”, 
+* Experiential, Deprecated are “out-of-warranty”.
+
+“Off-label” use of functions (using for unintended side-effects) voids the warranty (may change in future).
+
+To use a package outside of the update cycle use renv, RStudio package manager, or Microsoft’s mran.

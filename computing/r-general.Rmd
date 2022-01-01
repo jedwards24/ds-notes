@@ -61,6 +61,9 @@ Resources:
 + [RStudio article](https://rviews.rstudio.com/2017/04/19/r-for-enterprise-understanding-r-s-startup/) - probably the most accessible.
 + [Rbloggers article](https://www.r-bloggers.com/fun-with-rprofile-and-customizing-r-startup/)
 + There a [startup package](https://github.com/HenrikBengtsson/startup). This gives some explanation on the R startup process.
++ [usethis setup](https://usethis.r-lib.org/articles/articles/usethis-setup.html). Adds some lines for package development.
++ [RProfile essentials](http://kevinushey.github.io/blog/2015/02/02/rprofile-essentials/). Useful ideas for what to put in your `.Rprofile`.
++ [Managing R with .Rprofile, .Renviron, Rprofile.site, Renviron.site, rsession.conf, and repos.conf](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf). Overview.
 
 Some useful code:
 

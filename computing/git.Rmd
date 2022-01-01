@@ -12,6 +12,7 @@
 + [Karl Broman](https://kbroman.org/github_tutorial/)
 + [Happy git with R - Jenny Bryan](Jenny Bryan)
 + [Github Guides](https://guides.github.com/)
++ [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## Setup 
 

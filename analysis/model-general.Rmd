@@ -35,7 +35,7 @@ The `model.frame()` functions returns a data frame containing the variables used
 model.frame(mpg ~ disp + log(hp), data = mtcars, subset = cyl == 6) 
 ```
 
-The model frame adds a new attribute `terms`. "The `terms` object contains the data that defines the relationships between variables in the formulas, as well as any transformations of the individual predictors". It "...will be used to generate design matrices on new data". In `lm()` the design matrix is created with `model.matrix()` using terms and the data. The `"factor"` attribute of `terms` is a matrix with a row for each predictor in the formula and a column for each model term (this is mainly interesting when there are interactions).
+The model frame adds a new attribute `terms`. "The `terms` attribute contains the data that defines the relationships between variables in the formulas, as well as any transformations of the individual predictors". It "...will be used to generate design matrices on new data". In `lm()` the design matrix is created with `model.matrix()` using terms and the data. The `"factor"` attribute of `terms` is a matrix with a row for each predictor in the formula and a column for each model term (this is mainly interesting when there are interactions).
 
 See `?terms` and `?terms.object`.
 
@@ -50,34 +50,80 @@ Operations on variables included in the formula can only be on single columns (p
 
 ## Design Matrix {#design-matrix}
 
-The standard method in modelling functions in R is to take formula and data arguments and create a design matrix internally. However, some methods (Glmnet for example) instead takes a design matrix input. This has the advantage of avoiding the creation of a `terms` object which can be large for wide data.
+The standard method in modelling functions in R is to take formula and data arguments and create a design matrix internally. However, some methods (glmnet for example) instead take a design matrix input. This has the advantage of avoiding the internal creation of a `terms` object which can be large for wide data.
 
 To create a design matrix in R use `model.matrix()`. This takes a formula or terms input, and a data argument if needed (e.g. if `.` is used in the formula). It will call `model.frame()` internally, if needed, to get the data into the correct form. By default `model.matrix()` creates a column for the intercept (first column) and creates $k-1$ dummy variable for each factor with $k$ levels.
 
-For some models the standard design matrix may not be wanted. For example, glmnet creates an intercept internally and regularisation means that factors could be handled differently. __Maybe move these notes to glmnet.Rmd__
+For some models the standard design matrix may not be wanted. For example, glmnet creates an intercept internally and regularisation means that factors could be handled differently.
 
 ### Intercept
 
-The standard suggestion for excluding an intercept is to use `model.matrix( ~ . -1, data_input)` or `model.matrix( ~ 0 + ., data_input)`. This also changes the dummy variables for factors by adding one for all levels for the first factor only. To remove the intercept without changing how factors are processed use `model.matrix( ~ ., data_input)[, -1]`. If using `predict()` then use the same model matrix method with new data.
+The standard suggestion for excluding an intercept is to use `model.matrix( ~ . -1, data_input)` or `model.matrix( ~ 0 + ., data_input)`. However, this also changes the dummy variables for factors by adding one column for all levels for the first factor, but all-but-one for the remainder. To remove the intercept without changing how factors are processed use `model.matrix( ~ ., data_input)[, -1]`. If using `predict()` then use the same model matrix method with new data.
 
 ### Factors
 
 When `model.matrix()` creates a design matrix, by default it adds $N-1$ binary dummy variable columns for an $N$-level factor. The level not added as a dummy variable for each factor is the first (by default factor levels are ordered alphabetically). Levels that are empty count towards $N$. Logical variables are converted to factors with levels `c(FALSE, TRUE)`.
 
-These can be overridden by supplying a `contrasts` argument. Contrasts are linear combinations of variables whose coefficients sum to one. They are used in statistics to compare treatments. The default is to standard dummy encoding for non-ordered factors as described above and polynomial encoding for ordered factors (see below). See [this post](https://rstudio-pubs-static.s3.amazonaws.com/65059_586f394d8eb84f84b1baaf56ffb6b47f.html) for more detail on contrasts in R. I won't get into the detail of this since I'm only interested in two areas: including all factor levels (see below) and understanding ordered factor encoding.
+These can be overridden by supplying a `contrasts` argument. Contrasts are linear combinations of variables whose coefficients sum to one. They are used in statistics to compare treatments. The default is to standard dummy encoding for non-ordered factors as described above and polynomial encoding for ordered factors (see below).  The types of contrasts are applied by contrast functions (e.g. `contr.treatment()` and `contr.poly()`). Which of these are used can be changed either globally, as attributes on the data, or as supplied as model arguments e.g. to `model.matrix()`. The global options give the default functions to be used with ordered and unordered factors:
+
+```{r contrasts_options}
+options("contrasts")
+```
+
+Methods for changing contrasts:
+
+1. Change the global defaults with `options(contrasts = c("contr_one_hot", "contr.helmert"))`. 
+2. Use the  `contrasts.arg` argument in `model.matrix()`. This requires a list giving contrast functions to use for each named column e.g. `contrasts.arg = list(species = "contr_one_hot")` will only change the contrast for column `species`.
+3. Assign contrasts as attributes to each factor in the data frame e.g `contrasts(my_factor_vector) <- contr.sum(2)`. These are retained when converted to a model frame.
+
+The [help for `hardhat::model_matrix()`](https://hardhat.tidymodels.org/reference/model_matrix.html) suggests using the global settings or assigning contrasts as attributes to each factor in the data frame. Examples are given for each. There is more on hardhat functions in [the next section below](#one-hot). In my jemodel package I use global options but with `model.matrix()` to keep dependencies simple.
+
+See [this post](https://rstudio-pubs-static.s3.amazonaws.com/65059_586f394d8eb84f84b1baaf56ffb6b47f.html) for more detail on contrasts more generally in R. 
 
 Ordered factors are encoded using a contrast matrix but with non-binary entries. The default, polynomial encoding, replaces the $N$-level factor variable with $N-1$ columns labelled with the variable column name with suffix `.L`, `.Q`, `.C`, `.^4`, `.^5` etc. The contrasts are generated to orthogonal to each other. The polynomial contrast matrix for a $N$-level factor can be obtained with `contr.poly(n)`. As for all contrasts the columns sum to one. Model coefficients will have to reference this matrix when being interpreted. [This post](https://stats.stackexchange.com/questions/105115/polynomial-contrasts-for-regression) has more detail on how R uses polynomial contrasts. There are other contrast methods that can be used (see `?contr.poly`).
 
 Adding interactions with a factor will effectively multiply by the number of levels in that factor e.g. say model `~.` has 100 columns (1 intercept + 99) then `.*y` will have 300 if `y` has three levels (1 intercept, 99 matched with level 1 of y, 2 for y alone, and 2 * 99 for interactions with levels 2 and 3 of y).
 
-If fitting a regularised then there is a case for keeping all factor levels in. One disadvantage is a slower fit due to a larger model matrix. The advantages are that the coefficients are more easily interpretable rather than as contrasts from the reference factor level and because the regularisation penalises towards the intercept rather than towards the reference factor level. Creating binary dummy variables for all factor levels is called one-hot encoding in ML. See [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) for how to include all levels in the model matrix. The contrast matrix for each factor has a row and column for each level with just 1s on the diagonal.
+### One-hot Encoding and model.matrix() Alternatives {#one-hot}
 
-### To look at
+If fitting a regularised model then there is a case for keeping all factor levels when creating dummy variables since the regularisation penalises towards the intercept rather than towards the base factor level. This also makes the coefficients easier to interpret.  One disadvantage is a larger model matrix which will increase fitting time. Creating binary dummy variables for all factor levels is called one-hot encoding in ML. It was surprisingly hard to find a simple explanation of how to implement this so here is a summary of the approaches I found.
 
-modelr and hardhat have `model_matrix()`. Uses `terms` inputs so the model frame is constructed externally.
+First, `model.matrix(~ 0 + factor, data)` adds indicators for all factor levels for the _first_ variable only. This is demonstrated at [https://parsnip.tidymodels.org/reference/contr_one_hot.html](https://parsnip.tidymodels.org/reference/contr_one_hot.html).
 
-Tidymodels (recipes) on dummny variables: 
-[categorical predictors](https://recipes.tidymodels.org/articles/Dummies.html) [Dummy Variables Creation](https://recipes.tidymodels.org/reference/step_dummy.html)
+I initially used [this thread](https://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r) which uses  `contrasts(contrasts = FALSE)`. This takes a factor input and returns an identity matrix with rows/columns for each level. This corresponds to the contrast function `contr.treatment(contrasts = FALSE)` except this takes character vector inputs. `contr.treatment()` is the default for unordered factors but with `contrasts = TRUE`.
+
+```{r contrasts}
+x <- letters[1:3]
+xf <- factor(x)
+contrasts(xf)
+contrasts(xf, contrasts = FALSE)
+identical(contrasts(xf), contr.treatment(x))
+identical(contrasts(xf, contrasts = FALSE), contr.treatment(x, contrasts = FALSE))
+```
+
+Tidymodels provides a new contrast function which does this also: `parsnip::contr_one_hot()` (also in hardhat, but as an internal function). Its intended use will be described with the other hardhat functions below.
+
+`caret::dummyVars()` is a higher level function that takes a formula/data input and returns a dummyVars object, from which can be extracted a model matrix. However, caret is not developed currently so it is not a route I want to go down. 
+
+`glmnet::makeX()` is simple to use but has limitations:
+
+* It does not use a formula so all columns in the data are treated as predictors without any interactions.
+* Ordered factors are treated as unordered.
+
+The glmnetUtils package provides a wrapper for glmnet functions which take formula/data inputs instead of glmnet's usual x/y inputs, and which uses one-hot encoding. It also has an option to avoid creating the `terms` object because it can get very large with wide data, instead building the model matrix directly without it. The lower-level function that does this is  `glmnetUtils::makeModelComponents()` but it does not seem to handle formulas with a dot in. Arguments and benchmarking are given in the [vignette](https://cran.r-project.org/web/packages/glmnetUtils/vignettes/intro.html). The issue with `terms` is also described by Max Kuhn in [R formula method: bad parts](https://rviews.rstudio.com/2017/03/01/the-r-formula-method-the-bad-parts/). 
+
+The `terms` object has a matrix which is at least $p^2$ size (the matrix will have more columns when there are interactions). Since the data is $n\times p$, this will only be a memory issue when $p>n$. When $p$ is large then the time to build it might be an issue, but any time saving will only be significant when it is being built repeatedly. `model.matrix()` calls `model.frame()` and so will build `terms` in each call. This could be avoided where the terms object could be recycled, that is, when the rows of the data changes but not the formula and columns. So, cross-validation would be an example. The hardhat functions (described below) allow the reuse of `terms` Therefore, will not pursue the glmnetUtils method for now.    
+
+The hardhat package provides new functions `model_matrix()` and `model_frame()`. These simplify the arguments in `model.matrix()` and change the method quite a bit compared to the base functions. There is a `modelr::model_matrix()` function but this is a thin wrapper for `model.matrix()` which returns a tibble.   
+
+* `model_frame()` takes formula and data inputs and returns a list with `data` and `terms` objects.
+* `model_matrix()` takes terms and data inputs and returns the usual model matrix but as a tibble.
+
+These functions are faster than `model.matrix()` as data size increases (see the `code` folder for benchmarking).
+
+There are no contrasts arguments for these so the suggested way to implement one-hot encoding is to either change global contrast settings or to add the contrasts to the data before inputting to `model_frame()`.  
+
+These functions are designed to be used in modelling function creation but higher level options can be found in the recipes package: [categorical predictors](https://recipes.tidymodels.org/articles/Dummies.html) [Dummy Variables Creation](https://recipes.tidymodels.org/reference/step_dummy.html). I have not used these.
 
 [Alternatives to one-hot encoding](https://towardsdatascience.com/stop-one-hot-encoding-your-categorical-variables-bbb0fba89809) - if the design matrix size is an issue.
 
@@ -87,9 +133,11 @@ Max Kuhn has a a pair of posts on the R formula method which motivates what was 
 
 From the R core team (2003): [How To Write Model-Fitting Functions in R](https://developer.r-project.org/model-fitting-functions.html)
 
+There are several hardhat vignettes on writing model functions. 
+
 ## Tidymodels
 
-[Tidymodels] is a collection of packages to give a framework for modelling/machine learning. It is built on ideas from the carat package which is no longer developed. There is also the tidyverse's [modelr package](https://github.com/tidyverse/modelr) which provides similar utility but not in as much detail (simpler though). **Add more detail on modelr?**
+[Tidymodels] is a collection of packages to give a framework for modelling/machine learning. It is built on ideas from the carat package which is no longer developed. There is also the tidyverse's [modelr package](https://github.com/tidyverse/modelr) which provides similar utility but not in as much detail (simpler though).
 
 Links to guides:
 

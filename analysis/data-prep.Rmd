@@ -33,13 +33,22 @@ readr supports seven file formats with seven read_ functions:
 
 Try these with just the file path first.
 
-Comparison of `read_csv()` with`fread()`:
+Comparing `read_csv()` with`fread()`:
 
-+ `read_csv()` misclassifies a lot of column types (but gives warnings). It bases type only on the top part of the column.
++ `read_csv()` misclassifies a lot of column types (but gives warnings). It bases type only on the top part of the column whereas `fread()` samples from different parts of columns.
 + `fread()` is more thorough in getting column types, but encodes dates as characters.
-+ `fread()` has an `na.strings` arg to automatically convert certain strings to NAs.
-+ `fread()` is faster 
++ `fread()` has an `na.strings` arg to automatically convert certain strings to NAs. 
++ `read_csv()` never reads in as integers unless specified [see news](https://github.com/tidyverse/readr/blob/master/NEWS.md#integer-column-guessing)
 + `fread()` outputs a data frame rather than a tibble.
++ `read_csv()` read “-” as “\x96” while fread seemed correct. This can is fixed using argument `locale = readr::locale(encoding = "windows-1252")`. See [github issue](https://github.com/tidyverse/readr/issues/892) and 
+`?readr::guess_encoding`.
++ Attributes:
+    + `fread()` has ".internal.selfref".
+    + `read_csv()` attaches “spec”.
++ Speed:
+    + It is usually said that `fread()` is quicker.
+    + Generally the two packages seem similar when tested up to 2.5Gb. This was quite wide data. `vroom()` was not any quicker.
+    + `read_csv()` is actually faster with higher guess_max than lower when lower value causes errors.
 
 ## Other Packages
 
@@ -63,9 +72,13 @@ Vignettes:
 
 ### Writing to Excel
 
-I have had problems with this in the past due to Jave dependency issues for the packages I tried. However, when I revisited it recently (2020) it worked fine. The package I used was [openxlsx](https://cran.r-project.org/web/packages/openxlsx/). Another package which might be useful is [writexl](https://github.com/ropensci/writexl). I haven't tried this but it appears to be lightweight (without Excel dependency). It is probably able to only write basic data to teh spreadsheet though (e.g. no multiple sheets).
+I have had problems with this in the past due to Java dependency issues for the packages I tried. However, when I revisited it recently (2020) it worked fine. The package I used was [openxlsx](https://cran.r-project.org/web/packages/openxlsx/). Another package which might be useful is [writexl](https://github.com/ropensci/writexl). I haven't tried this but it appears to be lightweight (without Excel dependency). It is probably able to only write basic data to the spreadsheet though (e.g. no multiple sheets).
 
 The basic function in the openxl package is `write.xlsx(x, file)`. Multiple sheets can be written by supplying a named list as `x`. Alternatively a workbook can be built up in detail using `createWorkbook()` and then adding layers. See the vignettes.
+
+For an alternative to default Excel column widths (can be bit wide with auto settings) see this 
+[thread](https://stackoverflow.com/questions/45860085/r-autofit-excel-column-width/45860216#45860216).
+
 
 ### XML
 

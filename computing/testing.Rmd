@@ -2,7 +2,7 @@
 
 ## testthat
 
-Notes from 2018 (or earlier) so may not all be relevant now. See also [chapter in R packages book](http://r-pkgs.had.co.nz/tests.html).
+Notes from 2018 (or earlier) so may not all be relevant now. See also [chapter in R packages book](http://r-pkgs.had.co.nz/tests.html). Version 3.0 has brought some further changes, notably with the idea of an [edition](https://testthat.r-lib.org/articles/third-edition.html) which allows a choice of which version to implement in any package.
 
 This is a Hadley Wickham package designed to make testing easier. I found it worked well. There is a good introductory article at http://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf. The notes here compliment that.
 

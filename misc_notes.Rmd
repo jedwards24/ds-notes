@@ -9,6 +9,8 @@ This is a place for collecting links and small notes for which there isn't yet a
 
 + `anyDuplicated()` - test for duplicated rows in selected columns in a data frame. 
 
+`?rc.settings` for Rs autocomplete options e.g. 
+
 ## Tabulation functions
 
 `table()` produces contingency table objects.  `addMargins()` and `prop.table()` work with table objects. Also `tabulate()` returns a named vector but only works with numeric or factor inputs. I wrote the following to get a table with vector object. Not sure if it is needed/useful.

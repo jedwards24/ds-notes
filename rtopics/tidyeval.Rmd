@@ -9,16 +9,19 @@ Tidy evaluation is a framework for metaprogramming in R. The notes here will foc
 
 ## Links
 
-There is an online bookdown [Tidy Evaluation](https://tidyeval.tidyverse.org/). This is still a work-in-progress as of writing (with incomplete parts). The [Programming dplyr vignette](https://dplyr.tidyverse.org/articles/programming.html) also covers similar ground and may be a better starting point. The [metaprogramming chapter in Advanced R](https://adv-r.hadley.nz/metaprogramming.html) has more on the general area.
-
 A difficulty in this area is that it is hard to tell what is current since the area is still evolving. I also have some confusion over terminology and the packages involved. I think the core of tidy eval is contained in rlang, while tidyselect adds select helpers and other functions on top. 
 
++ [Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html). As of dplyr 1.0, I take this as the latest word on how tidy evaluation should be used in dplyr.
 + [rlang 0.4.0 blog post](https://www.tidyverse.org/blog/2019/06/rlang-0-4-0/). Introduces `{{` operator. This isn't mentioned in the Tidy Evaluation bookdown. It appears to be a shorthand for some of the methods given there.
 + [rlang blog 2020-02](https://www.tidyverse.org/blog/2020/02/glue-strings-and-tidy-eval/). Brings glue strings into tidy eval. Used together with `{{`.
 + [Data pronouns for tidy evaluation vignette](https://rlang.r-lib.org/reference/tidyeval-data.html). This gives `.data` and `.env` pronouns to be explicit in data masking. This might be what I should be doing in my packages.
 + [tidyselect package](https://tidyselect.r-lib.org/index.html) imports rlang (and other packages). Listed as dependency for dplyr but its functions are not loaded with the tidyverse. There are two vignettes: [Implementing tidyselect interfaces](https://tidyselect.r-lib.org/articles/tidyselect.html) and [Technical description of tidyselect](https://tidyselect.r-lib.org/articles/syntax.html). 
++ [Tidy Evaluation book](https://tidyeval.tidyverse.org/). Now superseded. Instead they link to the Programming with dplyr vignette and [using ggplot in packages](https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html).
++ The [metaprogramming chapter in Advanced R](https://adv-r.hadley.nz/metaprogramming.html) has more on the general area.
 
 The documentation of the various functions is useful too and my notes will include these. This [post on background of quotation](https://milesmcbain.xyz/the-roots-of-quotation/amp/) might be useful for deeper understanding. 
+
+Also see the [Tidyverse Design Guide (book)](https://design.tidyverse.org/).
 
 ## Tidy Evaluation
 
@@ -192,6 +195,23 @@ col_select(mtcars, 1, wt, "vs")
 [Dynamic dots](https://rlang.r-lib.org/reference/dyn-dots.html) explains how `...` can be captured using `c()` or `list()`. Other functions used are `list2()`, `dots_list()`, `vars()`, and `call2()`.
 
 [Filtering with string statements in dplyr](https://www.r-bloggers.com/2020/05/filtering-with-string-statements-in-dplyr/). I wanted to pass a string object to `dplyr::filter()` and this post gives a solution `filter(rlang::eval_tidy(rlang::parse_expr(selection_statement)))`. This can be done in base using `filter(eval(parse(text = selection_statement)))`. From the `eval_tidy()` I'd say `eval()` is fine here.
+
+## NSE outside tidyverse functions
+
+_Needs expanding_
+
+The following works using base R:
+```{r}
+f <- function(nm) {
+  ls <- list(a = 1, b = 2, c = 3)
+  ls[[deparse(substitute(nm))]]
+}
+f(a)
+```
+
+I don't know what the rlang approach is. There is `rlang::expr_deparse()` <https://www.tidyverse.org/blog/2018/03/rlang-0.2.0/>.
+
+[This blog post](https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/) talks about avoiding R CMD check notes when using NSE.
 
 ## Notes on Older Methods
 
