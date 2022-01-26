@@ -40,9 +40,6 @@ vignettes/*.pdf
 
 # Added by me
 ds-notes.Rproj
-todo.md
 /_book/
 /_bookdown_files/
-book.bib
-packages.bib
 /docs/
