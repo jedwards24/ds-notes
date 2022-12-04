@@ -39,7 +39,6 @@ vignettes/*.pdf
 .Renviron
 
 # Added by me
-ds-notes.Rproj
 /_book/
 /_bookdown_files/
 /docs/

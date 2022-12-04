@@ -40,6 +40,8 @@ In ranger, the in-bag status of each observation can be found by using the argum
 
 [randomForestExplainer package](https://cran.rstudio.com/web/packages/randomForestExplainer/vignettes/randomForestExplainer.html).
 
+[Blog post using the DALEX package](https://olgamie.github.io/2020/09/30/building-first-baseline-with-random-forest-using-ranger-and-dalex/)
+
 ### Tree Information
 
 Each package has functions to extract information about each tree such as which variable was split on, where the split was and the prediction for each terminal node.
@@ -70,7 +72,7 @@ The paper finds, in simulations and real data, that the one time ordering method
 
 An earlier example (artificial) example of this is given in a [blog post](http://www.win-vector.com/blog/2016/05/on-ranger-respect-unordered-factors/). I ran the code given there with `respect.unordered.factors` set to TRUE, FALSE and 'partition', as well as `randomForest()` with standard settings (mtry=2 to match the ranger models). The mse prediction errors were:
 
-```{r wv_results}
+```{r wv_results, echo=FALSE}
 tibble(model = c("FALSE", "TRUE", 'partition', "randomForest"), 
        mse_oob = c(4.16, 0.84, 1.92, 2.53),
        mse_test = c(2.69, 1.15, 1.50, 3.20)) %>% 
@@ -81,8 +83,6 @@ Although this is only a 100 x 4 data set with 20 levels in each variable, the pa
 
 There are a few other discussions on the ranger github [here](https://github.com/imbs-hl/ranger/issues/36) and [here](https://github.com/mlr-org/mlr/pull/918), but these will have been superseded by the paper.
 
-I have given an example of the effect of ordering in my `pdp_notes.Rmd` file.
-
 ## Missing Values
 
 `rfImpute()`
@@ -90,6 +90,8 @@ I have given an example of the effect of ordering in my `pdp_notes.Rmd` file.
 ## Speed
 
 There is a suggestion [here](https://stats.stackexchange.com/questions/37370/random-forest-computing-time-in-r) that not using the formula input to `randomForest` can speed it up but I found the opposite. The post is from 2013.
+
+Update: it can make a big difference if you have wide data because it avoids the internal `model.frame()` call. I’d be surprised if it was ever slower. Need to check.
 
 ## Misc
 

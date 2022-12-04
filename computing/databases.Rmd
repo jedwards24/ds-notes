@@ -114,9 +114,10 @@ https://www.databasestar.com/database-keys/
 
 ## Mapping Relationships
 
-Multiple datasets that are related can be held in a relational database. These relationships can be recorded using an _entity-relationship model_  and displayed with an _entity-relationship diagram_ (ERD). See [wiki](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) and [ERD](https://www.smartdraw.com/entity-relationship-diagram/). ERDs record the connections between entities, their identifying atrributes, the type of relation, and their cardinality (e.g. one-to-one).
+Multiple datasets that are related can be held in a relational database. These relationships can be recorded using an _entity-relationship model_  and displayed with an _entity-relationship diagram_ (ERD). See [wiki](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) and [ERD](https://www.smartdraw.com/entity-relationship-diagram/). ERDs record the connections between entities, their identifying attributes, the type of relation, and their cardinality (e.g. one-to-one).
 
-some ERD software:
+Some ERD software:
+
 + ER-Assistant. For windows. Free.
 + [dbdiagram](https://dbdiagram.io/home). Database diagrams rather than ERDs?
 + [Lucidchart](https://www.lucidchart.com/pages/). Online
@@ -128,7 +129,9 @@ some ERD software:
 
 + Reasons: Convenience and speed. 
 + Disadvantages: extra storage space; additional documentation; potential data anomolies; more code; slower operations.
+
 How: 
+
 + Storing derivable data.
 + Using pre-joined tables. 
 + Using hardcoded values 
@@ -161,6 +164,7 @@ At first glance a 1-1 relationship between tables seems odd since you could just
 
 
 Possible books:
+
 + [Database Design (free online)](https://opentextbc.ca/dbdesign01/)
 + [Inside relational databases](https://www.amazon.co.uk/Inside-Relational-Databases-Mark-Whitehorn/dp/1852334010)
 + [Database Design for Mere Mortals](https://www.amazon.co.uk/Database-Design-Mere-Mortals-Hands/dp/0321884493/)

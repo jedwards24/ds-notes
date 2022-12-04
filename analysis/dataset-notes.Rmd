@@ -1,7 +1,7 @@
 # Dataset Notes
 
-```{r dataset_setup, include = F}
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = TRUE)
+```{r dataset_setup, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache = FALSE)
 library(tidyverse)
 library(kableExtra)
 library(edwards)
@@ -114,7 +114,6 @@ data(package = "nycflights13")$results %>%
 [UCI ML Reposistory](https://archive.ics.uci.edu/ml/index.php)
 
 https://towardsdatascience.com/classification-on-a-large-and-noisy-dataset-with-r-c10cf14cbae6 Example analysis on a messy dataset from the UCI repo.
-
 
 [Recommender datasets](https://gist.github.com/entaroadun/1653794)
 

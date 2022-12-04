@@ -24,6 +24,8 @@ The base r `glm()` has a `predict.glm()` (can just use `predict()`) that can be 
 
 **Prediction uncertainty**. The following is for linear regression so will need to be transformed) The covariance matrix of parameters is $\Sigma = \sigma^2(\mathbf{X}^\intercal\mathbf{X})^{-1}$. The mean response $\hat y_i=\mathbf{x}_i\mathbf{\hat b}$ which has variance $\mathbf{x}_i\Sigma\mathbf{x}_i^\intercal$.
 
+**Sampling Bias**. Faraday (2006 book) notes that is outcomes are sampled with bias, then this only leads to a difference in intercept so that the relative effect of covariates can still be found. This is not true for other link functions. This assumes that the sampling bias is the same across all covariates. 
+
 [A simpler derivation of logistic regression](http://www.win-vector.com/blog/2011/09/the-simpler-derivation-of-logistic-regression/)
 
 [Interpreting log-odds ratios in logistic regression](https://stats.idre.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/)
