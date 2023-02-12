@@ -16,23 +16,21 @@ rmd_files: [
   "analysis/model-general.Rmd",
   "analysis/data-prep.Rmd",
   "analysis/data-exploration.Rmd",
-  "analysis/model-eval.Rmd",  
+  "analysis/model-eval.Rmd",
   "analysis/logistic-reg.Rmd",
   "analysis/glmnet.Rmd",
   "analysis/random-forests.Rmd",
   "analysis/decision-trees.Rmd",
   "analysis/text-model.Rmd",
   "analysis/dataset-notes.Rmd",
-  
+
   "computing/01-computing.Rmd",
   "computing/02-comp-general.Rmd",
   "computing/r-general.Rmd",
   "computing/testing.Rmd",
-  "computing/git.Rmd",
   "computing/memory.Rmd",
   "computing/package-development.Rmd",
   "computing/parallel.Rmd",
-  "computing/speed-profiling.Rmd",
   "computing/databases.Rmd",
 
   "rtopics/01-rtopics.Rmd",
@@ -47,5 +45,5 @@ rmd_files: [
   "rtopics/tidyeval.Rmd",
   "rtopics/r-cookbook.Rmd"
 ]
-    
+
 

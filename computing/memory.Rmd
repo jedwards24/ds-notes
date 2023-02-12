@@ -1,3 +1,9 @@
+# Memory
+
+## Profiling
+
+Profiling of code for both memory and speed can be done using RStudio's inbuilt  [profiler](https://support.rstudio.com/hc/en-us/articles/218221837-Profiling-with-RStudio) which uses the profvis package. I use this now instead of the utils functions (`Rprof()`, `Rprofmem()`, `summaryRprof()`) or the lineprof package.
+
 # Memory in R
 
 More recently, see `lobstr` package.
@@ -6,10 +12,10 @@ More recently, see `lobstr` package.
 
 + To find the memory size of any object in R use `object.size(x)`. 
 + To give this in different units use `print(object.size(x), units="auto")`.
-+ `memory.size()` - gives the memory in Mb currently used. memory.size(TRUE) gives the maximum available memory.
++ `memory.size()` - gives the memory in Mb currently used. `memory.size(TRUE)` gives the maximum available memory.
 + `memory.limit()` - returns the memory limit. 
 + `memory.limit(nnnn)` sets the memory limit to `nnnn`. This is limited by windows. If greater than maximum memory size then the hard drive is used.
-+ `gc()` – force garbage collection (clear memory). 
++ `gc(verbose = TRUE)` gives information about allocated space.
 `sort( sapply(ls(),function(x){object.size(get(x))}))`: Gives memory of all objects in workspace. From:
 http://stackoverflow.com/questions/1395270/determining-memory-usage
 
@@ -32,8 +38,8 @@ http://finzi.psych.upenn.edu/R/library/slam/html/array.html
 
 ## Memory Profiling
 
-http://www.r-bloggers.com/examples-of-profiling-r-code/
-The example below profiles memory as well. Memory allocation can also be profiled with function `Rprofmem()`.
+These are older notes and I now use profvis (see above).
+The example below from http://www.r-bloggers.com/examples-of-profiling-r-code/ profiles memory. An alternative is `Rprofmem()`.
 
 ```
 # profiling of both time and memory
@@ -44,8 +50,8 @@ summaryRprof(“myFunction.out”, memory=”both”)
 ```
 
 A detailed example of profiling R code can be found at
-http://www.stat.berkeley.edu/~nolan/stat133/Fall05/lectures/profilingEx.html. Also lineprof: `devtools::install_github("lineprof")`.
+http://www.stat.berkeley.edu/~nolan/stat133/Fall05/lectures/profilingEx.html. There is also lineprof: `devtools::install_github("lineprof")`:
 
-http://adv-r.had.co.nz/memory.html
-https://github.com/hadley/lineprof
-http://www.hansenlab.org/rstats/2014/01/30/lineprof/
+* http://adv-r.had.co.nz/memory.html
+* https://github.com/hadley/lineprof
+* http://www.hansenlab.org/rstats/2014/01/30/lineprof/
