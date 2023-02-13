@@ -156,15 +156,15 @@ Brief notes from the R4DS chapter:
 
 Example `pmap()` use with a df:
 
-```{r eval = FALSE}
-ari <- function(ind, a, b) {
-  if (ind){
+```{r}
+ari <- function(sum, a, b) {
+  if (sum){
     return(a + b)
   }
   a * b
 }
 
-tibble(ind = c(T, F, T, F), a = 1:4, b = 5:8) %>% 
+tibble(sum = c(T, F, T, F), a = 1:4, b = 5:8) %>% 
   mutate(out = pmap_int(., ari))
 ```
 
@@ -203,12 +203,14 @@ mtcars %>% group_by(cyl) %>% tally
 count(mtcars, cyl)
 ```
 
-By using the weight argument to `count()` it can also be used to sum a column:
+By using the weight argument to `count()` it can also be used to sum a column, so these two are equivalent:
 
 ```{r eval=F}
 mtcars %>% group_by(cyl) %>% summarise(tot = sum(mpg))
 count(mtcars, cyl, wt=mpg)
 ```
+
+Note: there are slight differences if working with non-tibble data since `count()` does not convert to a tibble while `group_by()` does.
 
 ### `mutate()` and `Summarise()`
 
@@ -255,10 +257,12 @@ summarise_over <- function(results_df, mean_var){
 When run this will give messages that no visible binding is found for ... `expect_r1`, `expect_r2`, `mean_r1` and `mean_r2`. These are variable names is `results_df` so are handled correctly because `dplyr` understands them to be e.g. `df$expect_r1` but R thinks they are don't exist.
 
 Some solutions are to create the variables somewhere, either as global variables e.g. `globalVariables(c("expect_r1", "expect_r2"))` "somewhere in the top-level of your package" or in the function as `expect_r1 <- expect_r2 <- NULL`. For `dplyr`/`ggplot` use of SE functions e.g. `mutate_()` to avoid NSE can fix this but it was tricky to implement in my example. due too the operations I was doing on the variables (`mean_r1 + mean_r2`). Elsewhere Jenny Bryant suggests this for piping (but it didn't fix my problem):
+
 ```
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 ```
+
 The version check is to ensure it works with older versions.
 
 ### Other Issues

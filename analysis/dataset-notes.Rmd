@@ -118,3 +118,7 @@ https://towardsdatascience.com/classification-on-a-large-and-noisy-dataset-with-
 [Recommender datasets](https://gist.github.com/entaroadun/1653794)
 
 [Recommender - bit more detail](https://gab41.lab41.org/the-nine-must-have-datasets-for-investigating-recommender-systems-ce9421bf981c)
+
+```{r dataset_teardown, include = FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+```

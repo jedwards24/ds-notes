@@ -151,7 +151,7 @@ for (count in 1:length(installedpackages)) install.packages(installedpackages[co
 
 ## IT Issues
 
-###Blinking White Dot in RStudio
+### Blinking White Dot in RStudio
 
 On my 2019 laptop (Windows 7) I have a persistent blinking white dot in the script window. It follows the cursor but with a lag. It is described [here](https://github.com/rstudio/rstudio/issues/4390) and also occurs on windows 10. The problem is in something underlying RStudio (QT?) and will probably be fixed in RStudio 1.3.
 

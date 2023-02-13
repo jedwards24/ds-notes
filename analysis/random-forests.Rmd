@@ -1,10 +1,12 @@
 # Random Forests
 
-```{r rf_setup, include = F}
+```{r rf_setup, include = FALSE}
 library(tidyverse)
 library(kableExtra)
 library(edwards)
 ```
+
+## Links
 
 [Original Breiman paper](https://link.springer.com/article/10.1023/A:1010933404324)
 
@@ -12,19 +14,19 @@ library(edwards)
 
 [Guide to the original random forest software by Leo Breiman and Adele Cutler](https://www.stat.berkeley.edu/~breiman/RandomForests)
 
+[Slides on RFs and GBMs in R](https://bgreenwell.github.io/MLDay18/MLDay18.html#1) - these are from the `pdp` package author Brandon Greenwell. Useful introduction. 
+
 [Manual for Breiman fortran software](https://www.stat.berkeley.edu/~breiman/Using_random_forests_v4.0.pdf) - may be useful as guide to variable importance and imputation.
 
 [Datacamp article on the Boruta package](https://www.datacamp.com/community/tutorials/feature-selection-R-boruta)
 
 [Boruta for those in a hurry](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf)
 
-[Slides on RFs and GBMs in R](https://bgreenwell.github.io/MLDay18/MLDay18.html#1) - these are from the `pdp` package author Brandon Greenwell. Useful introduction. 
-
 ## Basics
 
-In brief, random forest predictions are a combination of multiple trees. The observations used to fit each tree are sampled, with replacement, from the data. At each split only a subset (of size `mtry`) of variables are available. This makes makes the trees more dissimilar from each other.
+Random forest predictions are a combination of multiple trees. The observations used to fit each tree are sampled, with replacement, from the data. At each split only a subset (of size `mtry`) of variables are available. This makes makes the trees more dissimilar from each other.
 
-Predictions will tend to overfit to the data, but a better estimate of model fit can be found using *out-of-bag* (OOB) predictions. If an observation was used to grow a given tree then it is said to be *in-bag*. Observations not used are OOB. Just using predictions from trees for which the observation was OOB gives an OOB prediction (using majority vote as normal). I think ties are split randomly but I'm not sure.
+Predictions will tend to overfit to the data, but a better estimate of model fit can be found using *out-of-bag* (OOB) predictions. If an observation was used to grow a given tree then it is said to be *in-bag*. Observations not used are OOB. Just using predictions from trees for which the observation was OOB gives an OOB prediction. A majority vote is used with, I think, ties split randomly.
 
 In ranger, the in-bag status of each observation can be found by using the argument `keep.inbag = TRUE` when growing the forest. This adds an extra element `inbag.counts` to the forest object which is a list of counts of how often an observation was used for each tree (`num.trees` vectors each of length `n`). Predictions for each separate tree can be obtained using `predict(rf, data, predict.all = TRUE)`. The `.$predictions` of the output will then be a matrix rather than a vector with each column corresponding to individual trees.
 
@@ -32,7 +34,7 @@ In ranger, the in-bag status of each observation can be found by using the argum
 
 `ranger` has built in parallel processing (implemented by default). For `randomForest` you need to use explicitly use foreach and doParallel or similar.
 
-## Interpretaion
+## Interpretation
 
 [Slides on RF variable importance issues](http://www.statistik.uni-dortmund.de/useR-2008/slides/Strobl+Zeileis.pdf) - has lots of references. 
 
@@ -46,7 +48,7 @@ In ranger, the in-bag status of each observation can be found by using the argum
 
 Each package has functions to extract information about each tree such as which variable was split on, where the split was and the prediction for each terminal node.
 
-For `randomForest` there is the function `getTree(rfobj, k=1, labelVar=FALSE)` where `k` gives the tree number. If `labelVar=F` then a matrix is returned while `labelVar=T` a data frame is returned with a named column `split var` instead of a number.  
+For `randomForest` there is the function `getTree(rfobj, k=1, labelVar=FALSE)` where `k` gives the tree number. If `labelVar=FALSE` then a matrix is returned while `labelVar=TRUE` a data frame is returned with a named column `split var` instead of a number.  
 
 `ranger` has `treeInfo(object, tree = 1)` which returns a data frame.
 
@@ -83,16 +85,42 @@ Although this is only a 100 x 4 data set with 20 levels in each variable, the pa
 
 There are a few other discussions on the ranger github [here](https://github.com/imbs-hl/ranger/issues/36) and [here](https://github.com/mlr-org/mlr/pull/918), but these will have been superseded by the paper.
 
-## Missing Values
+## Wide Data Benchmark
 
-`rfImpute()`
+I had heard it suggested that random forests would not be appropriate for wide data so I ran a test. The following code will produce a wide dataset with 1000 rows and fit ranger models with 50 trees to it, using a single thread.
 
-## Speed
+```
+library(dplyr)
+library(ranger)
+library(glmnet)
+nn <- 1e3
+pp <- 2e4
+xmat <- matrix(sample(c(TRUE, FALSE), nn * pp, replace = TRUE), ncol = pp)
+nms <- paste0("x", 1:pp)
+colnames(xmat) <- nms
+y = rnorm(nn)
+dt <- as_tibble(xmat) %>% 
+  mutate(y = y) 
 
-There is a suggestion [here](https://stats.stackexchange.com/questions/37370/random-forest-computing-time-in-r) that not using the formula input to `randomForest` can speed it up but I found the opposite. The post is from 2013.
+edwards::object_size_all()
+system.time(ranger(y ~ ., data = dt, write.forest = FALSE, num.trees = 50, num.threads = 1))
+system.time(ranger(x = xmat, y = y, write.forest = FALSE, num.trees = 50, num.threads = 1))
+system.time(glm <- cv.glmnet(xmat, y, nfolds = 3))
+```
 
-Update: it can make a big difference if you have wide data because it avoids the internal `model.frame()` call. I’d be surprised if it was ever slower. Need to check.
+The standard formula method failed with 20000 columns with message `Error: protect(): protection stack overflow`, even with 10 trees. This error is explained at https://stackoverflow.com/questions/32826906/how-to-solve-protection-stack-overflow-issue-in-r-studio. The problem will be the large object generated internally by `model.terms()`. This can be avoided in ranger by creating a model matrix first and passing `x` and `y` arguments to `ranger()` rather than formulas.
+
+This solved the problem and gave the following timings in seconds. In practice, ranger would need more trees but I'm just interested in how the methods scale, not absolute timings.
+
+|  p  | Ranger Formula | Ranger XY | Glmnet |
+|:---:|:--------------:|:---------:|:------:|
+| 1E4 |        8       |    1.5    |    4   |
+| 2E4 |      Fail      |    2.5    |   11   |
+| 4E4 |      Fail      |     4     |   21   |
+| 8E4 |      Fail      |     7     |   41   |
 
 ## Misc
 
-There is a package [tuneRanger](https://rdrr.io/cran/tuneRanger/f/README.md) for tuning parameters in ranger. There is a paper also.
+There is a suggestion [here](https://stats.stackexchange.com/questions/37370/random-forest-computing-time-in-r) that not using the formula input to `randomForest` can speed it up but I found the opposite. The post is from 2013. It can make a big difference if you have wide data because it avoids the internal `model.frame()` call. I’d be surprised if it was ever slower. Need to check.
+
+`randomForest::rfImpute()` performs imputation.
