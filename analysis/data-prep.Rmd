@@ -14,7 +14,7 @@ You can import from the clipboard using `read.table("clipboard")`.
 
 Files can be downloaded from the web using `download.file(url, destfile, ...)`. The `destfile` is where to save. 
 
-## Reading text from a text file
+### Reading text from a text file
 
 Can use `read.table()` for this but this reads it in as a data frame. To get raw text use either `readLines()` or `scan()`. See http://en.wikibooks.org/wiki/R_Programming/Text_Processing#Reading_and_writing_text_files
 
@@ -28,47 +28,17 @@ readr supports seven file formats with seven read_ functions:
 +	`read_tsv()`: tab separated files
 +	`read_delim()`: general delimited files
 +	`read_fwf()`: fixed width files
-+	`read_table()`: tabular files where colums are separated by white-space.
++	`read_table()`: tabular files where columns are separated by white-space.
 +	`read_log()`: web log files
 
-Try these with just the file path first.
+Notes:
 
-Comparing `read_csv()` with`fread()`:
-
-+ `read_csv()` misclassifies a lot of column types (but gives warnings). It bases type only on the top part of the column whereas `fread()` samples from different parts of columns.
-+ `fread()` is more thorough in getting column types, but encodes dates as characters.
-+ `fread()` has an `na.strings` arg to automatically convert certain strings to NAs. 
 + `read_csv()` never reads in as integers unless specified [see news](https://github.com/tidyverse/readr/blob/master/NEWS.md#integer-column-guessing)
-+ `fread()` outputs a data frame rather than a tibble.
-+ `read_csv()` read “-” as “\x96” while fread seemed correct. This can is fixed using argument `locale = readr::locale(encoding = "windows-1252")`. See [github issue](https://github.com/tidyverse/readr/issues/892) and 
-`?readr::guess_encoding`.
-+ Attributes:
-    + `fread()` has ".internal.selfref".
-    + `read_csv()` attaches “spec”.
-+ Speed:
-    + It is usually said that `fread()` is quicker.
-    + Generally the two packages seem similar when tested up to 2.5Gb. This was quite wide data. `vroom()` was not any quicker.
-    + `read_csv()` is actually faster with higher guess_max than lower when lower value causes errors.
++ `read_csv()` read “-” as “\x96” while fread seemed correct. This can be fixed using argument `locale = readr::locale(encoding = "windows-1252")`. See [github issue](https://github.com/tidyverse/readr/issues/892) and `?readr::guess_encoding`.
 
-## Other Packages
+### Other Packages
 
 [The rio package](https://github.com/leeper/rio) gives a simple `import()` function which will use a different method depending on the file extension. It calls other packages such as data.table, haven, or readxl to do this.
-
-[vroom](https://vroom.r-lib.org/index.html) is a tidyverse package that uses lazy loading to be very fast.
-
-### readxl package
-
-HW package for importing excel files. Not loaded with tidyverse. Two main functions:
-
-+	excel_sheets(path) - lists all sheets in the spreadsheet.
-+	read_excel(path, sheet,…) - used to read in data. Default is first sheet unless specified (by name or number).
-
-The argument path is in quotations. 
-
-Vignettes:
-
-+	[Cell and column types](https://cran.r-project.org/web/packages/readxl/vignettes/cell-and-column-types.html) – by default read_excel() will guess column types but can be specified.
-+	 [Sheet geometry](https://cran.r-project.org/web/packages/readxl/vignettes/sheet-geometry.html) – talks about how to specify the area of an excel sheet that is imported. By default it imports the smallest rectangle that contains non-empty cells but there are lots of options.
 
 ### Writing to Excel
 
@@ -79,14 +49,24 @@ The basic function in the openxl package is `write.xlsx(x, file)`. Multiple shee
 For an alternative to default Excel column widths (can be bit wide with auto settings) see this 
 [thread](https://stackoverflow.com/questions/45860085/r-autofit-excel-column-width/45860216#45860216).
 
-
 ### XML
 
 I've only done a bit on this. The package to use is [xml2](https://github.com/r-lib/xml2). The guide here was useful: [quick guide to XML in R](https://lecy.github.io/Open-Data-for-Nonprofit-Research/Quick_Guide_to_XML_in_R.html).
 
 I am unclear on the structure for XML  but it seems to based on ideas from relational databases with a nested tag structure (thinking of trees might be helpful). Extracting is done with string pattern matching and searching up and down the hierarchy (parents and children).
 
-## Data Processing
+
+## Weight of Evidence
+
+These are univariate measures used for exploration of variables and for variable selection. It was hard to find much formal on them, but they seem to be measures used in credit scoring. The best information on them I found is this [Stitchfix  post](https://multithreaded.stitchfix.com/blog/2015/08/13/weight-of-evidence/). The author has a package: [Information](https://github.com/klarsen1/Information).
+
+For a binary response, WoE for level $i$ is the log of $p_i / (1 - p_i) \times  (1 - p) / p$, where $p_i$ is the mean response for level $i$ and $p$ is the mean response for the whole variable. Therefore this is the log odds plus a constant of $log [(1 - p) / p]$ (a logit so 0 when $p=0.5$). So the WoE adjusts the log-odds to take account of imbalanced classes - it measures the ratio of the factor level odds to the variable odds. 
+
+The IV of a variable is a weighted sum of the WoE values for the levels. The weights adjust to give larger weights to levels with more observation and to ensure that all levels contribute a positive value. There is a table that says whether a variable has predictive value based on IV. This is just a heuristic though. The main issue I can see is that it is independent of the amount of data you have. I have also heard it said that it biases towards variables with more levels.
+
+It might be interesting to relate log odds, WoE, relative risk and odds ratio to each other.
+
+## Misc
 
 [Preparing data for classifiers](http://www.win-vector.com/blog/2014/12/a-comment-on-preparing-data-for-classifiers/). John Mount. I have downloaded the paper mentioned here.
 
@@ -97,31 +77,3 @@ I am unclear on the structure for XML  but it seems to based on ideas from relat
 [Speed Comparison for basic row/column operation](http://www.win-vector.com/blog/2019/05/timing-working-with-a-row-or-a-column-from-a-data-frame/). dplyr can be quite a bit slower than base R once the data frame gets to a decent size.
 
 The [variablekey vignette](https://cran.r-project.org/web/packages/kutils/vignettes/variablekey.pdf) in the kutils package gives a method for recording changes in variables in data frames. It is based on a table of old/new variable names/classes/values (where the number of distinct values is not too large). The ordering of the values can be recorded. The table can be changed in, e.g. excel, then these changes can be applied to the data frame. I like the general idea of recording and displaying changes but I want to only make changes via R code.
-
-### Weight of Evidence and Variable Importance
-
-These are univariate measures used for exploration of variables and for variable selection. It was hard to find much formal on them, but they seem to be measures used in credit scoring. The best information on them I found is this [Stitchfix  post](https://multithreaded.stitchfix.com/blog/2015/08/13/weight-of-evidence/). The author has a package: [Information](https://github.com/klarsen1/Information).
-
-For a binary response, WoE for level $i$ is the log of $p_i / (1 - p_i) \times  (1 - p) / p$, where $p_i$ is the mean response for level $i$ and $p$ is the mean response for the whole variable. Therefore this is the log odds plus a constant of $log [(1 - p) / p]$ (a logit so 0 when $p=0.5$). So the WoE adjusts the log-odds to take account of imbalanced classes - it measures the ratio of the factor level odds to the variable odds. 
-
-The IV of a variable is a weighted sum of the WoE values for the levels. The weights adjust to give larger weights to levels with more observation and to ensure that all levels contribute a positive value. There is a table that says whether a variable has predictive value based on IV. This is just a heuristic though. The main issue I can see is that it is independent of the amount of data you have. I have also heard it said that it biases towards variables with more levels.
-
-It might be interesting to relate log odds, WoE, relative risk and odds ratio to each other.
-
-### Missing Values
-
-The `visdat::vis_miss()` could be useful for seeing quickly if missing values in different columns are in the same rows.
-
-[Amelia package](https://www.rdocumentation.org/packages/Amelia/versions/1.7.4/topics/amelia) - creates imputed datasets using a bootstrap EM algorithm. 
-
-[Chapter from Gelman on missing data](http://www.stat.columbia.edu/~gelman/arm/missing.pdf)
-
-To replace empty strings with `NA` in a tibble use `mutate_all(df, ~na_if(.,""))` or `mutate_if(df, is_character, ~na_if(.,""))`.
-
-[Removing NA values in a data frame](https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame). 
-
-+ `na.omit()` removes rows with any missing values.
-+ `tidyr::drop_na()` does the same but has tidyselect option for columns to inspect for NAs. 
-+ `complete.cases()` is base option to only consider some columns e.g. `df[complete.cases(df[ , 5:6]),]` only check columns 5 and 6 of `df`.
-
-
