@@ -23,3 +23,23 @@ Arguments can be passed to another function inside a function easily using `...`
 Firstly the contents of `...` can be captured in the function using `c(...)` or `list(...)`. Secondly, arguments in a list can be passed directly to a function using `do.call(fun_name, args_list)`. See this [thread](https://stackoverflow.com/questions/9129673/passing-list-of-named-parameters-to-function) (mainly about managing lists). Interesting how the output of `c()` depends on the deepest list level in its inputs. 
 
 Maybe useful in this context is `alist()` which handles its arguments as if they describe function arguments.
+
+## Shiny - Dynamic `selectInput()`
+
+I used the following code to get a drop-down menu that changed according to other dynamic inputs.
+
+```{r eval = FALSE}
+output$x_options <- renderUI({
+  selectInput("x_var", "Variables to show on x-axis:", input$clust_vars)
+})
+output$y_options <- renderUI({
+  selectInput("y_var", "Variables to show on y-axis:", input$clust_vars)
+})
+
+inputPanel(
+  uiOutput("x_options"),
+  uiOutput("y_options"),
+  sliderInput("label_n", "Number to label from each cluster:",
+              min = 1, max = 5, value = 2, step = 1)
+)  
+```
