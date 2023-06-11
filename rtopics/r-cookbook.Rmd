@@ -43,3 +43,11 @@ inputPanel(
               min = 1, max = 5, value = 2, step = 1)
 )  
 ```
+
+## Remove NAs from Data Frame
+
+To return a data frame without rows with `NA`s:
+
++ `na.omit()` - omits any column with a missing value. data.frame has a faster version.
++ `complete.cases()` - returns a logical vector of which rows don't contain any `NA`s. Can use this to selectively exclude columns e.g. `dat[complete.cases(dat[ , 5:6]),]` will just check cols 5 and 6 for `NA`s.
++ `tidyr::drop_na()`. Optional tidy-select arguments to only inspect some columns.

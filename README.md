@@ -1,3 +1,3 @@
 # ds-notes
 
-A loose and informal collection of notes on data science and related topics
+A loose and informal collection of old notes on data science and related topics

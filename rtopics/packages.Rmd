@@ -9,7 +9,6 @@ This is a developer focused package but I am interested in the ideas of type and
 + [video of talk ](https://resources.rstudio.com/rstudio-conf-2019/vctrs-tools-for-making-size-and-type-consistent-functions)
 + [Type and size stability](https://www.rdocumentation.org/packages/vctrs/versions/0.1.0/vignettes/stability.Rmd)
 
-
 [vroom package](https://vroom.r-lib.org/). Faster reading of delimited data. Uses lazy loading.
 
 [parallelMap](https://github.com/berndbischl/parallelMap). Interface some popular parallelization back-ends with a unified interface.
@@ -130,7 +129,7 @@ Unified Parallel and Distributed Processing.
 
 [CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/vignettes/intro.html) Analyses dependencies between functions and variables in scripts (not package dependencies).
 
-[Rando](https://github.com/MyKo101/rando) Context aware repoducible random numbers. Stronger checks than base.
+[Rando](https://github.com/MyKo101/rando) Context aware reproducible random numbers. Stronger checks than base.
 
 [fs](https://fs.r-lib.org/) File system operations. More consistent naming and return values than base with better checks.  
 
@@ -187,14 +186,6 @@ Use `...` in helper function to absorb extra cols in df/list passed to `pmap()`.
 
 **THESE NOTES ARE OLD**
 
-In dplyr there are five basic verbs: `filter`, `select`, `arrange`, `mutate`, `summarise`. The first argument for these is the data.
-
-* `filter` subsets observations. There are also a number of other functions to do this is specific ways (see cheatsheet), in particular `slice()` which selects rows by position.
-* `select` subsets variables. select columns by giving names as arguments or use helper functions as an argument.
-* `arrange` orders rows by a column. Default is low to high. Reverse order using `desc(colname)` instead.
-* `mutate` transforms variables to create new ones. `transmute` creates the new variable but drops other columns.
-* `summarise` summarises a column with a single value. Usually used following `group_by()` to create summaries for subgroups of a column. Use `ungroup()` to remove grouping.
-
 `count()` and `tally()` can be used to count unique values. The following are equivalent:
 
 ```{r eval=F}
@@ -216,14 +207,6 @@ Note: there are slight differences if working with non-tibble data since `count(
 
 Grouping and summarise creates a new tibble with new variables which you name in `summarise`. Therefore summarise and mutate are related and have similar structure. The difference is that `summarise` uses **summary or aggregation functions** which take a vector of values and return a single value while `mutate` uses **window functions** which take a vector of values and return a vector of the same length. Therefore `mutate` won't work directly with a user defined function that has scalar inputs. A way around this is to use `rowwise()` before the mutate call. See [this discussion](https://stackoverflow.com/questions/21818181/applying-a-function-to-every-row-of-a-table-using-dplyr). It is probably better to write a vectorised version of the function I wish to use.
 
-There is a _all, _at, and _if versions of each function (and transmute). These replace the depreciated _each functions that will be found in many guides. They apply operations to multiple variables and the variants are different ways of selecting these variables. Each has an argument `.funs` by which you give the function call that operates on each variable. You can supply a multiple functions to apply by using `funs()` or a character vector (`funs()` can also be used to define transformations inline). See the help file for good examples. Variable selection differs by:
-
-* _all affects every variable.
-* _at affects variables selected with a character vector or `vars()`.
-* _if affects variables selected with a predicate function e.g `is.numeric` (good for changing variable types).
-
-The predicate or variable arguments come before `.funs`. There are help files for `funs()` and `vars()`. To use `select_helpers` such as `contains()` use `_at` with the helper enclosed in `vars()`.
-
 ## Selecting columns as inputs to `mutate()`
 
 This is where I want to use mutate where the new variable is a function of many columns such that I don't want to type them all out explicitly. Note that this is different from selecting columns _to_ mutate. I found several Stack Overflow threads wanting to do this for a sum for which `mutate(sum = rowSums(.[1:4]))` or `mutate(sum=Reduce("+",.[1:4]))` could be used (possibly with `na.rm=T` argument to `rowSSums()`). The indices in square brackets could be replaced by a character vector of variable names also. I'm not as sure about the more general case asked [here](https://stackoverflow.com/questions/28095526/summarise-over-all-columns). `Reduce()` can be used more generally and might be enough (I think it only works with pairwise operations). `?Reduce` gives some other possibly useful functions too. Remember `rowwise` is needed for non-vectorised functions. The link gives an answer using `do()` and `unlist()` which might help understanding.
@@ -234,7 +217,6 @@ This is where I want to use mutate where the new variable is a function of many 
 * `select()` can be used to rename variables but there is also`rename(..., new=old)` to do this. 
 * To reorder columns use `select()` then the new order (numbers or names).
 * Slice/filter behaved weirdly on the OCT project, not picking all columns correctly when working with date/time data. Subsetting was ok. Retry with updated packages.
-* [Replacing NAs in a dataframe](https://stackoverflow.com/questions/8161836/how-do-i-replace-na-values-with-zeros-in-an-r-dataframe). Lots of different ways of doing this but `mutate_all(d, funs(ifelse(is.na(.), "missing", .)))` illustrates a dplyr method.
 * [Useful catalog of argument variations for select](https://www.r-bloggers.com/the-complete-catalog-of-argument-variations-of-select-in-dplyr/)
 + [pivot_](https://speakerdeck.com/yutannihilation/a-graphical-introduction-to-tidyrs-pivot-star). Nice slides on how to use `pivot_longer()` and `pivot_wider()`.
 
@@ -309,3 +291,4 @@ Lifecycle:
 “Off-label” use of functions (using for unintended side-effects) voids the warranty (may change in future).
 
 To use a package outside of the update cycle use renv, RStudio package manager, or Microsoft’s mran.
+  

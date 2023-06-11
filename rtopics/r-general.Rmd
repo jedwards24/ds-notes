@@ -144,6 +144,12 @@ browseVignettes() %>%
 
 To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit()` to see source code (although `browseVignettes()` seems easier to me). The `edit()` function needs to know which text editor to use (there isn't a default on my system). So for example I can use `edit(z, editor = "C:/Program Files/Notepad++/Notepad++.exe")`.
 
+## Lists of base R functions:
+
++ http://www.sr.bham.ac.uk/~ajrs/R/r-function_list.html
++ https://cran.r-project.org/doc/contrib/Short-refcard.pdf
++ https://statisticsglobe.com/r-functions-list/
+
 ## Paths in R
 
 [R for DS workflow chapter](https://r4ds.had.co.nz/workflow-projects.html) says never to use absolute paths in scripts. Gives differences in paths between mac/linux and windows: 

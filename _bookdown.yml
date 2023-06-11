@@ -28,17 +28,16 @@ rmd_files: [
 
   "rtopics/01-rtopics.Rmd",
   "rtopics/r-general.Rmd",
-  "rtopics/memory.Rmd",
-  "rtopics/package-development.Rmd",
-  "rtopics/parallel.Rmd",
   "rtopics/advanced-r-notes.Rmd",
   "rtopics/packages.Rmd",
   "rtopics/rmarkdown.Rmd",
   "rtopics/ggplot.Rmd",
-  "rtopics/functions.Rmd",
   "rtopics/strings.Rmd",
   "rtopics/dates.Rmd",
   "rtopics/tidyeval.Rmd",
+  "rtopics/package-development.Rmd",
+  "rtopics/parallel.Rmd",
+  "rtopics/memory.Rmd",
   "rtopics/r-cookbook.Rmd"
 ]
 
