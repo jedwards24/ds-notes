@@ -24,6 +24,8 @@ Mostly free online.
 
 [Standford Coursera ML series](https://www.coursera.org/learn/machine-learning)
 
+[Google ML crash course](https://developers.google.com/machine-learning/crash-course)
+
 [Applied Statistics with R](https://daviddalpiaz.github.io/appliedstats/)
 
 [R for Statistical Learning](https://daviddalpiaz.github.io/r4sl/)

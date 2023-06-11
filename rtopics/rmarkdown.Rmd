@@ -5,6 +5,7 @@ library(tidyverse)
 library(sparkline)
 library(formattable)
 ```
+
 Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using a plain text format, then convert it to structurally valid XHTML (or HTML). The design goal for Markdown’s formatting syntax is to make it as readable as possible. You can ply with basic markdown [here](https://daringfireball.net/projects/markdown/dingus).
 
 R Markdown builds on basic markdown and pandoc by adding executable R code.
@@ -14,8 +15,7 @@ R Markdown builds on basic markdown and pandoc by adding executable R code.
 + [Yihui Xie's knitr website](https://yihui.name/knitr)
 + [Bookdown](https://bookdown.org/yihui/bookdown/). By Yihui Xie
 + [Rmd cheatsheet 1](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
-+ [Rmd cheatsheet 2](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) - this one is
-newer but the other is less dense.
++ [Rmd cheatsheet 2](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf) - this one is newer but the other is less dense.
 + [Basic markdown syntax](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). May not be relevant to Rmd.
 + [Kable and KableExtra](https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html)
 + [Using the cache for knitr](https://yihui.name/knitr/demo/cache/)

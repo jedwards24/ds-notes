@@ -17,6 +17,54 @@ This section is for notes on general use of R and RStudio (not about specific co
   + Alt + Shift + G then line number.
   + Ctrl + F9/F10 - go back/forward through tabs, function definitions, jumping to lines, jumping to a function.
 
+## Installing R on New Computer
+
+I think these notes are out of date now as there are better ways of doing this but it might still be useful for getting info on installed packages.
+
+See http://stackoverflow.com/questions/1401904/painless-way-to-install-a-new-version-of-r-on-windows
+
+```
+library(utils)
+
+#saves info to a file called packageinfo
+rownames(installed.packages()) 
+packageinfo <- installed.packages()
+save(packageinfo, file="packageinfo.RDATA")
+
+#load saved info (set wd first)
+load("packageinfo.RDATA")
+pkgs <- packageinfo
+
+## Check necessary packages
+#need to change paths and create a vector with package names.
+load("G:\Setinfo\R\packagelist.RData" # includes a vector "pkgs"
+     installed <- pkgs %in% installed.packages()[, 'Package']
+     if (length(pkgs[!installed]) >=1){
+       install.packages(pkgs[!installed])
+     }     
+     
+load("packageinfo")
+pkgs <- packageinfo
+```
+
+Alternative from https://hlplab.wordpress.com/2012/06/01/transferring-installed-packages-between-different-installations-of-r/. This doesn't get them all (just the ones from the user library so use the above).
+
+```
+# store_packages.R
+# stores a list of your currently installed packages
+tmp = installed.packages()
+
+installedpackages = as.vector(tmp[is.na(tmp[,"Priority"]), 1])
+save(installedpackages, file="installed_packages.RDATA")
+
+# restore_packages.R
+# installs each package from the stored list of packages
+
+load("installed_packages.RDATA")
+
+for (count in 1:length(installedpackages)) install.packages(installedpackages[count])
+```
+
 ## Installing and Updating Packages
 
 Motivated by some problems with this in work I want to understand this process better.
@@ -35,8 +83,9 @@ Changing environment variables during the session does not affect `tempdir()` si
 
 ### Updating packages
 
-There is sometimes a difference between the latest version of package binary and source files. This means the latest source version hasn't yet been updated to a binary on CRAN. More info: [here](https://community.rstudio.com/t/meaning-of-common-message-when-install-a-package-there-are-binary-versions-available-but-the-source-versions-are-later/2431/4) and [here](https://community.rstudio.com/t/having-trouble-installing-and-loading-tidyverse-readr-no-hms-package/11268/2). 
-+ On windows source files require Rtools to use. 
+There is sometimes a difference between the latest version of package binary and source files. This means the latest source version hasn't yet been updated to a binary on CRAN. More info: [here](https://community.rstudio.com/t/meaning-of-common-message-when-install-a-package-there-are-binary-versions-available-but-the-source-versions-are-later/2431/4) and [here](https://community.rstudio.com/t/having-trouble-installing-and-loading-tidyverse-readr-no-hms-package/11268/2).
+
++ On windows, source files require Rtools to use. 
 + The availability of binaries is dependent on the R version so as your R becomes more out of date, binaries for the latest version are less likely to be available. 
 
 I have tended to update packages using RStudio drop down menus but the other option is to use `update.packages()` or `remotes::update_packages()`. There are arguments in each to use only binaries (`type = "win.binary"` and `build = FALSE` respectively. To see which packages are already installed use `installed.packages()`, which returns a data frame with a lot of information, or `.packages(all.available = TRUE)`, which just gives names (without the `all.available` arg it returns just *attached* packages).
@@ -95,6 +144,13 @@ browseVignettes() %>%
 
 To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit()` to see source code (although `browseVignettes()` seems easier to me). The `edit()` function needs to know which text editor to use (there isn't a default on my system). So for example I can use `edit(z, editor = "C:/Program Files/Notepad++/Notepad++.exe")`.
 
+## Paths in R
+
+[R for DS workflow chapter](https://r4ds.had.co.nz/workflow-projects.html) says never to use absolute paths in scripts. Gives differences in paths between mac/linux and windows: 
+
++ Absolute paths in Windows start with a drive letter (`C:`) or two backslashes, while in Mac/Linux they start with a slash.
++ `~` is a shortcut to the home directory in Mac/Linux, but to Documents in Windows.
+
 ## Misc
 
 * [R internals](https://cran.r-project.org/doc/manuals/R-ints.html).  A guide to the internal structures of R.
@@ -102,3 +158,9 @@ To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit
 * Internal functions in packages can be accessed using `:::`.
 * [Precedence order of operators](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Syntax.html)
 * [Coming to R from other languages](https://www.burns-stat.com/documents/tutorials/impatient-r/r-coming-programming-languages/)
+
+### Blinking White Dot in RStudio
+
+On my 2019 laptop (Windows 7) I have a persistent blinking white dot in the script window. It follows the cursor but with a lag. It is described [here](https://github.com/rstudio/rstudio/issues/4390) and also occurs on windows 10. The problem is in something underlying RStudio (QT?) and will probably be fixed in RStudio 1.3.
+
+Meanwhile a fix is to switch to [software rendering](https://support.rstudio.com/hc/en-us/articles/360017886674-Troubleshooting-RStudio-Rendering-Errors). This may be slower so I might want to switch back if markdown lags.

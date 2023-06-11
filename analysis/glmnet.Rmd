@@ -1,11 +1,8 @@
 # The glmnet Package
 
-__REWRITE__
-
-
 This package performs elasticnet regularisation. There is a [vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_beta.html) (2016).
 
-There are two main functions for fitting models `glmnet()` and `cv.glmnet()`. The former does a single fit while the second uses cross validation. They produce different objects for the purposes of plotting - coefficient values and loss respectively. Each function fits models over a sequence of `lambda` values which adjust the regularisation strength (larger `lambda` includes fewer variables). 
+There are two main functions for fitting models `glmnet()` and `cv.glmnet()`. The former does a single fit while the second uses cross validation. Each function fits models over a sequence of `lambda` values which adjust the regularisation strength (larger `lambda` includes fewer variables). The two fitting functions produce different objects with different plots from the `plot()` methods: `glmnet` objects give coefficient values while `cv.glmnet` objects give loss (both against `lambda`). 
 
 I'll concentrate on  `cv.glmnet()`. The argument `type.measure` states the loss measure for cross-validation. Default is `deviance` but alternatives for two-class binomial models are `class` (misclassification error), `auc` (area under ROC curve), and  `mae`. The returned object is an S4 list of length 10. There is a vector of `lambda` values and corresponding mean, sd, number of non-zero cofficients, and upper and lower intervals for the cv loss measures. The scalars `lambda.min` and `lambda.1se` give the `lambda` values that, respectively, minimise the cv loss and give the simplest model with 1 se of the minimum loss. Detailed information on the fitted models is in a sublist `glmnet.fit`.
 
@@ -25,6 +22,7 @@ The last two ignore `newx` so are really just alternative ways to query the mode
 The parameter $\lambda$ controls the strength of regularisation. Glmnet fits models for a sequence of $\lambda$ from which a model can be chosen. The function choses a default sequence or it can be specified. I haven't had any problems with the default until I started fitting ridge models which seemed to be failing to test small enough $\lambda$.
 
 The default sequence is based on $\lambda_{max}$ which is the smallest value of $\lambda$ for which all coefficients are zero (details [here](https://stats.stackexchange.com/questions/166630/glmnet-compute-maximal-lambda-value) or in Friedman etal's regularization paths paper). The formula has an $\alpha$ (the elastic net parameter) in the denominator so can't be calculated for ridge which has $\alpha=0$ (ridge has all non-zero coefficients). I saw somewhere that the calculation for ridge therefore uses $\alpha=0.001$. The sequence is then $k$ values from $\lambda_{min}=\epsilon\lambda_{max}$ to $\lambda_{max}$, with default $k=100$ and $\epsilon=0.0001$. The $\lambda$ range can be supplied directly, for example:
+
 ```
     grid=10^seq(1,-2,length=100) ##get lambda sequence
     ridge_mod=glmnet(x,y,alpha=0,lambda=grid)
@@ -68,7 +66,6 @@ Once I'd tidied my dataset I didn't have problems with speed or memory but here 
 + Some [advice](https://stackoverflow.com/questions/16284766/how-to-speed-up-glm-estimation-in-r) on speeding up glm fitting in R.
 + [Article on reducing the size of models when using `glm()`](http://www.win-vector.com/blog/2014/05/trimming-the-fat-from-glm-models-in-r/). 
 
-
 ### glmnetUtils
 
 [glmnetUtils](https://github.com/hongooi73/glmnetUtils) is a CRAN package to aid fitting glmnet models. It has one [vignette](https://cran.r-project.org/web/packages/glmnetUtils/vignettes/intro.html).
@@ -88,6 +85,3 @@ The alternative (default) is to build the model matrix  directly using a column 
 Setting the argument `sparse = TRUE` will use a `sparse.model.matrix` from the Matrix package.
 
 NOTE: I think the model matrix method treats ordered factors as unordered.
-
-### Output
-

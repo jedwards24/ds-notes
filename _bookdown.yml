@@ -9,8 +9,11 @@ rmd_files: [
   "index.Rmd",
   "intro.Rmd",
 
-  "workflow.Rmd",
-  "book_links.Rmd",
+  "general/01-general.Rmd",
+  "general/workflow.Rmd",
+  "general/book_links.Rmd",
+  "general/02-comp-general.Rmd",
+  "general/databases.Rmd",
 
   "analysis/01-analysis.Rmd",
   "analysis/model-general.Rmd",
@@ -23,15 +26,11 @@ rmd_files: [
   "analysis/text-model.Rmd",
   "analysis/dataset-notes.Rmd",
 
-  "computing/01-computing.Rmd",
-  "computing/02-comp-general.Rmd",
-  "computing/r-general.Rmd",
-  "computing/memory.Rmd",
-  "computing/package-development.Rmd",
-  "computing/parallel.Rmd",
-  "computing/databases.Rmd",
-
   "rtopics/01-rtopics.Rmd",
+  "rtopics/r-general.Rmd",
+  "rtopics/memory.Rmd",
+  "rtopics/package-development.Rmd",
+  "rtopics/parallel.Rmd",
   "rtopics/advanced-r-notes.Rmd",
   "rtopics/packages.Rmd",
   "rtopics/rmarkdown.Rmd",
