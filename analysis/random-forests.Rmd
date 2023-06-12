@@ -18,10 +18,6 @@ library(edwards)
 
 [Manual for Breiman fortran software](https://www.stat.berkeley.edu/~breiman/Using_random_forests_v4.0.pdf) - may be useful as guide to variable importance and imputation.
 
-[Datacamp article on the Boruta package](https://www.datacamp.com/community/tutorials/feature-selection-R-boruta)
-
-[Boruta for those in a hurry](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf)
-
 ## Basics
 
 Random forest predictions are a combination of multiple trees. The observations used to fit each tree are sampled, with replacement, from the data. At each split only a subset (of size `mtry`) of variables are available. This makes makes the trees more dissimilar from each other.
@@ -30,9 +26,93 @@ Predictions will tend to overfit to the data, but a better estimate of model fit
 
 In ranger, the in-bag status of each observation can be found by using the argument `keep.inbag = TRUE` when growing the forest. This adds an extra element `inbag.counts` to the forest object which is a list of counts of how often an observation was used for each tree (`num.trees` vectors each of length `n`). Predictions for each separate tree can be obtained using `predict(rf, data, predict.all = TRUE)`. The `.$predictions` of the output will then be a matrix rather than a vector with each column corresponding to individual trees.
 
-## Parallel
+## Ranger Model Settings
 
-`ranger` has built in parallel processing (implemented by default). For `randomForest` you need to use explicitly use foreach and doParallel or similar.
+The main inputs are either `formula`/`data`, `x`/`y`, or `data`/`dependent.variable.name`.
+
+Tuning parameters (with defaults):
+
+* `mtry`. Default is floor(sqrt(num independent vars)).
+* `max.depth`. Default is unlimited depth.
+* `min.node.size`. Default is 1 for classification, 5 for regression, and 10 for probability.
+
+Other parameters:
+
+* `write.forest` defaults to `TRUE`. Needed for predictions but reduces memory use if turned off.
+* `splitrule` defaults to “gini” for classification and “variance” for regression.
+* `respect.unordered.factors`. Defaults to FALSE (='ignore') but should always be set to TRUE (='order'). Setting to “partition” will be slow.
+* `importance` and `local.importance` for VI.
+* `oob.error`. Compute OOB prediction error. Set to FALSE to save computation time
+* `seed` defaults to generating the seed from R.
+* `num.threads` defaults to the number of CPUs available.
+* `classification`, and `probability`. Set tree type - see below.
+
+### Tree Type
+
+The type of model fitted depends on the type of the target variable column and the `classification` argument:
+
+* If the target is a factor, logical, or character, then classification is used.
+* If the target is numeric, regression is used by default, unless the argument `classification = TRUE` is given, in which case classification is used.
+
+If using classification, a further option is to supply `probability = TRUE`. This changes the predictions from class predictions to probabilities. 
+
+## Ranger Model Output
+
+The fitted model has `prediction.error` element which is OOB error on the training data. For classification this is the proportion of samples misclassified and for regression it is the MSE. For a probability tree it is the Brier score (which equals MSE for 0/1 targets).
+
+There is a `confusion.matrix` element for classification trees (not probability trees). Based on OOB.
+
+Unlike randomForest, the ranger package does not record error measures by number of trees. However, using `keep.inbag = TRUE` this can be done. See `jemodel::rang_oob_err()`.
+
+## Prediction
+
+See `?predict.ranger` for full information.
+
+The `predict.ranger` method needs inputs of a fitted ranger object and new data matching the training data. The data can only be left empty when quantile regression has been used. There is an option to only use the first `num.trees` trees for the prediction.
+
+`predict.ranger` returns a `ranger.prediction` object. For classification/regression this is a list with elements: `predictions`, `num.trees`, `num.independent.variables`, `num.samples`, and `treetype`. 
+
+The `predictions` object takes different forms depending on target variable type and model settings. For default settings:
+
+* Numeric target (regression tree) gives prediction of numeric vector.
+* Numeric target (classification tree built with  `classification = TRUE`) gives a numeric vector with values matching the target variable values.
+* Factor target (classification tree) gives a factor vector with values matching the target variable values.
+* Factor target  with `probability = TRUE` (classification tree) gives a matrix of probabilities with a column for each factor level in the target variable.
+
+This is with the default arguments `type = response` and `predict.all = FALSE`. Other options for type include se and quantiles. If `predict.all = TRUE` then the predictions are given for each individual tree which adds a dimension to the output (matrix or array).
+
+## Probability Forests
+
+Setting `probability = TRUE` with a categorical dependent variable grows a probability forest. Here, the node impurity is used for splitting, as in classification forests. Predictions are class probabilities for each sample. In contrast to other implementations, each tree returns a probability estimate and these estimates are averaged for the forest probability estimate. For details see Malley et al. (2012). 
+
+__Malley, J. D., Kruppa, J., Dasgupta, A., Malley, K. G., & Ziegler, A. (2012). Probability machines: consistent probability estimation using nonparametric learning machines. Methods Inf Med 51:74-81. https://doi.org/10.3414/ME00-01-0052__ 
+
+Slides:
+https://bigdata.unl.edu/documents/ASA_Workshop_Materials/Probability%20Machines.pdf
+
+* Mostly theoretical.
+* P25 says tuning adjusts to sample size e.g. size k of smallest terminal node for decision tree should have k/log(n) go to infinity as n goes to infinity.
+* Any nonparametric regression machine that is provably consistent is a probability machine.
+* Nearest neighbours and Random forest using random splits are both universally strongly consistent.
+* The prob option in randomForest has unknown consistency properties.
+* SVM not generally consistent.
+* ROC score is not a good way to validate prob machine. 
+* If a probability machine is consistent then the Brier score is also consistent.
+
+There are further papers given in the JSS ranger paper: https://arxiv.org/pdf/1508.04409.pdf
+
+__Making Sense of Random Forest Probabilities: a Kernel Perspective (2018) Matthew Olson Abraham J. Wyner https://arxiv.org/abs/1812.05792__ 
+
+* Says that consistency of prob estimates depends on hyperparameters. Gives example which is clearly not consistent for low mtry.
+* It does mention earlier theory, but says it does not give guarantees. IDK exactly what the theory says but it clearly does not hold in the example.
+* “tuning parameters are critical in practice”
+
+For binary targets, probability prediction should be very similar to regression on 0/1. A practical difference is that the default `min.node.size` is: _1 for classification, 5 for regression, 3 for survival, and 10 for probability_.
+
+https://stats.stackexchange.com/questions/226109/how-does-predict-randomforest-estimate-class-probabilities says prob estimates are different for randomForest and ranger:
+
+>For ranger...each tree predicts class probabilities and these probabilities are averaged for the forest prediction. For two classes, this is equivalent to a regression forest on a 0-1 coded response.
+...in randomForest with type="prob" each tree predicts a class and probabilities are calculated from these classes.
 
 ## Interpretation
 
@@ -44,11 +124,16 @@ In ranger, the in-bag status of each observation can be found by using the argum
 
 [Blog post using the DALEX package](https://olgamie.github.io/2020/09/30/building-first-baseline-with-random-forest-using-ranger-and-dalex/)
 
+[Datacamp article on the Boruta package](https://www.datacamp.com/community/tutorials/feature-selection-R-boruta)
+
+[Boruta for those in a hurry](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf)
+
 ### Tree Information
 
 Each package has functions to extract information about each tree such as which variable was split on, where the split was and the prediction for each terminal node.
 
-For `randomForest` there is the function `getTree(rfobj, k=1, labelVar=FALSE)` where `k` gives the tree number. If `labelVar=FALSE` then a matrix is returned while `labelVar=TRUE` a data frame is returned with a named column `split var` instead of a number.  
+For `randomForest` there is the function `getTree(rfobj, k=1, labelVar=FALSE)` where `k` gives the tree number. 
+If `labelVar=FALSE` then a matrix is returned while `labelVar=TRUE` a data frame is returned with a named column `split var` instead of a number.  
 
 `ranger` has `treeInfo(object, tree = 1)` which returns a data frame.
 
@@ -121,6 +206,7 @@ This solved the problem and gave the following timings in seconds. In practice, 
 
 ## Misc
 
-There is a suggestion [here](https://stats.stackexchange.com/questions/37370/random-forest-computing-time-in-r) that not using the formula input to `randomForest` can speed it up but I found the opposite. The post is from 2013. It can make a big difference if you have wide data because it avoids the internal `model.frame()` call. I’d be surprised if it was ever slower. Need to check.
+Ranger coerces characters to unordered factors but I cannot find this in the documentation.
+For logicals it makes no difference whether logical, integer, factor or ordered.
 
-`randomForest::rfImpute()` performs imputation.
+`ranger` has built in parallel processing (implemented by default). For `randomForest` you need to use explicitly use foreach and doParallel or similar.
