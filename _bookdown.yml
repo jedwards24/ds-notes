@@ -19,10 +19,6 @@ rmd_files: [
   "analysis/model-general.Rmd",
   "analysis/data-import-export.Rmd",
   "analysis/data-exploration.Rmd",
-  "analysis/logistic-reg.Rmd",
-  "analysis/glmnet.Rmd",
-  "analysis/random-forests.Rmd",
-  "analysis/decision-trees.Rmd",
   "analysis/text-model.Rmd",
   "analysis/dataset-notes.Rmd",
 
