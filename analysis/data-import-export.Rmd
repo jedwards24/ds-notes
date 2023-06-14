@@ -1,0 +1,74 @@
+# Importing & Exporting Data in R
+
+## Base methods
+
+Quick guide http://www.statmethods.net/input/importingdata.html
+
+Comprehensive https://www.datacamp.com/community/tutorials/r-data-import-tutorial#gs.MWOdcL8
+
+The basic function is `read.table()`. There are variants like `read.csv()` and `read.delim()` but these can all be done through `read.table()` with appropriate arguments.
+
+You can import from the clipboard using `read.table("clipboard")`.  
+
+Files can be downloaded from the web using `download.file(url, destfile, ...)`. The `destfile` is where to save. 
+## Reading text from a text file
+
+Can use `read.table()` for this but this reads it in as a data frame. To get raw text use either `readLines()` or `scan()`. See http://en.wikibooks.org/wiki/R_Programming/Text_Processing#Reading_and_writing_text_files
+
+## readr package
+
+For reading in data.  The first is used for csv, tab separated etc. and table formatted files. Are faster than base functions, have simpler arguments, and give more useful error messages.
+
+readr supports seven file formats with seven read_ functions:
+
++	`read_csv()`: comma separated (CSV) files
++	`read_tsv()`: tab separated files
++	`read_delim()`: general delimited files
++	`read_fwf()`: fixed width files
++	`read_table()`: tabular files where columns are separated by white-space.
++	`read_log()`: web log files
+
+Notes:
+
++ `read_csv()` never reads in as integers unless specified [see news](https://github.com/tidyverse/readr/blob/master/NEWS.md#integer-column-guessing)
++ `read_csv()` read “-” as “\x96” while fread seemed correct. This can be fixed using argument `locale = readr::locale(encoding = "windows-1252")`. See [github issue](https://github.com/tidyverse/readr/issues/892) and `?readr::guess_encoding`.
+
+## Other Packages
+
+[The rio package](https://github.com/leeper/rio) gives a simple `import()` function which will use a different method depending on the file extension. It calls other packages such as data.table, haven, or readxl to do this.
+
+## Writing to Excel
+
+I have had problems with this in the past due to Java dependency issues for the packages I tried. However, when I revisited it recently (2020) it worked fine. The package I used was [openxlsx](https://cran.r-project.org/web/packages/openxlsx/). Another package which might be useful is [writexl](https://github.com/ropensci/writexl). I haven't tried this but it appears to be lightweight (without Excel dependency). It is probably able to only write basic data to the spreadsheet though (e.g. no multiple sheets).
+
+The basic function in the openxl package is `write.xlsx(x, file)`. Multiple sheets can be written by supplying a named list as `x`. Alternatively a workbook can be built up in detail using `createWorkbook()` and then adding layers. See the vignettes.
+
+For an alternative to default Excel column widths (can be bit wide with auto settings) see this 
+[thread](https://stackoverflow.com/questions/45860085/r-autofit-excel-column-width/45860216#45860216).
+
+## JSON Files
+
+The JSON data format was designed as a way of allowing different machines or processes within machines to communicate with each other by sending messages constructed in a well defined format. JSON is now the preferred data format used by APIs (Application Programming Interfaces).
+
+I found the following packages for working with json files. I used jsonlite.
+
+* [jsonlite](https://github.com/jeroen/jsonlite). 
+* [rjson](https://github.com/alexcb/rjson)
+* [RJSONIO](https://github.com/duncantl/RJSONIO). Old.
+
+Read files in with `read_json()`. By default this reads in as a nested list. With the arg `simplifyVector = TRUE`, it will be converted to a dataframe (possibly with list columns). In a file I used at work the list was one element per row. The list was 3x the size of the dataframe in R. The `fromJSON()` seems to do the same but defaults to simplifying.
+
+* https://datacarpentry.org/r-socialsci/06-json/index.html
+* https://tidyr.tidyverse.org/articles/rectangle.html
+* https://themockup.blog/posts/2020-05-22-parsing-json-in-r-with-jsonlite/
+* A number of vignettes at https://cran.r-project.org/web/packages/jsonlite/
+
+The RStudio viewer is good for looking at lists from json files.
+
+## XML
+
+I've only done a bit on this. XML is similar to JSON but a bit longer and harder to parse.
+
+The package to use is [xml2](https://github.com/r-lib/xml2). The guide here was useful: [quick guide to XML in R](https://lecy.github.io/Open-Data-for-Nonprofit-Research/Quick_Guide_to_XML_in_R.html).
+
+I am unclear on the structure for XML but it seems to based on ideas from relational databases with a nested tag structure (thinking of trees might be helpful). Extracting is done with string pattern matching and searching up and down the hierarchy (parents and children).

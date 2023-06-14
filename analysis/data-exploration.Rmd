@@ -1,18 +1,6 @@
-# Data Exploration
+# Data Exploration and Preparation
 
 These notes relate to variable and data exploration. In particular exploring the relationship between input and output variables. This includes visualising model predictions for given variables.
-
-[Visualizing GLMs for binary outcomes](http://ddar.datavis.ca/pages/extra/titanic-glm-ex.pdf)
-
-[ggeffects package](https://strengejacke.github.io/ggeffects/index.html). Computes marginal effects from statistical models.
-
-[Checking functional form in logistic regression using loess plots](https://thestatsgeek.com/2014/09/13/checking-functional-form-in-logistic-regression-using-loess/)
-
-[Andrew Gelman Exploratory Data Analysis](http://www.stat.columbia.edu/~gelman/research/published/p755.pdf). Discussion paper. 22pp.
-
-## Visualisation
-
-[Data Visualisation workshop](http://stulp.gmw.rug.nl/21-03-2019/ggplotworkshop/). ggplot based. Should be a fairly quick read 
 
 ## Automated Exploration Tools
 
@@ -25,3 +13,24 @@ These notes relate to variable and data exploration. In particular exploring the
 
 There is an [article](http://r4stats.com/articles/software-reviews/r-gui-comparison/) comparing various GUIs for R with links to detailed reviews for each. Some are packages while others are separate programs. Examples are the rattle package and the [bluesky application](https://www.blueskystatistics.com/Default.asp).
 
+## Weight of Evidence
+
+These are univariate measures used for exploration of variables and for variable selection. It was hard to find much formal on them, but they seem to be measures used in credit scoring. The best information on them I found is this [Stitchfix  post](https://multithreaded.stitchfix.com/blog/2015/08/13/weight-of-evidence/). The author has a package: [Information](https://github.com/klarsen1/Information).
+
+For a binary response, WoE for level $i$ is the log of $p_i / (1 - p_i) \times  (1 - p) / p$, where $p_i$ is the mean response for level $i$ and $p$ is the mean response for the whole variable. Therefore this is the log odds plus a constant of $log [(1 - p) / p]$ (a logit so 0 when $p=0.5$). So the WoE adjusts the log-odds to take account of imbalanced classes - it measures the ratio of the factor level odds to the variable odds. 
+
+The IV of a variable is a weighted sum of the WoE values for the levels. The weights adjust to give larger weights to levels with more observation and to ensure that all levels contribute a positive value. There is a table that says whether a variable has predictive value based on IV. This is just a heuristic though. The main issue I can see is that it is independent of the amount of data you have. I have also heard it said that it biases towards variables with more levels.
+
+It might be interesting to relate log odds, WoE, relative risk and odds ratio to each other.
+
+## Misc
+
+[Preparing data for classifiers](http://www.win-vector.com/blog/2014/12/a-comment-on-preparing-data-for-classifiers/). John Mount. I have downloaded the paper mentioned here.
+
+[Variable Importance](https://win-vector.com/2018/12/17/vtreat-variable-importance/). Suggests that variable screening (before passing to model fitting) is important. Wide data can cause any algorithm to fail. The vtreat package has several functions to value the variables individually (using linear, piecewise linear, or knn fits).
+
+[Advanced tricks with data table](https://brooksandrew.github.io/simpleblog/articles/advanced-data-table/)
+
+[Speed Comparison for basic row/column operation](http://www.win-vector.com/blog/2019/05/timing-working-with-a-row-or-a-column-from-a-data-frame/). dplyr can be quite a bit slower than base R once the data frame gets to a decent size.
+
+The [variablekey vignette](https://cran.r-project.org/web/packages/kutils/vignettes/variablekey.pdf) in the kutils package gives a method for recording changes in variables in data frames. It is based on a table of old/new variable names/classes/values (where the number of distinct values is not too large). The ordering of the values can be recorded. The table can be changed in, e.g. excel, then these changes can be applied to the data frame. I like the general idea of recording and displaying changes but I want to only make changes via R code.

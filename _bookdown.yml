@@ -17,7 +17,7 @@ rmd_files: [
 
   "analysis/01-analysis.Rmd",
   "analysis/model-general.Rmd",
-  "analysis/data-prep.Rmd",
+  "analysis/data-import-export.Rmd",
   "analysis/data-exploration.Rmd",
   "analysis/logistic-reg.Rmd",
   "analysis/glmnet.Rmd",
