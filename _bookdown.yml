@@ -16,7 +16,9 @@ rmd_files: [
   "general/databases.Rmd",
 
   "analysis/01-analysis.Rmd",
-  "analysis/model-general.Rmd",
+  "analysis/model-formulas.Rmd",
+  "analysis/design-matrix.Rmd",
+  "analysis/tidymodels.Rmd",
   "analysis/data-import-export.Rmd",
   "analysis/data-exploration.Rmd",
   "analysis/text-model.Rmd",

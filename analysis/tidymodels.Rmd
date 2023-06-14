@@ -1,0 +1,33 @@
+# Tidymodels
+
+[Tidymodels] is a collection of packages to give a framework for modelling/machine learning. It is built on ideas from the carat package which is no longer developed. There is also the tidyverse's [modelr package](https://github.com/tidyverse/modelr) which provides similar utility but not in as much detail (simpler though).
+
+Links to guides:
+
++ [Blog post](http://www.rebeccabarter.com/blog/2020-03-25_machine_learning/).
++ [Rstudioconf workshop](https://education.rstudio.com/blog/2020/02/conf20-intro-ml/).
++ [R Views gentle intro](https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/).
++ [tidymodels site](https://www.tidymodels.org/). Contains a long tutorial and many guides. [Github](https://github.com/tidymodels).
+
+This [critique of tidymodels](https://staffblogs.le.ac.uk/teachingr/2020/10/05/on-not-using-tidymodels/) does make some good points and I have similar reservations. I worry that it is just adding an extra layer on top of standard processes and trying to be over-general. The criticisms don't apply equally to the whole of tidymodels. The parsnip and recipes packages are the ones that I have the main doubts about. However, there are useful ideas here so they may be useful. Hopefully other packages can be used easily without buying into the full system.
+
+[K-means with tidymodels](https://www.tidymodels.org/learn/statistics/k-means/) - a small example of using tidymodels (just broom I think) with K-means. Uses `augment()`, `tidy()`, and `glance()` to handle the output and uses map-unnest to neatly run over different numbers of cluster centres.
+
+Main packages (there are many more):
+
++ rsample - data splitting and resampling.
++ parsnip - fit models.
++ recipes - data preprocessing.
++ workflows - bundle pre-processing, modeling, and post-processing together.
++ tune - tuning.
++ yardstick - model performance metrics.
++ broom - converts model information into tibbles.
++ dials - manages tuning parameters and grids.
+
+Possibly useful is the [pixiedust](https://github.com/nutterb/pixiedust) package which customises table output from models after tidying with broom. 
+
+There is also HW's [modelr](https://github.com/tidyverse/modelr) which performs many of these functions from within the tidyverse.
+
+See also vtreat for some similar ideas.
+
+Quick thoughts on pre-processing data. I want a way of saving the pro-processing steps. A script could be fine but it isn't modular. Functions seem the obvious way but then should I save the arguments? The recipes way is to save an object bundling the data, model formula, and further transformations. This does make sense, but would I rather these were kept separate?
