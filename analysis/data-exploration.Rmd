@@ -23,6 +23,35 @@ The IV of a variable is a weighted sum of the WoE values for the levels. The wei
 
 It might be interesting to relate log odds, WoE, relative risk and odds ratio to each other.
 
+Here are some rough functions I wrote to explore this (may not be correct):
+
+```
+woe <- function(data, target, predictor) {
+  woe <- data %>% 
+    group_by({{predictor}}) %>% 
+    summarise(n_pos = sum({{target}}),
+              n_neg = sum(!{{target}})) %>% 
+    mutate(pc_ev = n_pos / sum(n_pos)) %>% 
+    mutate(pc_ne = n_neg / sum(n_neg)) %>% 
+    mutate(woe = log(pc_ev / pc_ne))  %>% 
+    mutate(iv = woe * (pc_ev - pc_ne))
+  cat("IV is ", sum(woe$iv), "\n")
+  woe
+}  
+
+iv <- function(predictor, data, target) {
+  pred_name <- names(select(data, {{predictor}}))
+  targ_name <- names(select(data, {{target}}))
+  res <- data %>% 
+    group_by(!!sym(pred_name)) %>% 
+    summarise(n_pos = sum(!!sym(targ_name)),
+              n_neg = sum(!(!!sym(targ_name)))) %>% 
+    mutate(pc_ev = n_pos / sum(n_pos)) %>% 
+    mutate(pc_ne = n_neg / sum(n_neg)) %>% 
+    mutate(woe = log(pc_ev / pc_ne))   
+  sum(res$woe * (res$pc_ev - res$pc_ne))
+}
+```
 ## Misc
 
 [Preparing data for classifiers](http://www.win-vector.com/blog/2014/12/a-comment-on-preparing-data-for-classifiers/). John Mount. I have downloaded the paper mentioned here.

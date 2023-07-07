@@ -18,7 +18,6 @@ rmd_files: [
   "analysis/01-analysis.Rmd",
   "analysis/model-formulas.Rmd",
   "analysis/design-matrix.Rmd",
-  "analysis/tidymodels.Rmd",
   "analysis/data-import-export.Rmd",
   "analysis/data-exploration.Rmd",
   "analysis/text-model.Rmd",
