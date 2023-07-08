@@ -1,137 +1,4 @@
-# R Packages Collection
-
-This records R packages for possible future use. I will add notes as I read about them.
-
-[vctrs package](https://vctrs.r-lib.org/)
-
-This is a developer focused package but I am interested in the ideas of type and size stability of functions.
-
-+ [video of talk ](https://resources.rstudio.com/rstudio-conf-2019/vctrs-tools-for-making-size-and-type-consistent-functions)
-+ [Type and size stability](https://www.rdocumentation.org/packages/vctrs/versions/0.1.0/vignettes/stability.Rmd)
-
-[vroom package](https://vroom.r-lib.org/). Faster reading of delimited data. Uses lazy loading.
-
-[parallelMap](https://github.com/berndbischl/parallelMap). Interface some popular parallelization back-ends with a unified interface.
-
-[sjmisc package](https://cloud.r-project.org/web/packages/sjmisc/index.html). Data and variable transformation functions.
-
-[vtreat package paper](https://arxiv.org/abs/1611.09477)
-
-By Nina Zumel and John Mount. Goes with their book. This package gives a methodology for preparing data for predictive modelling. It produces a *treatment plan* which can be applied to new as well as existing data which automates the handling of:
-
-+ Missing data.
-+ Novel categorical levels only found in new data.
-+ High cardinality categorical variables.
-+ Wide data: having too many candidate variables.
-
-These are very general problems for which I need standardised solution methods. It also has useful references.
-
-[future](https://cran.r-project.org/web/packages/future/index.html)
-Unified Parallel and Distributed Processing.
-
-[infer](https://teachdatascience.com/infer/). Adds verbs to tidyverse to aid hypothesis testing.
-
-[glmnetutils](https://blog.revolutionanalytics.com/2016/11/glmnetutils.html). A collection of tools to streamline the process of fitting elastic net models with glmnet.
-
-[goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html). From Mango. Run a selection of tests on your packages to see if they conform to some good practice rules. Two vignettes.
-
-[equisse](https://github.com/dreamRs/esquisse). Interactive Rstudio addin for viewing ggplots.
-
-[githubinstall](https://cran.r-project.org/web/packages/githubinstall/vignettes/githubinstall.html). Makes it easier to install packages from github. The devtools version requires developer name while this just requires the package name.
-
-**lintr styler formatR**. Packages that check your code's formatting. [styler](https://styler.r-lib.org/) and [lintr](https://github.com/jimhester/lintr) both support the tidyverse style guide - styler is for interactive use while lintr uses automated checks. styler has a Rstudio addin. [formatR](https://yihui.org/formatr/) by Yihui Xie 
-
-[withr](https://withr.r-lib.org/index.html). Run code from a temporarily altered state. Ensures that you do not permanently alter global options/variables. Locally change a random number seed might be useful.
-
-[mlr](https://mlr.mlr-org.com/index.html). Machine learning with R.
-
-[funGraphs](https://github.com/kcf-jackson/funGraphs) Maps function dependencies in a package.
-
-[ggtext](https://github.com/clauswilke/ggtext) Improved text rendering support for ggplot2.
-
-[prismatic](https://github.com/EmilHvitfeldt/prismatic) Color manipulation tools
-
-[summarytools](https://github.com/dcomtois/summarytools)
-
-[packrat](http://rstudio.github.io/packrat/) A package management system. I believe this has been superceded by [renv](https://rstudio.github.io/renv/index.html)
-
-[prophet](https://facebook.github.io/prophet/) Automated forecasting package from facebook.
-
-[tidytext](https://cran.r-project.org/web/packages/tidytext/index.html)
-
-[janitor](https://cran.r-project.org/web/packages/janitor/) - some useful misc low level functions for data work.
-
-[fst](https://www.fstpackage.org/) Fast reading and writing of data frames. Uses a fast compression algorithm.
-
-[qs](https://github.com/traversc/qs) Quick seralization of R objects. Gives comparison to fst and `saveRDS()`.
-
-[tsibble](https://tsibble.tidyverts.org/) Tools for wrangling temporal data in a tidy framework. Succeeds the tibbletime package. [Slides from RStudio course](https://github.com/rstudio-conf-2020/time-series-forecasting?fbclid=IwAR2K82TIWjzyCimYrDeH19oHKiUowrRxbcpKjUz2ed2achIm2tUt779k05o)
-
-[slider](https://github.com/DavisVaughan/slider) Sliding window functions. The tsibble news says that the sliding window in their package can be replaced by `slider::slide()`. rom RStudio - builds on purrr. [tidyverse blog](https://www.tidyverse.org/blog/2020/02/slider-0-1-0/).
-
-`furrr` and `future` - parallel processing. 
-
-[caret](http://topepo.github.io/caret/index.html)
-
-[bigstatsr](https://privefl.github.io/bigstatsr/index.html)
-
-[DiagrammeR](http://rich-iannone.github.io/DiagrammeR/). Flowcharts etc. in RMarkdown.
-
-+ https://datascienceplus.com/how-to-build-a-simple-flowchart-with-r-diagrammer-package/
-+ https://rstudio-pubs-static.s3.amazonaws.com/194240_c9bc85a7f24b41a2b1f42724c525a109.html#1
-+ https://mikeyharper.uk/flowcharts-in-r-using-diagrammer/
-
-[summarytools](https://cran.r-project.org/web/packages/summarytools/vignettes/Introduction.html). For quickly summarising data.
-
-[skimr](https://github.com/ropensci/skimr). Quick, simple summaries for variables in a data frame.
-
-[naniar](https://github.com/njtierney/naniar). Missing data functions. Tidy-based. Has a good collection of functions to replace strings with NAs (dplyr has `na_if()` but these are more usuable). Related [visdat](https://cran.r-project.org/web/packages/visdat/vignettes/using_visdat.html) has a few possibly useful plotting functions for missing values.
-
-[usethis](https://usethis.r-lib.org/). Workflow package helping to automate tasks.
-
-[checkr](https://github.com/poissonconsulting/checkr). Functions to check properties of objects. Has a `check_key()` function. The author also gives a [review of some assertive programming R packages](https://cran.r-project.org/web/packages/checkr/vignettes/assertive-programming.html). Superseded by [chk](https://github.com/poissonconsulting/chk) [github.io](https://poissonconsulting.github.io/chk/index.html). There is also the older related [datacheckr](https://github.com/poissonconsulting/datacheckr). 
-
-[snakecase](https://github.com/Tazinho/snakecase) - for parsing and conversion between snake, camel etc. cases. May be useful for general parsing too.
-
-[annotater](https://github.com/luisDVA/annotater). Adds version number and sources comments after `library()` commands. 
-
-[rebus](https://github.com/richierocks/rebus). Regular expression builder. Builds up regular expressions using readable functions.
-
-[qs](https://github.com/traversc/qs). An interface for quickly saving and reading objects to/from disk.
-
-[tinytest](https://github.com/markvanderloo/tinytest). Minimal dependency testing package.
-
-[cli](https://github.com/r-lib/cli). Command line interfaces - attractive messages for output from code processes.
-
-[renv](https://rstudio.github.io/renv/index.html). Reproducible environments for R projects. A way of controlling package and R versions in a project. Aims to replace packrat.
-
-[progressr](https://github.com/HenrikBengtsson/progressr). Package for progress updates. Author of futures package.
-
-[gluedown](https://github.com/kiernann/gluedown). Vectors to formatted markdown text.
-
-[benchmarkme](https://github.com/csgillespie/benchmarkme). Benchmarking the speed of your system.
-
-[logger](https://daroczig.github.io/logger/)
-
-[rsthemes](https://www.garrickadenbuie.com/project/rsthemes/) More themes for RStudio.
-
-[multiplyr](https://multidplyr.tidyverse.org/) Backend for dplyr for using multi-cores. Not CRAN yet.
-
-[dtplyr](https://dtplyr.tidyverse.org/) dplyr backend for calling data table.
-
-[disk.frame](https://github.com/xiaodaigh/disk.frame) To manipulate tabular data that doesn't fit in RAM.
-
-[dupree](https://github.com/russHyde/dupree) Identify chunks / blocks of highly duplicated code within a set of R scripts.
-
-[spelling](https://github.com/ropensci/spelling/) Tools for automated spell checking. Based on Hunspell.
-
-[miniCRAN](https://github.com/andrie/miniCRAN) Create a mini version of CRAN containing only selected packages.
-
-[CodeDepends](https://cran.r-project.org/web/packages/CodeDepends/vignettes/intro.html) Analyses dependencies between functions and variables in scripts (not package dependencies).
-
-[Rando](https://github.com/MyKo101/rando) Context aware reproducible random numbers. Stronger checks than base.
-
-[fs](https://fs.r-lib.org/) File system operations. More consistent naming and return values than base with better checks.  
+# R Packages Notes
 
 ## purrr
 
@@ -151,7 +18,8 @@ Brief notes from the R4DS chapter:
 + `map()` is identical to `lapply()` but adds in some shortcuts.
 + Shortcuts extract named elements or by position e.g. `map_dbl("r.squared")` or `map(2)`.
 + The `map_*()` variants are like `vapply()` but need less typing. `vapply()` can ouput matrices while `map_*()` can't.
-+ `map2()` and `pmap()` use multiple related inputs. `invoke_map()` applies multiple functions. `walk()` returns side_effects. See [https://purrr.tidyverse.org/reference/map2.html](https://purrr.tidyverse.org/reference/map2.html). + There are lots of other useful functions in the package e.g. `safely()`, `possibly()`, and `quietly()` manage errors in parallel actions. 
++ `map2()` and `pmap()` use multiple related inputs. `invoke_map()` applies multiple functions. `walk()` returns side_effects. See [https://purrr.tidyverse.org/reference/map2.html](https://purrr.tidyverse.org/reference/map2.html). 
++ There are lots of other useful functions in the package e.g. `safely()`, `possibly()`, and `quietly()` manage errors in parallel actions. 
 
 Example `pmap()` use with a df:
 
@@ -168,19 +36,6 @@ tibble(sum = c(T, F, T, F), a = 1:4, b = 5:8) %>%
 ```
 
 Use `...` in helper function to absorb extra cols in df/list passed to `pmap()`.
-
-## tibbles
-
-**OLD NOTES**
-
-**tibbles** are an alternative to data frames. Main differences are printing and subsetting.
-
-* Print just shows 10 rows and columns that fit on screen. Use arguments `n=` and `width=` to change. Can change defaults using `options()`.
-* Other displaying options are `glimpse()` and `View()`. `glimpse()` is the dplyr version of `str()` and shows all variables with data transposed
-* Row names are not printed. they should not contain data in tidy data.
-* Standard dplyr methods always return a tibble. To subset to a vector use `[[` or `$`. To use with a pipe use `.$x` or `.[["x"]]`. Alternatively use `unlist(use.names = FALSE)` (or just `unlist()` to keep names).
-* Create using `tibble()` or `tribble()` (transposed tibble), or using `as_tibble()` to coerce an existing df. I think `tbl_df()` and `data_frame()` are the functions in the dplyr package while the others are newer from the tibble package.
-* It’s possible for a tibble to have column names that are not valid R variable names, aka non-syntactic names e.g. they might not start with a letter, or they might contain unusual characters like a space. To refer to these variables, you need to surround them with backticks, \`.
 
 ## dplyr
 
@@ -213,82 +68,4 @@ This is where I want to use mutate where the new variable is a function of many 
 
 ## Other notes
 
-* There are versions of each verb followed by an underscore which have standard evaluation semantics (see section below). These are now depreciated as their functionality is included in the basic versions (but see below).
-* `select()` can be used to rename variables but there is also`rename(..., new=old)` to do this. 
-* To reorder columns use `select()` then the new order (numbers or names).
-* Slice/filter behaved weirdly on the OCT project, not picking all columns correctly when working with date/time data. Subsetting was ok. Retry with updated packages.
-* [Useful catalog of argument variations for select](https://www.r-bloggers.com/the-complete-catalog-of-argument-variations-of-select-in-dplyr/)
-+ [pivot_](https://speakerdeck.com/yutannihilation/a-graphical-introduction-to-tidyrs-pivot-star). Nice slides on how to use `pivot_longer()` and `pivot_wider()`.
-
-### Issues with NSE
-
-When using `dplyr` inside my own function I had a problem with lots of `Note: no visible binding for global variable xxxx` messages. This doesn't stop code from running an isn't an error, but is annoying. It has been a bigger problem for people producing packages and there are several threads (e.g. [compiler issues](https://stackoverflow.com/questions/24258770/using-compiler-package-and-suppress-no-visible-binding-for-global-variable)
-[main thread - ggplot](https://stackoverflow.com/questions/9439256/how-can-i-handle-r-cmd-check-no-visible-binding-for-global-variable-notes-when)) about it (the problems occur with `ggplot` and `compiler` too). I didn't find any of the solutions ideal but did manage to fix it.
-
-My example is the function:
-
-```
-summarise_over <- function(results_df, mean_var){
-  summary <- results_df %>% 
-    group_by_("exper_no", "pol_no", mean_var) %>%
-    summarise(mean_r1 = mean(expect_r1), mean_r2 = mean(expect_r2)) %>%
-    mutate(mean_r_all = (mean_r1 + mean_r2) / 2)
-  return(summary)
-}
-```
-When run this will give messages that no visible binding is found for ... `expect_r1`, `expect_r2`, `mean_r1` and `mean_r2`. These are variable names is `results_df` so are handled correctly because `dplyr` understands them to be e.g. `df$expect_r1` but R thinks they are don't exist.
-
-Some solutions are to create the variables somewhere, either as global variables e.g. `globalVariables(c("expect_r1", "expect_r2"))` "somewhere in the top-level of your package" or in the function as `expect_r1 <- expect_r2 <- NULL`. For `dplyr`/`ggplot` use of SE functions e.g. `mutate_()` to avoid NSE can fix this but it was tricky to implement in my example. due too the operations I was doing on the variables (`mean_r1 + mean_r2`). Elsewhere Jenny Bryant suggests this for piping (but it didn't fix my problem):
-
-```
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
-```
-
-The version check is to ensure it works with older versions.
-
-### Other Issues
-
-[Fixing a multiple warning “unknown column”](https://stackoverflow.com/questions/39041115/fixing-a-multiple-warning-unknown-column/42536153). There is an interaction with RStudio's disgnostics that can produce unnecessary warnings. It's quite annoying so worth avoiding. It may be fixed in future versions of RStudio but a workaround is to either turn off diagnostics in `Preferences/Code/Diagnostics` or add `# !diagnostics off` at the top of files.
-
-## Other tidyverse
-
-**pryr**: Used to investigate the R language e.g. looking at the workings of base functions. Since replaced by **lobstr**
-
-**plyr**: Tools to split data apart, operate on all pieces, and then collect results. For data frames this has been replaced by dplyr which is easier to use and faster.
-
-[magrittr pipe guide](https://magrittr.tidyverse.org/reference/pipe.html). Note the use of braces and brackets and the availability of alias functions for many standard operators (see `?extract`). The dot can be used to create a named functional sequence.
-
-[tidyverse site](https://www.tidyverse.org/). This has regular articles on updates to the tidyverse packages. Often worth reading.
-
-[tidyverse 1.00 release](https://blog.rstudio.com/2016/09/15/tidyverse-1-0-0/) lists all of the packages installed. May be out of date now since magrittr isn't listed. 
-
-[rvest](https://cran.r-project.org/web/packages/rvest/index.html) is a web scraping package. Example (older now) tutorials are [here](https://rpubs.com/Radcliffe/superbowl), [here](https://blog.rstudio.org/2014/11/24/rvest-easy-web-scraping-with-r/) and a [longer one](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/)
-
-[haven](https://haven.tidyverse.org/) is used to import SAS, SPSS, and Stata files. There are alternative packages but this should be faster. There are two vignettes.
-
-[tidylog](https://github.com/elbersb/tidylog). Provides feedback about dplyr and tidyr operations with simple wrapper functions.
-
-[itdepends](https://github.com/r-lib/itdepends). Explore dependencies for packages and projects. See [Blog post](https://www.tidyverse.org/blog/2019/05/itdepends/).
-
-[conflicted](https://www.tidyverse.org/blog/2018/06/conflicted/). Stricter handling of package conflicts.
-
-[strict](https://github.com/hadley/strict). Make R stricter. Not CRAN yet.
-
-[waldo](https://github.com/r-lib/waldo/). Differences between objects. Developed for use in testthat v3.
-
-[bench](https://github.com/r-lib/bench). Benchmarks code.
-
-## Package Maintainence
-
-From HW keynote RStudio Conf 2021
-
-Lifecycle: 
-
-* Stable, superceded are “in-warranty”, 
-* Experiential, Deprecated are “out-of-warranty”.
-
-“Off-label” use of functions (using for unintended side-effects) voids the warranty (may change in future).
-
-To use a package outside of the update cycle use renv, RStudio package manager, or Microsoft’s mran.
-  
+[pivot_](https://speakerdeck.com/yutannihilation/a-graphical-introduction-to-tidyrs-pivot-star). Nice slides on how to use `pivot_longer()` and `pivot_wider()`.

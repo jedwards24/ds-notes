@@ -170,3 +170,7 @@ To get a specific vignette in R use `vignette("colwise", "dplyr")` and use `edit
 On my 2019 laptop (Windows 7) I have a persistent blinking white dot in the script window. It follows the cursor but with a lag. It is described [here](https://github.com/rstudio/rstudio/issues/4390) and also occurs on windows 10. The problem is in something underlying RStudio (QT?) and will probably be fixed in RStudio 1.3.
 
 Meanwhile a fix is to switch to [software rendering](https://support.rstudio.com/hc/en-us/articles/360017886674-Troubleshooting-RStudio-Rendering-Errors). This may be slower so I might want to switch back if markdown lags.
+
+### Unknown Column Warnings
+
+[Fixing a multiple warning “unknown column”](https://stackoverflow.com/questions/39041115/fixing-a-multiple-warning-unknown-column/42536153). There is an interaction with RStudio's disgnostics that can produce unnecessary warnings. It's quite annoying so worth avoiding. It may be fixed in future versions of RStudio but a workaround is to either turn off diagnostics in `Preferences/Code/Diagnostics` or add `# !diagnostics off` at the top of files.
