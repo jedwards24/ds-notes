@@ -33,9 +33,9 @@ dataset_info <- function(datasets) {
 }
 ```
 
-Also put example analyses here.
+Notes on available datasets, mainly with a view to use in testing or examples. 
 
-## Inbuilt Datasets
+## Inbuilt R Datasets
 
 R comes with a number of inbuilt datasets. These can be viewed using `data()`, which will also list any datasets built into loaded packages. The base R packages come from the `datasets` package and there are help files for each set (or see the [documentation](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/00Index.html)). 
 
@@ -73,7 +73,12 @@ tidy_depends <- packageDescription("tidyverse")$Imports %>%
   str_remove_all("\n") %>% 
   str_remove_all("\\(.+?\\)") %>% 
   str_squish() %>% 
-  setdiff(c("lubridate", "broom", "modelr")) #exclude dependencies that are not loaded
+  setdiff(c("broom", "modelr")) #exclude dependencies that are not loaded
+
+tidy_datasets <- data(package = tidy_depends)$results %>%
+  as_tibble() %>% 
+  left_join(dataset_info(.$Item), by = c(Item = "name")) %>% 
+  rename(Dataset = Item)
 ```
 
 Other packages often come with datasets included. Packages on my computer with the most datasets are:  
@@ -86,14 +91,16 @@ data(package = .packages(all.available = TRUE))$results %>%
   my_kable()
 ```
 
-The tidyverse packages contain a number of datasets. These are the packages loaded with the tidyverse (not including dependencies such as broom, lubridate, and modelr which are not loaded).
+The tidyverse packages contain a number of datasets. These are the packages loaded with the tidyverse (not including dependencies such as broom and modelr which are not loaded). The next two tables give information on these datasets.
 
 ```{r tidy}
-data(package = tidy_depends)$results %>%
-  as_tibble() %>% 
-  left_join(dataset_info(.$Item), by = c(Item = "name")) %>% 
-  select(-LibPath) %>% 
-  my_kable()
+tidy_datasets %>% 
+  select(-LibPath, -Title) %>% 
+  edwards::my_kable()
+
+tidy_datasets %>% 
+  select(Package, Dataset, Title) %>% 
+  edwards::my_kable()
 ```
 
 dplyr has `starwars` which has NAs and nested columns; `storms` with NAs and 10000 rows. forcats has `gss_cat` - most vars are factors (2 aren't), 21,483 rows and NAs in one column. 
@@ -105,6 +112,7 @@ library(nycflights13)
 data(package = "nycflights13")$results %>%
   as_tibble() %>% 
   left_join(dataset_info(.$Item), by = c(Item = "name")) %>% 
+  rename(Dataset = Item) %>% 
   select(-LibPath) %>% 
   my_kable()
 ```
